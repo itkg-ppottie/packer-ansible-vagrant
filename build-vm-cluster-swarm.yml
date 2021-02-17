@@ -1,0 +1,16 @@
+- name: a play that runs entirely on the ansible host
+  hosts: 127.0.0.1
+  connection: local
+
+  tasks:
+  ### Build instances
+    - file: path=log state=directory mode=0755
+
+    - name: create vm
+      shell: bash -c "PATH=$PATH:/opt/packer/ packer build -var 'disk_size={{ item.size }}' -var 'name={{ item.name }}' -on-error=run-cleanup-provisioner packer/debian-10-template.json " > log/debian10-{{ item.name }}.log
+      args:
+        creates: output-debian10-{{ item.size }}G-{{ item.name }}
+      with_items:
+        - { name: "vm-swarm-master-01", size: "10"}
+      register: packer
+

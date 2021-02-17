@@ -1,0 +1,56 @@
+- name: 'Provision Image'
+  hosts: 127.0.0.1
+  connection: local
+  become: true
+
+  tasks:
+    - name: Install aptitude using apt
+      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+    - name: Install required system packages
+      apt: name={{ item }} state=present update_cache=yes force_apt_get=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/debian buster stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: "{{item}}"
+        state: latest
+        force_apt_get: yes
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+    - name: check if docker is ready
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure Docker is started and enabled at boot
+      # https://docs.ansible.com/ansible/latest/modules/service_module.html
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Ensure handlers are notified now to avoid firewall conflicts
+      # https://docs.ansible.com/ansible/latest/modules/meta_module.html
+      meta: flush_handlers
+
+    - name: "Ensure the user {{ ansible_user }} is part of the docker group"
+      # https://docs.ansible.com/ansible/latest/modules/user_module.html
+      user: 
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes

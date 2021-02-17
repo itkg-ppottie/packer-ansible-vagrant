@@ -1,0 +1,99 @@
+{
+	"builders": [
+	  {
+		"boot_command": [
+			"<wait> <esc><wait>",
+
+			"install preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `preseed_path`}} <wait>",
+			"debian-installer=fr_FR.UTF-8 <wait>",
+			"auto <wait>",
+			"locale=fr_FR.UTF-8 keyboard-configuration/layoutcode=fr keyboard-configuration/variantcode=latin9 keymap=skip-config <wait>",
+			"kbd-chooser/method=fr <wait>",
+			"keyboard-configuration/xkb-keymap=fr <wait>",
+			"netcfg/get_hostname={{ user `hostname` }} <wait>",
+			"netcfg/get_domain={{ user `domain` }} <wait>",
+			"fb=false <wait>",
+			"debconf/frontend=noninteractive <wait>",
+			"console-setup/ask_detect=false <wait>",
+			"console-keymaps-at/keymap=fr <wait>",
+			"grub-installer/bootdev=/dev/sda <wait>",
+			"<enter><wait>"
+		],
+		"boot_wait": "10s",
+		"disk_size": "{{ user `disk_size`}}000",
+		"guest_os_type": "debian_64",
+		"headless": true,
+		"http_directory": "packer/http",
+		"iso_checksum": "sha256:b317d87b0a3d5b568f48a92dcabfc4bc51fe58d9f67ca13b013f1b8329d1306d",
+		"iso_url": "https://cdimage.debian.org/mirror/cdimage/archive/10.7.0/amd64/iso-cd/debian-10.7.0-amd64-netinst.iso",
+		"name": "debian10-{{ user `disk_size`}}G-{{ user `name`}}",
+		"output_directory": "packer/output-debian_10",
+		"shutdown_command": "echo '{{user `password`}}'|sudo -S shutdown -h now",
+		"ssh_password": "{{user `password`}}",
+		"ssh_timeout": "1800s",
+		"ssh_username": "{{user `user`}}",
+		"type": "virtualbox-iso",
+		"vboxmanage": [
+			[
+				"modifyvm",
+				"{{.Name}}",
+				"--audio",
+				"null"
+			  ],
+		  [
+			"modifyvm",
+			"{{.Name}}",
+			"--memory",
+			"{{ user `memory`}}"
+		  ],
+		  [
+			"modifyvm",
+			"{{.Name}}",
+			"--cpus",
+			"{{ user `cpus`}}"
+		  ]
+		],
+		"vm_name": "Debian-10-Template"
+	  }
+	],
+	"provisioners": [
+		{
+            "type": "shell",
+            "execute_command": "echo '{{user `password`}}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+            "inline": [
+				"echo \"deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main\" >> /etc/apt/source.list",
+                "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367",
+                "/usr/bin/apt-get update",
+                "/usr/bin/apt-get -y install ansible"
+            ]
+        },
+		{
+			"type": "ansible-local",
+			"playbook_file": "playbooks/install_docker.yml"
+		},
+		{
+            "type": "shell",
+            "execute_command": "echo '{{user `password`}}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+            "inline": [
+                "/usr/bin/apt-get -y remove ansible"
+            ]
+        }
+	],
+	"post-processors": [{
+		"type": "vagrant",
+		"compression_level": "4",
+		"keep_input_artifact": true
+	}],
+	"variables": {
+	  "preseed_path": "preseed-debian10.cfg",
+	  "cpus": "1",
+	  "custom_script": "scripts/empty.sh",
+	  "disk_size": "15",
+	  "domain": "local",
+	  "hostname": "debian10",
+	  "memory": "1024",
+	  "name": "image",
+	  "password": "debian",
+	  "user": "debian"
+	}
+}
