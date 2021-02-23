@@ -72,6 +72,10 @@
 			"playbook_file": "playbooks/install_docker.yml"
 		},
 		{
+			"type": "ansible-local",
+			"playbook_file": "playbooks/grub.yml"
+		},
+		{
             "type": "shell",
             "execute_command": "echo '{{user `password`}}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
             "inline": [
