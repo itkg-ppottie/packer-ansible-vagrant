@@ -4,22 +4,23 @@
   become: yes
   become_user: root
   tasks:
-    - debug: var=docker_info.Swarm.LocalNodeState
+    - name: Check if Swarm Mode is already activated
+      command: docker info
+      register: docker_info
+      changed_when: false
 
-- name: Configure primary swarm manager
-  hosts: {{ primary_swarm_manager }}
+- hosts: managers[0]
   become: yes
-  become_user: root
   tasks:
-    - name: "Starting primary swarm manager"
+    - name: Starting primary swarm manager
       shell: >
         docker swarm init --advertise-addr {{ vagrant_primary_manager_ip }}
       register: init_result
-      when: docker_info.Swarm.LocalNodeState != "active"
+      when: '"Swarm: active" not in docker_info.stdout'
 
     - debug: var=init_result
 
-    - name: "Retrieve manager token"
+    - name: Retrieve manager token
       shell: >
         docker swarm join-token manager --quiet
       register: manager_token_result
@@ -27,44 +28,48 @@
     - set_fact:
         manager_token: "{{ manager_token_result.stdout }}"
 
-    - name: "Retrieve worker token"
+    - name: Retrieve worker token
       shell: >
         docker swarm join-token worker --quiet
       register: worker_token_result
+      when: '"Swarm: active" in docker_info.stdout'
 
     - set_fact:
         worker_token: "{{ worker_token_result.stdout }}"
+
+    - debug: var=worker_token
+
 
 - hosts: managers[1:]
   become: yes
   become_user: root
   tasks:
-    - name: "Starting secondary swarm managers"
+    - name: Starting secondary swarm managers
       shell: >
         docker swarm join \
-          --token {{ hostvars[manager1]['manager_token'] }} \
+          --token {{ manager_token_result.stdout  }} \
           {{ vagrant_primary_manager_ip }}:{{ swarm_bind_port }}
       register: init_result
-      when: docker_info.Swarm.LocalNodeState != "active"
+      when: '"Swarm: active" not in docker_info.stdout'
 
 - hosts: workers
   become: yes
   become_user: root
   tasks:
-    - name: "Starting swarm workers"
+    - name: Starting swarm workers
       shell: >
         docker swarm join \
-          --token {{ hostvars['manager1']['worker_token'] }} \
+          --token {{ worker_token_result.stdout  }} \
           {{ vagrant_primary_manager_ip }}:{{ swarm_bind_port }}
       register: init_result
-      when: docker_info.Swarm.LocalNodeState != "active"
+      when: '"Swarm: active" not in docker_info.stdout'
 
 - hosts: all
   serial: 1
   become: yes
   become_user: root
   tasks:
-    - name: "Label nodes"
+    - name: Label nodes
       shell: >
         docker node update --label-add {{ item }}=true {{ inventory_hostname }}
       when: "item != 'all_groups'"
@@ -78,12 +83,11 @@
   become: yes
   become_user: root
   tasks:
-
     - name: Examine the swarm
-      no_log: true
       shell: >
-        echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | sed -n -e "/^{/p"| python -m json.tool
+        curl --unix-socket /var/run/docker.sock http://localhost/info | sed -n -e "/^{/p"| python -m json.tool
       register: docker_swarm_result
+      no_log: true
 
     - set_fact:
         docker_swarm_info: "{{ docker_swarm_result.stdout | from_json }}"
@@ -92,10 +96,17 @@
 
 - include: network.yml
 
-- hosts: VM-PDDV-NGC-AUTO-DCK
+- hosts: managers[0]
   become: yes
   become_user: root
   tasks:
+    - name: check docker-ui
+      shell: >
+        docker ps 
+      register: docker_services
+      no_log: true
+
+
     - name: Start docker-ui globally
       run_once: true
       shell: >
@@ -105,6 +116,7 @@
            -p 9000:9000/tcp \
            --network appnet \
            --mode global \
-           uifd/ui-for-docker \
+           uifd/ui-for-docker
       tags:
         - docker-ui
+      when: "'docker-ui' not in docker_services.stdout"
