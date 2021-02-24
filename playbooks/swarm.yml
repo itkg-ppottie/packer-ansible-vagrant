@@ -50,6 +50,7 @@
     - name: Starting secondary swarm managers
       shell: >
         docker swarm join \
+
           --token {{ hostvars[manager_primary]['worker_token']  }} \
           {{ hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
       register: init_result
