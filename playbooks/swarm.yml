@@ -25,9 +25,6 @@
         docker swarm join-token manager --quiet
       register: manager_token_result
 
-    - set_fact:
-        manager_token: "{{ manager_token_result.stdout }}"
-
     - name: Retrieve worker token
       shell: >
         docker swarm join-token worker --quiet
@@ -36,8 +33,14 @@
 
     - set_fact:
         worker_token: "{{ worker_token_result.stdout }}"
+        primary_manager_ip: "{{ vagrant_primary_manager_ip }}"
+        manager_token: "{{ manager_token_result.stdout }}"
 
     - debug: var=worker_token
+
+    - debug: var=primary_manager_ip
+
+
 
 
 - hosts: managers[1:]
@@ -47,8 +50,8 @@
     - name: Starting secondary swarm managers
       shell: >
         docker swarm join \
-          --token {{ manager_token_result.stdout  }} \
-          {{ vagrant_primary_manager_ip }}:{{ swarm_bind_port }}
+          --token {{ hostvars[manager_primary]['worker_token']  }} \
+          {{ hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
@@ -59,12 +62,12 @@
     - name: Starting swarm workers
       shell: >
         docker swarm join \
-          --token {{ worker_token_result.stdout  }} \
-          {{ vagrant_primary_manager_ip }}:{{ swarm_bind_port }}
+          --token {{ hostvars[manager_primary]['worker_token']  }} \
+          {{  hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
-- hosts: all
+- hosts: managers, workers
   serial: 1
   become: yes
   become_user: root

@@ -6,7 +6,11 @@
   ### Build instances
     - file: path=log state=directory mode=0755
 
-    - name: create vm
+    - name: clean output directory
+      file: path='./packer/output-debian_10' state=absent
+
+
+    - name: create box vm
       shell: bash -c "PATH=$PATH:/opt/packer/ packer build -var 'disk_size={{ item.size }}' -var 'name={{ item.name }}' -on-error=run-cleanup-provisioner packer/debian-10-template.json " > log/debian10-{{ item.name }}.log
       args:
         creates: output-debian10-{{ item.size }}G-{{ item.name }}
@@ -14,3 +18,6 @@
         - { name: "vm-swarm-master-01", size: "10"}
       register: packer
 
+    - name: create infra preprod
+      shell: bash -c "vagrant up" > log/infra.log
+ 

@@ -32,6 +32,7 @@ handle_error(error_msg) unless vagrant_yaml
 
 servers = vagrant_yaml['servers']
 ANSIBLE_GROUPS = vagrant_yaml['ANSIBLE_GROUPS']
+WORKERS = vagrant_yaml['WORKERS']
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -63,16 +64,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             if server["name"] ==  ANSIBLE_GROUPS["managers"][0]
               vagrant_primary_manager_ip = server["eth1"]
             end
-            v.vm.provision "ansible" do |ansible|
-                ansible.verbose = "vv"
-                ansible.force_remote_user = true
-                ansible_ssh_user= "root"
-                ansible.groups = ANSIBLE_GROUPS
-                ansible.extra_vars = {
-                  vagrant_primary_manager_ip: vagrant_primary_manager_ip,
-                  swarm_bind_port: 2377
-                }
-                ansible.playbook = "./playbooks/swarm.yml"
+            if server["name"] == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
+              v.vm.provision "ansible" do |ansible|
+                  ansible.verbose = "vv"
+                  ansible.limit = "all"
+                  ansible.force_remote_user = true
+                  ansible_ssh_user= "root"
+                  ansible.groups = ANSIBLE_GROUPS
+                  ansible.extra_vars = {
+                    vagrant_primary_manager_ip: servers[1]['eth1'],
+                    manager_primary: ANSIBLE_GROUPS["managers"][0],
+                    swarm_bind_port: 2377
+                  }
+                  ansible.playbook = "./playbooks/swarm.yml"
+              end
             end
         end
       end
