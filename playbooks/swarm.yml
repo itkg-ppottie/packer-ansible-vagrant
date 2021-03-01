@@ -1,6 +1,6 @@
 ---
 
-- hosts: all
+- hosts: managers, workers
   become: yes
   become_user: root
   tasks:
@@ -29,7 +29,6 @@
       shell: >
         docker swarm join-token worker --quiet
       register: worker_token_result
-      when: '"Swarm: active" in docker_info.stdout'
 
     - set_fact:
         worker_token: "{{ worker_token_result.stdout }}"
@@ -39,8 +38,6 @@
     - debug: var=worker_token
 
     - debug: var=primary_manager_ip
-
-
 
 
 - hosts: managers[1:]
@@ -118,7 +115,7 @@
            --name docker-ui \
            --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
            -p 9000:9000/tcp \
-           --network appnet \
+           --network multi-host-net \
            --mode global \
            uifd/ui-for-docker
       tags:

@@ -1,6 +1,6 @@
 ---
 
-- hosts: VM-PDDV-NGC-AUTO-DCK
+- hosts: managers[0]
   become: yes
   become_user: root
   tasks:
@@ -8,7 +8,7 @@
       shell: >
         docker network ls --filter name={{ item }}$ | tail -n +2
       with_items:
-        - appnet
+        - multi-host-net
       register: network_result
 
     - set_fact:
@@ -19,4 +19,4 @@
         docker network create -d overlay {{ item }}
       when: item not in docker_current_networks
       with_items:
-        - appnet
+        - multi-host-net

@@ -20,4 +20,4 @@
 
     - name: create infra preprod
       shell: bash -c "vagrant up" > log/infra.log
- 
+      
