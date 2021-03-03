@@ -40,10 +40,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.username = 'debian'
   config.ssh.password = 'debian'
   config.vm.synced_folder ".","/vagrant", disabled:true
-    servers.each do |server|
-      config.vm.define server["name"] do |v|
+    servers.each_with_index do | (hostname,server),index|
+      config.vm.define hostname do |v|
         v.vm.box  = server["box"]
-        v.vm.hostname = server["name"]
+        v.vm.hostname = hostname
 
         v.vm.network :private_network, ip: server["eth1"]
         v.vm.provider "virtualbox" do |vb|
@@ -61,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             end
         end
         if server["type"] == "swarm"
-            if server["name"] == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
+            if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
               v.vm.provision "ansible" do |ansible|
                   ansible.verbose = "vv"
                   ansible.limit = "all"
@@ -69,11 +69,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                   ansible_ssh_user= "root"
                   ansible.groups = ANSIBLE_GROUPS
                   ansible.extra_vars = {
-                    vagrant_primary_manager_ip: servers[1]['eth1'],
+                    vagrant_primary_manager_ip: servers[ANSIBLE_GROUPS["managers"][0]]['eth1'],
                     manager_primary: ANSIBLE_GROUPS["managers"][0],
                     swarm_bind_port: 2377
                   }
                   ansible.playbook = "./playbooks/swarm.yml"
+              end
+              v.vm.provision "ansible" do |ansible|
+                ansible.verbose = "vv"
+                ansible.limit = "all"
+                ansible.force_remote_user = true
+                ansible_ssh_user= "root"
+                ansible.groups = ANSIBLE_GROUPS
+                ansible.playbook = "./playbooks/glusterfs/provision.yml"
+                ansible.extra_vars = {
+                  servers: servers
+                  }
               end
             end
         end

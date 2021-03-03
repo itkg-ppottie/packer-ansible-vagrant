@@ -75,6 +75,6 @@ packer_debian10-10G-vm-swarm-master-01_virtualbox.box
 L'étape suivante sera d'executer vagrant avec  la ou les box créé(es)  pour deployer l'architecture attendue.
 
 
-[Automatiser la création d'une VM avec Packer et Ansible](packer_ansible.md)
+[Automatiser la création d'une VM avec Packer et Ansible](doc/packer_ansible.md)
 
-[Automatiser la création d'une infrastructuve avec Vagrant et Ansible](vagrant_ansible.md)
+[Automatiser la création d'une infrastructuve avec Vagrant et Ansible](doc/vagrant_ansible.md)
