@@ -13,7 +13,7 @@ Obtenir un environnement de développement et de tests des architectures actuell
   <iframe src="https://www.youtube.com/watch?v=8RX9aBII_3s" frameborder="0" allowfullscreen="true"> </iframe>
 </figure>
 <!-- blank line -->
-
+[![Packer+Vagrant+Ansible](https://i.ytimg.com/vi/8RX9aBII_3s/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLA8cIEtu8JiRTKzpPbQpxIWd2vJug)](https://www.youtube.com/watch?v=8RX9aBII_3s "Video Title")
 
 ## Comment s’y prendre ?
 
