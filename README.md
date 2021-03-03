@@ -6,6 +6,15 @@
 ## Objectifs :
 Obtenir un environnement de développement et de tests des architectures actuelles pour l’intégration de nouvelles solutions menant à la scalabilité ou l’auto-scalabilité des services, le monitoring, etc sans impacter les architectures actuelles.
 
+## Demo
+
+<!-- blank line -->
+<figure class="video_container">
+  <iframe src="https://www.youtube.com/watch?v=8RX9aBII_3s" frameborder="0" allowfullscreen="true"> </iframe>
+</figure>
+<!-- blank line -->
+
+
 ## Comment s’y prendre ?
 
 Il nous faut pouvoir prévoir les interventions d’installation, configuration et de tests pour modifier ces environnements en minimisant l’impact et les incidents.
@@ -72,9 +81,15 @@ $ ansible-playbook build-vm-cluster-swarm.yml
 Ala fin de l'executon de la tache Packer , nous obtenons au final une box prête à l’emploi :
 packer_debian10-10G-vm-swarm-master-01_virtualbox.box
 
-L'étape suivante sera d'executer vagrant avec  la ou les box créé(es)  pour deployer l'architecture attendue.
-
-
 [Automatiser la création d'une VM avec Packer et Ansible](doc/packer_ansible.md)
 
+L'étape suivante sera d'executer vagrant avec  la ou les box créé(es)  pour deployer l'architecture attendue.
+
 [Automatiser la création d'une infrastructuve avec Vagrant et Ansible](doc/vagrant_ansible.md)
+
+Au final de l'execution du playbook principale on obtient ,selon la configuration de l'infrastructure de la preprod (par défaut):
+
+Une VM sous haproxy configuré pour loadbalancing entre les 2 nodes
+Une VM avec Docker Swarm configuré en Master
+Une VM sous Docker Swarm configuré en worker
+
