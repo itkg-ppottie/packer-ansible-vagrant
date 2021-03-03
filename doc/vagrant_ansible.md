@@ -48,13 +48,13 @@ servers:
     eth1: 192.168.30.11
     mem: '1024'
     cpu: '1'
-  - name: VM-PDDV-NGC-AUTO-DCK
+  - name: VM-MANAGER1-DCK
     type: swarm
     box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
     eth1: 192.168.30.13
     mem: '1024'
     cpu: '1'
-  - name: VM-PDDV-NGC-TRENT-DCK
+  - name: VM-WORKER1-DCK
     type: swarm
     box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
     eth1: 192.168.30.27
@@ -64,9 +64,9 @@ MANAGERS: 1
 WORKERS: 1
 ANSIBLE_GROUPS:
   managers:
-    - VM-PDDV-NGC-AUTO-DCK
+    - VM-MANAGER1-DCK
   workers:
-    - VM-PDDV-NGC-TRENT-DCK
+    - VM-WORKER1-DCK
   'all_groups:children':
     - managers
     - workers
@@ -354,9 +354,9 @@ Comme indiqué précédement, l'intégralité des machines composants le cluster
 ```yaml
 ANSIBLE_GROUPS:
   managers:
-    - VM-PDDV-NGC-AUTO-DCK
+    - VM-MANAGER1-DCK
   workers:
-    - VM-PDDV-NGC-TRENT-DCK
+    - VM-WORKER1-DCK
 ```
 Nous retrouverons donc les varaibles de tableaux `managers` et `worker` dans le playbook;
 
