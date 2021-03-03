@@ -76,4 +76,5 @@ L'étape suivante sera d'executer vagrant avec  la ou les box créé(es)  pour d
 
 
 [Automatiser la création d'une VM avec Packer et Ansible](packer_ansible.md)
+
 [Automatiser la création d'une infrastructuve avec Vagrant et Ansible](vagrant_ansible.md)
