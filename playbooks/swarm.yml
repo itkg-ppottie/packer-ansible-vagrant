@@ -1,5 +1,5 @@
 ---
-
+# lecture de l'état du swarm sur le noeud du cluster
 - hosts: managers, workers
   become: yes
   become_user: root
@@ -9,6 +9,7 @@
       register: docker_info
       changed_when: false
 
+# Initialisation du cluster sur le manageur principal
 - hosts: managers[0]
   become: yes
   tasks:
@@ -36,28 +37,27 @@
         manager_token: "{{ manager_token_result.stdout }}"
 
     - debug: var=worker_token
-
     - debug: var=primary_manager_ip
 
-
+# rejoindre le cluser pour les machines manager
 - hosts: managers[1:]
   become: yes
   become_user: root
   tasks:
-    - name: Starting secondary swarm managers
+    - name: Starting secondary swarm managers to join cluster
       shell: >
         docker swarm join \
-
           --token {{ hostvars[manager_primary]['worker_token']  }} \
           {{ hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
+# rejoindre le cluser pour les machines workers
 - hosts: workers
   become: yes
   become_user: root
   tasks:
-    - name: Starting swarm workers
+    - name: Starting swarm workers to join cluster
       shell: >
         docker swarm join \
           --token {{ hostvars[manager_primary]['worker_token']  }} \
@@ -65,6 +65,7 @@
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
+# Labellisation des noeuds
 - hosts: managers, workers
   serial: 1
   become: yes
@@ -80,6 +81,7 @@
       tags:
         - label
 
+#lecture de l'etat du cluster
 - hosts: managers[0]
   become: yes
   become_user: root
@@ -97,6 +99,7 @@
 
 - include: network.yml
 
+#installation d'un service dans le cluster
 - hosts: managers[0]
   become: yes
   become_user: root

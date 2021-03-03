@@ -61,9 +61,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             end
         end
         if server["type"] == "swarm"
-            if server["name"] ==  ANSIBLE_GROUPS["managers"][0]
-              vagrant_primary_manager_ip = server["eth1"]
-            end
             if server["name"] == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
               v.vm.provision "ansible" do |ansible|
                   ansible.verbose = "vv"
