@@ -32,7 +32,7 @@
   become_user: root
   tasks:
     - name: Create a directory kilometer-api
-      file:
+      file: 
         path: /home/debian/kilometers-api
         state: directory
 

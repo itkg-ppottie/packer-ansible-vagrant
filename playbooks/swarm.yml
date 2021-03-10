@@ -104,23 +104,23 @@
   become: yes
   become_user: root
   tasks:
-    - name: check docker-ui
+    - name: check docker-visualizer
       shell: >
         docker ps 
       register: docker_services
       no_log: true
 
 
-    - name: Start docker-ui globally
+    - name: Start docker-visualizer globally
       run_once: true
       shell: >
          docker service create \
-           --name docker-ui \
+           --name docker-visualizer \
            --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
-           -p 9000:9000/tcp \
+           -p 8080:8080/tcp \
            --network multi-host-net \
            --mode global \
-           uifd/ui-for-docker
+          dockersamples/visualizer:stable
       tags:
-        - docker-ui
-      when: "'docker-ui' not in docker_services.stdout"
+        - docker-visualizer
+      when: "'docker-visualizer' not in docker_services.stdout"
