@@ -1,0 +1,1 @@
+# Ajouter un volume de partage au cluster swarm avec GlusterFS et Ansible

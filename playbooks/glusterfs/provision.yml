@@ -41,8 +41,6 @@
         opts: "defaults,_netdev"
         state: mounted
 
-
-
     - name: directory permissions
       file:
         path: "{{ gluster_mount_dir }}"
