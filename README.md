@@ -77,4 +77,8 @@ L'étape suivante sera d'executer vagrant avec  la ou les box créé(es)  pour d
 
 [Automatiser la création d'une VM avec Packer et Ansible](doc/packer_ansible.md)
 
-[Automatiser la création d'une infrastructuve avec Vagrant et Ansible](doc/vagrant_ansible.md)
+[Automatiser la création d'une infrastructuve locale sous swarm avec Vagrant et Ansible](doc/vagrant_ansible.md)
+
+[Ajouter un volume partager entre les noeuds de notre cluster local Swarm avec GlusterFS et Ansible](doc/gluster_ansible.md)
+
+[Déployer GlusterFs au minimum dans une vertiable architecture](doc/persistant_storage.md)
