@@ -88,6 +88,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               end
             end
         end
+        if server["type"] == "bdd"
+            v.vm.network "forwarded_port", guest: 5432, host: 5432
+
+            v.vm.provision "ansible" do |ansible|
+                ansible.verbose = "vv"
+                ansible.limit = "all"
+                ansible.force_remote_user = true
+                ansible_ssh_user= "root"
+                ansible.groups = ANSIBLE_GROUPS
+                ansible.extra_vars = {
+                  world: world,
+                  postgresql_version: 10
+                }
+                ansible.playbook = "./playbooks/postgresql.yml"
+            end
+        end
       end
     end
 end
