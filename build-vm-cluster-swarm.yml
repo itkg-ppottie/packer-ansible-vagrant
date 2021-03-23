@@ -20,4 +20,8 @@
 
     - name: create infra preprod
       shell: bash -c "vagrant up" > log/infra.log
-      
+
+    - name: include local config
+      include_vars:
+        file: preprod/vars.vagrantfile.yaml
+        name: preprod_vars

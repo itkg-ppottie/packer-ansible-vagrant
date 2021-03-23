@@ -1,0 +1,7 @@
+---
+- hosts: gluster
+  become: yes
+  become_user: root
+  roles:
+    - geerlingguy.glusterfs
+    - gluster

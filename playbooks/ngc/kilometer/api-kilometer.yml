@@ -1,0 +1,62 @@
+
+# create user and database
+- hosts: databases[0]
+  become: yes
+  become_method: sudo
+  become_user: postgres
+  vars:
+    allow_world_readable_tmpfiles: true
+    ansible_ssh_pipelining: true
+  tasks:
+    - name: create database
+      postgresql_db:
+        name: kilometers-api
+
+    - name: Create user, set MD5-hashed password, grant privs
+      postgresql_user:
+        name: api
+        password: koh6Phodiyooh3seetoh
+  
+
+    - name: Ensure we have access from the new user
+      become: yes
+      become_user: postgres
+      postgresql_privs:
+        db:  kilometers-api
+        role: api
+        objs: ALL_IN_SCHEMA
+        privs: SELECT,INSERT,UPDATE,DELETE
+
+- hosts: managers[0]
+  become: yes
+  become_user: root
+  tasks:
+    - name: Create a directory kilometer-api
+      file:
+        path: /home/debian/kilometers-api
+        state: directory
+
+    - name: Copy docker-compose.yml to master
+      copy:
+        src: docker-compose-swarm.yml
+        dst: /home/debian/kilometers-api/docker-compose.yml
+    - name: check kilometers-api
+      shell: >
+        docker ps 
+      register: docker_services
+      no_log: true
+
+
+    - name: Start kilometers-api globally
+      run_once: true
+      shell: >
+         docker service create \
+           --name kilometers-api \
+           --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
+           -p 9000:9000/tcp \
+           --network multi-host-net \
+           --mode global \
+           uifd/ui-for-docker
+      tags:
+        - docker-ui
+      when: "'docker-ui' not in docker_services.stdout"

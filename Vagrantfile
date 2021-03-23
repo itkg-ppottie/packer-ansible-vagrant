@@ -50,60 +50,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             vb.customize ["modifyvm", :id, "--memory", server["mem"]]
             vb.customize ["modifyvm", :id, "--cpus", server["cpu"]]
         end
-        if server["type"] == "haproxy"
-            v.vm.provision "ansible" do |ansible|
-                ansible.verbose = "vv"
-                ansible.extra_vars = {
-                  world: world,
-                  swarm_bind_port: 2377
-                }
-                ansible.playbook = "./playbooks/haproxy_playbook.yml"
-            end
-        end
-        if server["type"] == "swarm"
-            if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
-              v.vm.provision "ansible" do |ansible|
-                  ansible.verbose = "vv"
-                  ansible.limit = "all"
-                  ansible.force_remote_user = true
-                  ansible_ssh_user= "root"
-                  ansible.groups = ANSIBLE_GROUPS
-                  ansible.extra_vars = {
-                    vagrant_primary_manager_ip: servers[ANSIBLE_GROUPS["managers"][0]]['eth1'],
-                    manager_primary: ANSIBLE_GROUPS["managers"][0],
-                    swarm_bind_port: 2377
-                  }
-                  ansible.playbook = "./playbooks/swarm.yml"
-              end
-              v.vm.provision "ansible" do |ansible|
-                ansible.verbose = "vv"
-                ansible.limit = "all"
-                ansible.force_remote_user = true
-                ansible_ssh_user= "root"
-                ansible.groups = ANSIBLE_GROUPS
-                ansible.playbook = "./playbooks/glusterfs/provision.yml"
-                ansible.extra_vars = {
-                  servers: servers
-                  }
-              end
-            end
-        end
         if server["type"] == "bdd"
-            v.vm.network "forwarded_port", guest: 5432, host: 5432
-
-            v.vm.provision "ansible" do |ansible|
-                ansible.verbose = "vv"
-                ansible.limit = "all"
-                ansible.force_remote_user = true
-                ansible_ssh_user= "root"
-                ansible.groups = ANSIBLE_GROUPS
-                ansible.extra_vars = {
-                  world: world,
-                  postgresql_version: 10
-                }
-                ansible.playbook = "./playbooks/postgresql.yml"
-            end
+          v.vm.network "forwarded_port", guest: 5432, host: 5432
         end
+
+        if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
+          v.vm.provision "ansible" do |ansible|
+              ansible.verbose = "vv"
+              ansible.limit = "all"
+              ansible.force_remote_user = true
+              ansible_ssh_user= "root"
+              ansible.groups = ANSIBLE_GROUPS
+              ansible.extra_vars = {
+                vagrant_primary_manager_ip: servers[ANSIBLE_GROUPS["managers"][0]]['eth1'],
+                manager_primary: ANSIBLE_GROUPS["managers"][0],
+                world: world,
+                servers: servers,
+                swarm_bind_port: 2377
+              }
+              ansible.playbook = "./playbooks/playbooks.yml"
+          end
+        end
+
       end
     end
 end
