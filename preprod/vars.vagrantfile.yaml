@@ -6,6 +6,13 @@ servers:
       eth1: 192.168.30.11
       mem: '1024'
       cpu: '1'
+  VM-PDDV-NGC-AUTO-DCK-BDD:
+      name: VM-PDDV-NGC-AUTO-DCK-BDD
+      type: bdd
+      box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
+      eth1: 192.168.30.12
+      mem: '1024'
+      cpu: '1'
   VM-PDDV-NGC-AUTO-DCK:
       name: VM-PDDV-NGC-AUTO-DCK
       type: swarm
@@ -18,13 +25,6 @@ servers:
       type: swarm
       box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
       eth1: 192.168.30.27
-      mem: '1024'
-      cpu: '1'
-  VM-PDDV-NGC-AUTO-DCK-BDD:
-      name: VM-PDDV-NGC-AUTO-DCK-BDD
-      type: bdd
-      box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
-      eth1: 192.168.30.12
       mem: '1024'
       cpu: '1'
 #   - name: VM-PDDV-NGC-DCK-ELK-1
@@ -44,6 +44,8 @@ servers:
 MANAGERS: 1
 WORKERS: 1
 ANSIBLE_GROUPS:
+  load-balancer:
+    - VM-PDDV-HAPROXY
   managers:
     - VM-PDDV-NGC-AUTO-DCK
   workers:

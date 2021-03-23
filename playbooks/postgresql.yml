@@ -29,7 +29,6 @@
         - sysstat
         - postgresql-11
 
-- hosts: databases[0]
 
 
 - hosts: databases[0]

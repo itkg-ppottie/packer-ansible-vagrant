@@ -1,0 +1,4 @@
+- name: 'Provision Image'
+  hosts:  load-balancer
+  roles:
+    - { role: haproxy, become: true}

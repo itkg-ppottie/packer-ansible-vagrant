@@ -6,6 +6,12 @@ COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[3m
 
+install_api_kilometer:
+	
+
+install:
+	make install_@arg
+
 build: ## build box and create cluster infrastructure
 build:
 	ansible-playbook build-vm-cluster-swarm.yml
