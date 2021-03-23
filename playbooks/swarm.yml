@@ -1,6 +1,16 @@
 ---
 # lecture de l'état du swarm sur le noeud du cluster
 - hosts: managers, workers
+  tasks:
+    - name: Log into private registry and force re-authorization
+      community.docker.docker_login:
+        registry_url: "{{ private_registry.host }}"
+        username: "{{ private_registry.login }}"
+        password: "{{ private_registry.token }}"
+        reauthorize: yes
+
+
+- hosts: managers, workers
   become: yes
   become_user: root
   tasks:
@@ -115,12 +125,12 @@
       run_once: true
       shell: >
          docker service create \
-           --name docker-visualizer \
+           --name docker-visualizer  \
+           --constraint=node.role==manager \
            --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
            -p 8080:8080/tcp \
            --network multi-host-net \
-           --mode global \
-          dockersamples/visualizer:stable
+           dockersamples/visualizer:stable
       tags:
         - docker-visualizer
       when: "'docker-visualizer' not in docker_services.stdout"

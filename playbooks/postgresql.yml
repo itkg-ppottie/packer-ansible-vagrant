@@ -1,6 +1,6 @@
 ---
 
-- hosts: databases[0]
+- hosts: databases-postgresql
   become: yes
   become_user: root
   tasks:
@@ -13,25 +13,23 @@
       apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' state=present
 
 
-- hosts: databases[0]
+- hosts: databases-postgresql
   become: yes
   become_user: root
   tasks:
 
     - name: Install required system packages
       apt: name={{ item }} state=present update_cache=yes force_apt_get=yes
-      loop: 
+      loop:
         - libicu-dev
         - software-properties-common
         - libpq-dev
-        - python-psycopg2
+        - python3-psycopg2
         - postgresql-contrib-11
         - sysstat
         - postgresql-11
 
-
-
-- hosts: databases[0]
+- hosts: databases-postgresql
   become: yes
   become_user: root
   gather_facts: no
@@ -45,12 +43,4 @@
       lineinfile: dest=/etc/postgresql/11/main/postgresql.conf
                   regexp="^listen_addresses"
                   line="listen_addresses = '*'" state=present
-
-    - name: postgresql should allow access to host
-      copy:
-        dest: /etc/postgresql/11/main/pg_hba.conf
-        content: |
-          local   all   postgres   peer
-          local   all   all        peer
-          host    all   all        0.0.0.0/0   md5
       notify: restart postgresql

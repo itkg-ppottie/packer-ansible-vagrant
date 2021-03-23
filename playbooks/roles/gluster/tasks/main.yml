@@ -1,5 +1,5 @@
 - name: Create List of nodes to be added into Cluster
-  set_fact: 
+  set_fact:
     nodelist: "{{ groups['gluster']|map('extract', servers, 'eth1')|list }}"
 
 - name: Show the list we obtained for ansible_all_ipv4_addresses
@@ -34,8 +34,8 @@
   file:
     path: "{{ gluster_mount_dir }}"
     state: directory
-    owner: debian
-    group: debian
+    owner: "{{ username }}"
+    group: "{{ username }}"
     mode: 0775
     recurse: yes
   become: yes

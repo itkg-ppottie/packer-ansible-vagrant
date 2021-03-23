@@ -10,7 +10,7 @@ install_api_kilometer:
 	
 
 install:
-	make install_@arg
+	ansible-galaxy collection install -r requirements.yml
 
 build: ## build box and create cluster infrastructure
 build:
@@ -42,6 +42,7 @@ banner:
 	printf "\033[32m                                                                                                            \033[0m\n"
 
 deploy-kilometer: 
+	docker stack deploy --with-registry-auth --compose-file docker-compose.yml api_kilometer
 
 
 ##

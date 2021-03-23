@@ -1,0 +1,13 @@
+- hosts: managers, workers, databases-mysql-docker
+  become: yes
+  become_user: root
+  vars:
+  tasks:
+    - name: install docker-compose
+      apt:
+        name: "{{item}}"
+        state: latest
+        force_apt_get: yes
+        update_cache: yes
+      loop:
+        - docker-compose
