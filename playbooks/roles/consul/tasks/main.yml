@@ -1,0 +1,24 @@
+
+
+- name: Create a consul directory's
+  file:
+    path: "/home/{{ username }}/consul"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy docker-compose.yml of consul on master swarm node
+  copy:
+    src: "../docker-compose.yml"
+    dest: "/home/{{ username }}/consul/docker-compose.yml"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+
+- name: deploy consul stack
+  community.docker.docker_stack:
+    state: present
+    name: consul
+    with_registry_auth: yes
+    compose:
+      - "/home/{{ username }}/consul/docker-compose.yml"

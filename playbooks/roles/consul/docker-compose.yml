@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+
+  server-bootstrap:
+    image: consul:latest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: 10m
+    ports:
+      - 8500:8500
+    command: "agent -server -bootstrap-expect 1 -ui -client 0.0.0.0 -bind '{{ GetInterfaceIP \"eth0\" }}'"
+
+  server:
+    image: consul:latest
+    command: "agent -server -retry-join server-bootstrap -client 0.0.0.0 -bind '{{ GetInterfaceIP \"eth0\" }}'"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - server-bootstrap
+
+  client:
+    image: consul:latest
+    command: "agent -retry-join server-bootstrap -client 0.0.0.0 -bind '{{ GetInterfaceIP \"eth0\" }}'"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - server-bootstrap
+
+networks:
+  default:
+    external: true
+    name: core-infra
