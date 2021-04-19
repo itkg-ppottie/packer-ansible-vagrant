@@ -1,0 +1,119 @@
+version: "3.4"
+networks:
+  api:
+    external:
+      name: kilometers-api
+  redis:
+    external:
+      name: kilometers-redis
+services:
+  nginx:
+    depends_on:
+      - web
+    hostname: 'kilometers-api-nginx.{{.Node.Hostname}}'
+    image: babel.ngc-data.fr:8443/common/docker/nginx:1.18.0
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: 10m
+    networks:
+      - api
+    volumes:
+      - /mnt/gluster/api-kilometer/nginx/conf.d:/etc/nginx/conf.d
+      - /mnt/gluster/api-kilometer/static:/var/www/public/static
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    ports:
+      - 8081:80
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+
+  migration:
+    command:  python manage.py migrate
+    env_file:
+      - .env
+    image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: 10m
+    depends_on:
+      - redis
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 200M
+      restart_policy:
+        condition: none
+    networks:
+      - redis
+      - api
+  web:
+    command: /usr/local/bin/gunicorn --bind=0.0.0.0:8000 --pid=/home/ngc/run/gunicorn.pid --user=ngc --workers=4 --worker-class=gevent --worker-connections=1000  --user=ngc  project.wsgi:application
+    hostname: 'kilometers-api-web.{{.Node.Hostname}}'
+    env_file:
+      - .env
+    image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: 10m
+    depends_on:
+      - redis
+    deploy:
+      replicas: 1
+      update_config:
+        failure_action: rollback
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1024M
+    healthcheck:
+      test: ["CMD", "python", "-c" ,"import urllib.request; print (0 if urllib.request.urlopen('http://0.0.0.0:8000/api/exploit/alive').getcode()==200 else 1)"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    networks:
+      - redis
+      - api
+    volumes:
+        - "/mnt/gluster/api-kilometer/static:/home/ngc/code/static"
+  redis:
+    image: "redis:alpine"
+    volumes:
+      - /mnt/gluster/api-kilometer/redis:/home/docker/data
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: 10m
+    command: redis-server --appendonly yes
+    networks:
+      - redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 6s
+      timeout: 3s
+      retries: 30

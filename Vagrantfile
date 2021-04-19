@@ -34,6 +34,8 @@ servers = vagrant_yaml['servers']
 ANSIBLE_GROUPS = vagrant_yaml['ANSIBLE_GROUPS']
 WORKERS = vagrant_yaml['WORKERS']
 VAGRANTFILE_API_VERSION = "2"
+private_registry = vagrant_yaml['private_registry']
+
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true
@@ -50,8 +52,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             vb.customize ["modifyvm", :id, "--memory", server["mem"]]
             vb.customize ["modifyvm", :id, "--cpus", server["cpu"]]
         end
-        if server["type"] == "bdd"
+        if server["type"] == "postgres"
           v.vm.network "forwarded_port", guest: 5432, host: 5432
+        end
+        if server["type"] == "mysql"
+          v.vm.network "forwarded_port", guest: 3306, host: 3306
         end
 
         if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
@@ -62,16 +67,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               ansible_ssh_user= "root"
               ansible.groups = ANSIBLE_GROUPS
               ansible.extra_vars = {
+                ansible_python_interpreter:"/usr/bin/python3",
                 vagrant_primary_manager_ip: servers[ANSIBLE_GROUPS["managers"][0]]['eth1'],
                 manager_primary: ANSIBLE_GROUPS["managers"][0],
                 world: world,
                 servers: servers,
-                swarm_bind_port: 2377
+                username: config.ssh.username,
+                swarm_bind_port: 2377,
+                private_registry: private_registry
               }
               ansible.playbook = "./playbooks/playbooks.yml"
           end
         end
-
       end
     end
 end

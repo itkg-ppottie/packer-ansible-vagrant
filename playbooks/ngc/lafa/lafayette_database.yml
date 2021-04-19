@@ -1,0 +1,15 @@
+- hosts: databases-mysql-docker
+  tasks:
+    - name: Log into private registry and force re-authorization
+      community.docker.docker_login:
+        registry_url: "{{ private_registry.host }}"
+        username: "{{ private_registry.login }}"
+        password: "{{ private_registry.token }}"
+        reauthorize: yes
+    - name: Start Lafayette Database with Kilometers Datas
+      community.docker.docker_container:
+        name: kilometers_api_lafa_commun-db
+        image: babel.ngc-data.fr:8443/common/tests/lafa_commun:latest
+        restart_policy: unless-stopped
+        ports:
+          - 3306:3306

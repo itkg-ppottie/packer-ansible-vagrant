@@ -1,0 +1,5 @@
+allow_world_readable_tmpfiles: true
+ansible_ssh_pipelining: true
+database_name: kilometers-api
+database_user: api
+path_to_icat: /etc/postgresql/11/main

@@ -1,0 +1,63 @@
+
+- name: Create a directory kilometer-api on gluster volume
+  file:
+    path: "/mnt/gluster/{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - "api-kilometer"
+    - "api-kilometer/nginx"
+    - "api-kilometer/nginx/conf.d"
+    - "api-kilometer/static"
+    - "api-kilometer/redis"
+
+- name: Create a directory kilometer-api
+  file:
+    path: "/home/{{ username }}/api-kilometer"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+# TODO : recuperer le docker-compose-swarm du projet
+
+- name: Copy docker-compose.yml and conf files to master
+  copy:
+    src: "../../../{{ world }}/api-kilometer/docker-compose-swarm.yml"
+    dest: "/home/{{ username }}/api-kilometer/docker-compose-swarm.yml"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+
+- name: copy nginx config file to shared directory's
+  copy:
+    src: "../../../{{ world }}/api-kilometer/conf.d/default.conf"
+    dest: "/mnt/gluster/api-kilometer/nginx/conf.d/default.conf"
+
+- name: copy env vars file
+  copy:
+    src: "../../../{{ world }}/api-kilometer/sample.env"
+    dest: "/home/{{ username }}/api-kilometer/.env"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: generate docker-compose file with env vars
+  command: "sh -c 'docker-compose -f docker-compose-swarm.yml config > docker-compose.yml'"
+  args:
+    chdir: "/home/{{ username }}/api-kilometer/"
+
+# - name: clean files unused
+#   file:
+#     path: "/home/{{ username }}/api-kilometer/{{item}}"
+#     state: absent
+#   with_items:
+#     - "docker-compose-swarm.yml"
+#     - ".env"
+
+- name: deploy api_kilometer stack
+  community.docker.docker_stack:
+    state: present
+    name: api_kilometer
+    with_registry_auth: yes
+    compose:
+      - "/home/{{ username }}/api-kilometer/docker-compose.yml"

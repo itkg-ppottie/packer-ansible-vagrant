@@ -1,0 +1,9 @@
+- name: autorisation pg_hba.conf
+  postgresql_pg_hba: 
+    dest: "{{ path_to_icat }}/pg_hba.conf"
+    databases: "{{ database_name }}"
+    users: "{{ database_user }}"
+    address: "0.0.0.0/0"
+    contype: host
+    method: password
+  notify: restart postgresql

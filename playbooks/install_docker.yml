@@ -9,7 +9,18 @@
 
     - name: Install required system packages
       apt: name={{ item }} state=present update_cache=yes force_apt_get=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+      loop: [ 
+          'apt-transport-https',
+          'ca-certificates',
+          'curl',
+          'software-properties-common',
+          'python3-pip', 
+          'virtualenv',
+          'python3-setuptools',
+          'python3-gnupg2',
+          'python3-jsondiff'
+          'pass'
+        ]
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -31,6 +42,8 @@
         - docker-ce
         - docker-ce-cli
         - containerd.io
+        - docker-compose
+
     - name: check if docker is ready
       service:
         name: docker
@@ -50,7 +63,8 @@
 
     - name: "Ensure the user {{ ansible_user }} is part of the docker group"
       # https://docs.ansible.com/ansible/latest/modules/user_module.html
-      user: 
+      user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
+

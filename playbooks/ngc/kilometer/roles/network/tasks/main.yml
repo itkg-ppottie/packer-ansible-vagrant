@@ -1,0 +1,13 @@
+- name: Create overlay kilometers-api
+  community.docker.docker_network:
+    driver: overlay
+    attachable: true
+    name:  kilometers-api
+    state: present
+
+- name: Create overlay kilometers-redis
+  community.docker.docker_network:
+    driver: overlay
+    attachable: true
+    name:  kilometers-redis
+    state: present
