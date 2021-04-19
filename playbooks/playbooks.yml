@@ -2,5 +2,6 @@
 - include: load_balancers.yml
 - include: swarm.yml
 - include: gluster.yml
+- include: consul.yml
 - include: postgresql.yml
 - include: ngc/kilometer/api-kilometer.yml
