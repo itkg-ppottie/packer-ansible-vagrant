@@ -6,12 +6,22 @@ networks:
   redis:
     external:
       name: kilometers-redis
+  traefik-proxy:
+    external:
+      name: traefik-proxy
+
 services:
   nginx:
     depends_on:
       - web
-    hostname: 'kilometers-api-nginx.{{.Node.Hostname}}'
+    hostname: '${PROJECT_NAME}-nginx.{{.Node.Hostname}}'
     image: babel.ngc-data.fr:8443/common/docker/nginx:1.18.0
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-proxy
+      - traefik.http.routers.static-${PROJECT_NAME}.rule=Host(`${HOST_FQDN}`)
+      - traefik.http.routers.static-${PROJECT_NAME}.entrypoints=web
+      - traefik.http.services.static-${PROJECT_NAME}.loadbalancer.server.port=80
     logging:
       driver: "json-file"
       options:
@@ -19,6 +29,7 @@ services:
         max-size: 10m
     networks:
       - api
+      - traefik-proxy
     volumes:
       - /mnt/gluster/api-kilometer/nginx/conf.d:/etc/nginx/conf.d
       - /mnt/gluster/api-kilometer/static:/var/www/public/static
@@ -27,8 +38,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
-    ports:
-      - 8081:80
     deploy:
       replicas: 2
       restart_policy:
@@ -67,6 +76,12 @@ services:
     env_file:
       - .env
     image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-proxy
+      - traefik.http.routers.${PROJECT_NAME}.rule=Host(`${HOST_FQDN}`)
+      - traefik.http.routers.${PROJECT_NAME}.entrypoints=web
+      - traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port=8000
     logging:
       driver: "json-file"
       options:
@@ -93,6 +108,7 @@ services:
     networks:
       - redis
       - api
+      - traefik-proxy
     volumes:
         - "/mnt/gluster/api-kilometer/static:/home/ngc/code/static"
   redis:

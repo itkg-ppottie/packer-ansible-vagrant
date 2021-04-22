@@ -11,6 +11,8 @@
 - include: swarm.yml
 - include: gluster.yml
 - include: consul.yml
-- include: postgresql.yml
-- include: ngc/lafa/lafayette_database.yml
-- include: ngc/kilometer/api-kilometer.yml
+- include: traefik.yml
+# - include: postgresql.yml
+# - include: monitoring/monitoring.yml
+# - include: ngc/lafa/lafayette_database.yml
+# - include: ngc/kilometer/api-kilometer.yml

@@ -1,0 +1,20 @@
+
+
+- name: remove docker-visualizer stack
+  community.docker.docker_swarm_service:
+    state: absent
+    name: docker-visualizer
+
+- name: Start docker-visualizer globally
+  run_once: true
+  shell: >
+      docker service create \
+        --name docker-visualizer  \
+        --constraint=node.role==manager \
+        --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
+        --label traefik.enable=true \
+        --label traefik.http.routers.api.rule="Host('{{ PREFIX_URL_DOMAIN }}traefik.{{ URL_DOMAIN }}')" \
+        --label traefik.http.routers.api.service=api@internal \
+        --label traefik.http.services.traefik.loadbalancer.server.port=8080 \
+        --network multi-host-net \
+        dockersamples/visualizer:stable

@@ -42,7 +42,7 @@
     group: "{{ username }}"
 
 - name: generate docker-compose file with env vars
-  command: "sh -c 'docker-compose -f docker-compose-swarm.yml config > docker-compose.yml'"
+  command: "sh -c ' export PROJECT_URL_DOMAIN={{ PROJECT_URL_DOMAIN }}; docker-compose -f docker-compose-swarm.yml config > docker-compose.yml'"
   args:
     chdir: "/home/{{ username }}/api-kilometer/"
 
@@ -53,6 +53,11 @@
 #   with_items:
 #     - "docker-compose-swarm.yml"
 #     - ".env"
+
+- name: remove api_kilometer stack
+  community.docker.docker_stack:
+    state: absent
+    name: api_kilometer
 
 - name: deploy api_kilometer stack
   community.docker.docker_stack:

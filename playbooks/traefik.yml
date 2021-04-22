@@ -1,0 +1,4 @@
+---
+- hosts: managers[0]
+  roles:
+    - traefik

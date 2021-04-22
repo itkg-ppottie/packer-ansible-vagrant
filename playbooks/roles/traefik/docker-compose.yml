@@ -1,0 +1,52 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: babel.ngc-data.fr:8443/common/docker/traefik:2.4.7
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - core-infra
+      - traefik-proxy
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: any
+      labels:
+        - traefik.enable=true
+        - "traefik.http.routers.api.rule=Host('${PREFIX_URL_DOMAIN}traefik.${URL_DOMAIN}')"
+        - traefik.http.routers.api.service=api@internal
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: 10m
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+       - "traefik"
+       - --api
+       - --api.insecure=true
+       - --api.debug=true
+       - --accesslog
+       - --log
+       - --providers.docker=true
+       - --providers.docker.swarmmode=true
+       - --providers.docker.exposedbydefault=false
+       - --providers.docker.network=traefik-proxy
+       - --entrypoints.web.address=:80
+
+
+networks:
+  traefik-proxy:
+    external: true
+    name: traefik-proxy
+
+  core-infra:
+    external: true
+    name: core-infra
+  
