@@ -27,3 +27,6 @@
     with_registry_auth: yes
     compose:
       - "/home/{{ username }}/traefik/docker-compose.yml"
+  environment:
+    URL_DOMAIN: "{{ URL_DOMAIN }}"
+    PREFIX_URL_DOMAIN: "{{ PREFIX_URL_DOMAIN }}"

@@ -1,14 +1,14 @@
-version: "3.4"
+version: "3.7"
 networks:
   api:
-    external:
-      name: kilometers-api
+    external: true
+    name: kilometers-api
   redis:
-    external:
-      name: kilometers-redis
+    external: true
+    name: kilometers-redis
   traefik-proxy:
-    external:
-      name: traefik-proxy
+    external: true
+    name: traefik-proxy
 
 services:
   nginx:
@@ -16,12 +16,7 @@ services:
       - web
     hostname: '${PROJECT_NAME}-nginx.{{.Node.Hostname}}'
     image: babel.ngc-data.fr:8443/common/docker/nginx:1.18.0
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-proxy
-      - traefik.http.routers.static-${PROJECT_NAME}.rule=Host(`${HOST_FQDN}`)
-      - traefik.http.routers.static-${PROJECT_NAME}.entrypoints=web
-      - traefik.http.services.static-${PROJECT_NAME}.loadbalancer.server.port=80
+
     logging:
       driver: "json-file"
       options:
@@ -42,11 +37,17 @@ services:
       replicas: 2
       restart_policy:
         condition: on-failure
-      # resources:
-      #   limits:
-      #     cpus: '0.1'
-      #     memory: '50M'
-
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '50M'
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-proxy"
+        - "traefik.http.routers.static-${PROJECT_NAME}.rule=Host(`${PROJECT_URL_DOMAIN}`)"
+        - "traefik.http.routers.static-${PROJECT_NAME}.entrypoints=web"
+        - "traefik.http.routers.static-${PROJECT_NAME}.service=nginx"
+        - "traefik.http.services.nginx.loadbalancer.server.port=80"
   migration:
     command:  python manage.py migrate
     env_file:
@@ -61,10 +62,10 @@ services:
       - redis
     deploy:
       replicas: 1
-      # resources:
-      #   limits:
-      #     cpus: '0.5'
-      #     memory: '200M'
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '200M'
       restart_policy:
         condition: none
     networks:
@@ -76,12 +77,7 @@ services:
     env_file:
       - .env
     image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-proxy
-      - traefik.http.routers.${PROJECT_NAME}.rule=Host(`${HOST_FQDN}`)
-      - traefik.http.routers.${PROJECT_NAME}.entrypoints=web
-      - traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port=8000
+
     logging:
       driver: "json-file"
       options:
@@ -96,10 +92,17 @@ services:
         order: start-first
       restart_policy:
         condition: on-failure
-      # resources:
-      #   limits:
-      #     cpus: '1.5'
-      #     memory: '1024M'
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: '1024M'
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-proxy"
+        - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${PROJECT_URL_DOMAIN}`)"
+        - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
+        - "traefik.http.routers.${PROJECT_NAME}.service=web"
+        - "traefik.http.services.web.loadbalancer.server.port=8000"
     healthcheck:
       test: ["CMD", "python", "-c" ,"import urllib.request; print (0 if urllib.request.urlopen('http://0.0.0.0:8000/api/exploit/alive').getcode()==200 else 1)"]
       interval: "20s"

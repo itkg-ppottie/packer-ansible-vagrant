@@ -1,0 +1,77 @@
+version: "2.4"
+networks:
+  internal-monitoring:
+      name: internal-monitoring
+services:
+  alertmanager:
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    container_name: alertmanager
+    image: prom/alertmanager
+    mem_limit: 70M
+    networks:
+      - internal-monitoring
+    restart: always
+    # volumes:
+    #   - ./configuration.yml:/etc/alertmanager/config.yml
+
+  blackbox-exporter:
+    container_name: blackbox-exporter
+    dns: 8.8.8.8
+    image: prom/blackbox-exporter
+    mem_limit: 70M
+    networks:
+      - internal-monitoring
+    extra_hosts: 
+      - "recette-ngc-trends-fleet.ngc-data.fr:10.66.30.11"
+      - "recette-ngc-check-vin.ngc-data.fr:10.66.30.11"
+      - "preprod-next-ngcvin5.ngc-data.fr:10.66.30.11"
+      - "recette-ngc-expertises.ngc-data.fr:10.66.30.11"
+      - "preprod-horizon.ngc-data.fr:10.66.30.11"
+    restart: always
+    volumes:
+      - "./configuration.yml:/etc/blackbox_exporter/config.yml"
+  grafana:
+    container_name: grafana
+    env_file:
+      - .env
+    image: grafana/grafana
+    mem_limit: 70M
+    networks:
+      - internal-monitoring
+      - monitoring
+    ports:
+      - 30000:3000
+    restart: always
+    user: "104"
+    volumes:
+      - ./dashboards:/etc/grafana/provisioning/dashboards
+      - ./datasources:/etc/grafana/provisioning/datasources
+      - grafana_data:/var/lib/grafana
+prometheus:
+  command:
+    - "--config.file=/etc/prometheus/prometheus.yml"
+    - "--storage.tsdb.path=/prometheus"
+    - "--storage.tsdb.retention.time=15d"
+    - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+    - "--web.console.templates=/usr/share/prometheus/consoles"
+  container_name: prometheus
+  image: "prom/prometheus"
+  mem_limit: 500M
+  networks:
+    - internal-monitoring
+  restart: always
+  volumes:
+    - "./configuration.yml:/etc/prometheus/prometheus.yml"
+    - "./configuration.yml:/etc/prometheus/blackbox_targets.yml"
+    - "./alert.rules:/etc/prometheus/alert.rules"
+    - "prometheus_data:/prometheus"
+volumes:
+  prometheus_data:
+    name: metrics-prometheus-data
+    driver: local
+  grafana_data: 
+    name: metrics-grafana-data
+    driver: local
+    
