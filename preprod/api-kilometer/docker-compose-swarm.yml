@@ -33,10 +33,10 @@ services:
       replicas: 2
       restart_policy:
         condition: on-failure
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 50M
+      # resources:
+      #   limits:
+      #     cpus: '0.1'
+      #     memory: '50M'
 
   migration:
     command:  python manage.py migrate
@@ -52,10 +52,10 @@ services:
       - redis
     deploy:
       replicas: 1
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 200M
+      # resources:
+      #   limits:
+      #     cpus: '0.5'
+      #     memory: '200M'
       restart_policy:
         condition: none
     networks:
@@ -81,14 +81,14 @@ services:
         order: start-first
       restart_policy:
         condition: on-failure
-      resources:
-        limits:
-          cpus: "1.5"
-          memory: 1024M
+      # resources:
+      #   limits:
+      #     cpus: '1.5'
+      #     memory: '1024M'
     healthcheck:
       test: ["CMD", "python", "-c" ,"import urllib.request; print (0 if urllib.request.urlopen('http://0.0.0.0:8000/api/exploit/alive').getcode()==200 else 1)"]
-      interval: 20s
-      timeout: 10s
+      interval: "20s"
+      timeout: "10s"
       retries: 3
     networks:
       - redis
@@ -108,7 +108,7 @@ services:
       driver: "json-file"
       options:
         max-file: "5"
-        max-size: 10m
+        max-size: "10m"
     command: redis-server --appendonly yes
     networks:
       - redis

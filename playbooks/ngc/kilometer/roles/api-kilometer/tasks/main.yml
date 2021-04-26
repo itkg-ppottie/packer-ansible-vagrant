@@ -27,12 +27,16 @@
     dest: "/home/{{ username }}/api-kilometer/docker-compose-swarm.yml"
     owner: "{{ username }}"
     group: "{{ username }}"
+    force: true
+
 
 
 - name: copy nginx config file to shared directory's
   copy:
     src: "../../../{{ world }}/api-kilometer/conf.d/default.conf"
     dest: "/mnt/gluster/api-kilometer/nginx/conf.d/default.conf"
+    force: true
+
 
 - name: copy env vars file
   copy:
@@ -40,6 +44,8 @@
     dest: "/home/{{ username }}/api-kilometer/.env"
     owner: "{{ username }}"
     group: "{{ username }}"
+    force: true
+
 
 - name: generate docker-compose file with env vars
   command: "sh -c 'docker-compose -f docker-compose-swarm.yml config > docker-compose.yml'"
@@ -60,4 +66,4 @@
     name: api_kilometer
     with_registry_auth: yes
     compose:
-      - "/home/{{ username }}/api-kilometer/docker-compose.yml"
+      - "/home/{{ username }}/api-kilometer/docker-compose-swarm.yml"

@@ -17,8 +17,8 @@
           'python3-pip', 
           'virtualenv',
           'python3-setuptools',
-          'python3-gnupg2',
-          'python3-jsondiff'
+          'python3-gnupg',
+          'python3-jsondiff',
           'pass'
         ]
 
