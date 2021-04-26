@@ -24,7 +24,7 @@
 - name: Copy docker-compose.yml and conf files to master
   copy:
     src: "../../../{{ world }}/api-kilometer/docker-compose-swarm.yml"
-    dest: "/home/{{ username }}/api-kilometer/docker-compose-swarm.yml"
+    dest: "/home/{{ username }}/api-kilometer/docker-compose.yml"
     owner: "{{ username }}"
     group: "{{ username }}"
     force: true
@@ -46,20 +46,6 @@
     group: "{{ username }}"
     force: true
 
-
-- name: generate docker-compose file with env vars
-  command: "sh -c ' export PROJECT_URL_DOMAIN={{ PROJECT_URL_DOMAIN }}; docker-compose -f docker-compose-swarm.yml config > docker-compose.yml'"
-  args:
-    chdir: "/home/{{ username }}/api-kilometer/"
-
-# - name: clean files unused
-#   file:
-#     path: "/home/{{ username }}/api-kilometer/{{item}}"
-#     state: absent
-#   with_items:
-#     - "docker-compose-swarm.yml"
-#     - ".env"
-
 - name: remove api_kilometer stack
   community.docker.docker_stack:
     state: absent
@@ -71,4 +57,9 @@
     name: api_kilometer
     with_registry_auth: yes
     compose:
-      - "/home/{{ username }}/api-kilometer/docker-compose-swarm.yml"
+      - "/home/{{ username }}/api-kilometer/docker-compose.yml"
+  environment:
+    PROJECT_URL_DOMAIN: "{{ PROJECT_URL_DOMAIN }}"
+    POSTGRESQL_HOST: "{{ POSTGRESQL_HOST }}"
+    LAFA_COMMON_HOST: "{{ LAFA_COMMON_HOST }}"
+    PROJECT_NAME: "{{ PROJECT_NAME }}"
