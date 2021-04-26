@@ -1,0 +1,22 @@
+- name: a play that runs entirely on the ansible host
+  hosts: localhost
+  connection: local
+
+  tasks:
+
+
+    - name: include local config
+      include_vars: preprod/vars.vagrantfile.yaml
+    
+    - debug: var=servers
+
+    - name: Update the /etc/hosts file with node name
+      become: yes
+      become_user: root
+      lineinfile:
+        path: "/etc/hosts"
+        regexp: ".*\t{{ item.value.eth1 }}\t{{ item.value.name}}"
+        line: "{{  item.value.eth1 }}\t{{ item.value.name }}"
+        state: present
+        backup: yes
+      with_dict: "{{servers}}"

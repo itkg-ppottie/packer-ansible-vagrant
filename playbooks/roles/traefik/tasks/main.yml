@@ -1,0 +1,29 @@
+- name: Create overlay networks traefik-proxy
+  community.docker.docker_network:
+    driver: overlay
+    name:  traefik-proxy
+    state: present
+    attachable: true
+
+- name: Create a traefik directory's
+  file:
+    path: "/home/{{ username }}/traefik"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy docker-compose.yml of traefik on master swarm node
+  copy:
+    src: "../docker-compose.yml"
+    dest: "/home/{{ username }}/traefik/docker-compose.yml"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    force: true
+
+- name: deploy traefik stack
+  community.docker.docker_stack:
+    state: present
+    name: traefik
+    with_registry_auth: yes
+    compose:
+      - "/home/{{ username }}/traefik/docker-compose.yml"

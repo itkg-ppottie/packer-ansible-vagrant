@@ -3,3 +3,5 @@ packer_cache
 packer/output-debian_10
 .vagrant
 packer_*.box
+.history
+.vscode

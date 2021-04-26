@@ -2,6 +2,7 @@
   become: yes
   become_user: root
   vars:
+    DOCKER_COMPOSE_VERSION: 1.29.1
   tasks:
 
     - name: update pip3 to setup ansible <---> docker
@@ -17,11 +18,10 @@
       - docker
       - jsondiff
 
-    - name: install docker-compose
-      apt:
-        name: "{{item}}"
-        state: latest
-        force_apt_get: yes
-        update_cache: yes
-      loop:
-        - docker-compose
+    - name: download docker-compose
+      command: curl -s -L "https://github.com/docker/compose/releases/download/{{ DOCKER_COMPOSE_VERSION }}/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
+
+    - name: set executable permission on docker-compose binary
+      file:
+        path: /usr/local/bin/docker-compose
+        mode: 0755

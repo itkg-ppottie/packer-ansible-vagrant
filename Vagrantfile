@@ -35,7 +35,8 @@ ANSIBLE_GROUPS = vagrant_yaml['ANSIBLE_GROUPS']
 WORKERS = vagrant_yaml['WORKERS']
 VAGRANTFILE_API_VERSION = "2"
 private_registry = vagrant_yaml['private_registry']
-
+url_domain =  vagrant_yaml['url_domain']
+prefix_url_domain = vagrant_yaml['prefix_url_domain']
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true
@@ -74,7 +75,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 servers: servers,
                 username: config.ssh.username,
                 swarm_bind_port: 2377,
-                private_registry: private_registry
+                private_registry: private_registry,
+                URL_DOMAIN: url_domain,
+                PREFIX_URL_DOMAIN: prefix_url_domain
               }
               ansible.playbook = "./playbooks/playbooks.yml"
           end
