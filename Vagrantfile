@@ -53,11 +53,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             vb.customize ["modifyvm", :id, "--memory", server["mem"]]
             vb.customize ["modifyvm", :id, "--cpus", server["cpu"]]
         end
-        if server["type"] == "postgres"
-          v.vm.network "forwarded_port", guest: 5432, host: 5432
-        end
-        if server["type"] == "mysql"
-          v.vm.network "forwarded_port", guest: 3306, host: 3306
+
+        if server["forward_ports"].kind_of?(Array)
+          server["forward_ports"].each  do |forward_ports|
+            v.vm.network "forwarded_port", guest: forward_ports, host: forward_ports
+          end
         end
 
         if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up

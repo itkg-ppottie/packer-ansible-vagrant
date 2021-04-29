@@ -12,13 +12,18 @@ servers:
     eth1: 192.168.30.11
     mem: '2048'
     cpu: '2'
-  VM-PDDV-NGC-AUTO-DCK-BDD:
+    forward_ports:
+      - 80
+      - 8080
+    VM-PDDV-NGC-AUTO-DCK-BDD:
     name: VM-PDDV-NGC-AUTO-DCK-BDD
     type: postgres
     box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
     eth1: 192.168.30.12
     mem: '2048'
     cpu: '2'
+    forward_ports:
+      - 5432
   VM-PDDV-NGC-LAFA-DCK-BDD:
     name: VM-PDDV-NGC-LAFA-DCK-BDD
     type: mysql
@@ -26,6 +31,8 @@ servers:
     eth1: 192.168.30.23
     mem: '2048'
     cpu: '2'
+    forward_ports:
+      - 3306
   # VM-PDDV-NGC-METRICS:
   #   name: VM-PDDV-NGC-METRICS
   #   type: metrics
