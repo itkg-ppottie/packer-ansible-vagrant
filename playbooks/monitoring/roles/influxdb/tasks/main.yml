@@ -1,0 +1,30 @@
+
+
+
+- name: Add InfluxDB GPG apt Key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Add InfluxDB repository
+  apt_repository: 
+    repo: "deb https://repos.influxdata.com/{{ os_version }} stable"
+    state: present
+    update_cache: true
+
+- name: Install InfluxDB packages
+  apt: 
+    name: influxdb
+    update_cache: yes
+    state: latest
+
+- name: Modify InfluxDB hostname
+  replace:
+    dest=/etc/influxdb/influxdb.conf
+    regexp='hostname = "localhost"'
+    replace='hostname = "{{ ansible_hostname }}"'
+    backup=yes
+
+- name: Start the InfluxDB service
+  service: name=influxdb state=restarted
+
