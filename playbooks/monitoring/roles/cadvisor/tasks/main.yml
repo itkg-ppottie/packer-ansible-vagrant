@@ -1,0 +1,31 @@
+- name: Create a cadvisor directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ cadvisor_user }}"
+    group: "{{ cadvisor_user }}"
+  with_items:
+    - "{{ cadvisor_home }}"
+
+
+- name: Template a file to cadvisor-compose.yml
+  copy:
+    src: "./templates/{{ item }}"
+    dest: "{{ cadvisor_home }}/{{ item }}"
+    owner: "{{ cadvisor_user }}"
+    group:  "{{ cadvisor_user }}"
+    mode: '0644'
+  loop:
+    - cadvisor-compose.yml
+
+- community.docker.docker_stack:
+    name: cadvisor
+    state: absent
+
+- name: deploy cadvisor service
+  community.docker.docker_stack:
+    state: present
+    name: cadvisor
+    with_registry_auth: yes
+    compose:
+      - "{{ cadvisor_home }}/cadvisor-compose.yml"
