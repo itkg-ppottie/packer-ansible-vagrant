@@ -29,6 +29,7 @@
     fstype: glusterfs
     opts: "defaults,_netdev"
     state: mounted
+    boot: yes
 
 - name: directory permissions
   file:
