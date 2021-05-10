@@ -1,0 +1,2 @@
+cadvisor_user: "{{ username | default(\"debian\")}}"
+cadvisor_home: "/home/{{ cadvisor_user }}/cadvisor"

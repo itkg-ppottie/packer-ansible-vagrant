@@ -62,7 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
           v.vm.provision "ansible" do |ansible|
-              ansible.verbose = "vv"
+              ansible.verbose = true
               ansible.limit = "all"
               ansible.force_remote_user = true
               ansible_ssh_user= "root"

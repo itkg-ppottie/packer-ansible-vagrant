@@ -1,0 +1,36 @@
+version: "3.7"
+networks:
+  internal-monitoring:
+    external: true
+    name: internal-monitoring
+services:
+  cadvisor:
+    image: docker
+    entrypoint: ["/bin/sh","-c"]
+    networks:
+    - internal-monitoring
+    deploy:
+      mode: global
+    environment:
+      - PARENT={{.Task.Name}}
+      - CHILDNAME={{.Service.Name}}_sidecar.{{.Node.ID}}.{{.Task.ID}}
+      - CADVISOR_VERSION=v0.37.5
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /dev/kmsg:/dev/kmsg:ro
+    command: 
+    - |
+      exec docker run -i --rm --network="container:$${PARENT}" \
+            --volume=/:/rootfs:ro \
+            --volume=/var/run:/var/run:ro  \
+            --volume=/sys:/sys:ro  \
+            --volume=/var/lib/docker/:/var/lib/docker:ro \
+            --volume=/dev/disk/:/dev/disk:ro \
+            --name $${CHILDNAME} \
+            --privileged \
+            --device=/dev/kmsg \
+            gcr.io/cadvisor/cadvisor:$${CADVISOR_VERSION}

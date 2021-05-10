@@ -1,4 +1,39 @@
 ---
+- hosts: managers
+  become: yes
+  become_user: root
+  tasks:
+    - name: Ensure json file exists
+      copy:
+        content: "{}"
+        dest: /etc/docker/daemon.json
+        force: false
+
+  
+    - name: append more key/values
+      set_fact:
+        docker_vars: "{{ docker_vars | default([]) | combine({ item.key : item.value }) }}"
+      with_items:
+      - { key: "log-driver", value: "json-file" }
+      - { key: "log-opts", value: { max-size: "10m", max-file: "3"} }
+      - { key: "metrics-addr", value: "localhost:9323" }
+      - { key: "experimental", value: true }
+
+    - debug:
+        var: docker_vars
+
+    - name: write var to file
+      copy:
+        content: "{{ docker_vars | to_nice_json }}"
+        dest: /etc/docker/daemon.json
+
+    - name: Restart service docker daemon
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: docker
+
+
 # lecture de l'état du swarm sur le noeud du cluster
 - hosts: managers, workers
   tasks:
@@ -107,4 +142,22 @@
 
     - debug: var=docker_swarm_info.Swarm
 
-- include: network.yml
+
+# create overlay networks for infra swarm nodes
+- hosts: managers[0]
+  become: yes
+  become_user: root
+  tasks:
+
+    - name: Create overlay networks
+      community.docker.docker_network:
+        driver: overlay
+        name:  multi-host-net
+        state: present
+
+    - name: Create overlay networks
+      community.docker.docker_network:
+        driver: overlay
+        attachable: true
+        name:  core-infra
+        state: present
