@@ -1,0 +1,4 @@
+grafana_user: "{{ username | default(\"debian\")}}"
+grafana_home: "/home/{{ grafana_user }}/grafana"
+grafana_data: "/data/grafana"
+GRAFANA_PASSWORD: admin

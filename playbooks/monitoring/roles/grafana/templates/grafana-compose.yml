@@ -1,0 +1,52 @@
+version: '3.7'
+networks:
+  traefik-proxy:
+    external: true
+    name: traefik-proxy
+  internal-monitoring:
+    external: true
+    name: internal-monitoring
+services:
+  grafana:
+    image: babel.ngc-data.fr:8443/common/docker/grafana:7.5.5
+    networks:
+      - traefik-proxy
+      - internal-monitoring
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./dashboards:/etc/grafana/dashboards
+    labels: 
+      com.docker.stack.namespace: monitoring
+      traefik.enable: "true"
+      traefik.http.routers.grafana.rule: "Host('{{ PREFIX_URL_DOMAIN }}grafana.{{ URL_DOMAIN }}')"
+      traefik.http.routers.grafana.service: "grafana-service"
+      traefik.http.services.grafana-service.loadbalancer.server.port: "3000"
+      traefik.http.routers.grafana.entrypoints: web
+      traefik.docker.network: traefik-proxy
+    ports:
+      - 3000:3000
+    # Set environmental variables
+    environment:
+      # Set admin password change with first login
+      - "GF_SECURITY_ADMIN_PASSWORD={{ GRAFANA_PASSWORD }}"
+      - GF_USERS_ALLOW_SIGN_UP=false
+      # Not using Email for now
+      # - GF_SERVER_DOMAIN=localhost
+      # - GF_SMTP_ENABLED=true
+      # - GF_SMTP_HOST=xxxxx:587
+      # - GF_SMTP_USER=xxxxxxx
+      # - GF_SMTP_PASSWORD=xxxxxxx
+      # - GF_SMTP_FROM_ADDRESS=grafana@xxxxxxxxxx.xx
+      # Configure prometheus datasource
+      - "PROMETHEUS_ENDPOINT=http://{{ PREFIX_URL_DOMAIN }}prometheus.{{ URL_DOMAIN }}:9090"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+volumes:
+  grafana_data:
+    name: metrics-grafana-data
+    driver: local
