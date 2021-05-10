@@ -35,5 +35,5 @@
     - node-exporter
     - docker-exporter
     - prometheus
-    # - grafana
+    - grafana
 

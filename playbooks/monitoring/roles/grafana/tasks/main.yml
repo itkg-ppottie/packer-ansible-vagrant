@@ -1,0 +1,45 @@
+- name: Create a grafana directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_user }}"
+  with_items:
+    - "{{ grafana_home }}"
+    - "{{ grafana_home }}/dashboards"
+
+- name: "Copy config file dashboards"
+  copy:
+    src: "./templates/dashboards/{{ item }}"
+    dest: "{{ grafana_home }}/dashboards/{{ item }}"
+    owner: "{{ grafana_user }}"
+    group:  "{{ grafana_user }}"
+    mode: '0644'
+  loop:
+    - swarmprom-nodes-dash.json
+    - swarmprom-prometheus-dash.json
+    - swarmprom-services-dash.json
+
+
+
+- name: Template a file to grafana-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ grafana_home }}/{{ item }}"
+    owner: "{{ grafana_user }}"
+    group:  "{{ grafana_user }}"
+    mode: '0644'
+  loop:
+    - grafana-compose.yml
+
+- community.docker.docker_stack:
+    name: grafana
+    state: absent
+
+- name: deploy grafana service
+  community.docker.docker_stack:
+    state: present
+    name: grafana
+    with_registry_auth: yes
+    compose:
+      - "{{ grafana_home }}/grafana-compose.yml"
