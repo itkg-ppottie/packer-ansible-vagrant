@@ -1,0 +1,55 @@
+- name: Create a prometheus directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_user }}"
+  with_items:
+    - "{{ prometheus_home }}"
+
+
+- name: "Copy config file prometheus"
+  copy:
+    src: "./templates/{{ item }}"
+    dest: "{{ prometheus_home }}/{{ item }}"
+    owner: "{{ prometheus_user }}"
+    group:  "{{ prometheus_user }}"
+    mode: '0644'
+  loop:
+    - swarm_node.rules.yml
+    - swarm_task.rules.yml
+    - prometheus.yml
+
+- name: Template a file to prometheus-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ prometheus_home }}/{{ item }}"
+    owner: "{{ prometheus_user }}"
+    group:  "{{ prometheus_user }}"
+    mode: '0644'
+  loop:
+    - prometheus-compose.yml
+
+
+- name: Create a directory prometheus on gluster volume
+  file:
+    path: "/mnt/gluster/{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - "prometheus"
+
+- community.docker.docker_stack:
+    name: prometheus
+    state: absent
+
+- name: deploy prometheus service
+  community.docker.docker_stack:
+    state: present
+    name: prometheus
+    with_registry_auth: yes
+    compose:
+      - "/home/{{ username }}/prometheus/prometheus-compose.yml"
+
+

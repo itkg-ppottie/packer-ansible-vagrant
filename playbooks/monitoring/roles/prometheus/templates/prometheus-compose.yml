@@ -1,0 +1,50 @@
+version: "3.7"
+networks:
+  traefik-proxy:
+    external: true
+    name: traefik-proxy
+  internal-monitoring:
+    external: true
+    name: internal-monitoring
+services:
+  prometheus:
+    hostname: "prometheus"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    image: babel.ngc-data.fr:8443/common/docker/prometheus:{{ VERSION }}
+    labels:
+      com.docker.stack.namespace: monitoring
+      traefik.enable: "true"
+      traefik.http.routers.prometheus.rule: "Host('{{ PREFIX_URL_DOMAIN }}prometheus.{{ URL_DOMAIN }}')"
+      traefik.http.routers.prometheus.service: "prometheus"
+      traefik.http.services.prometheus.loadbalancer.server.port: "9090"
+      traefik.http.routers.prometheus.entrypoints: web
+      traefik.docker.network: traefik-proxy
+    ports:
+      - 9090:9090
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 128M
+    networks:
+      - internal-monitoring
+      - traefik-proxy
+    user: root
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./prometheus.yml:/etc/prometheus/blackbox_targets.yml"
+      - "./alert.rules:/etc/prometheus/alert.rules"
+      - "{{ prometheus_data }}:/prometheus"
+
+
