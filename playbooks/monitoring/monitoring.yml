@@ -34,6 +34,6 @@
     - cadvisor
     - node-exporter
     - docker-exporter
-    # - prometheus
+    - prometheus
     # - grafana
 
