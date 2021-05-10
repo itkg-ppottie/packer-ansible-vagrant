@@ -9,12 +9,12 @@
 
     - name: Install required system packages
       apt: name={{ item }} state=present update_cache=yes force_apt_get=yes
-      loop: [ 
+      loop: [
           'apt-transport-https',
           'ca-certificates',
           'curl',
           'software-properties-common',
-          'python3-pip', 
+          'python3-pip',
           'virtualenv',
           'python3-setuptools',
           'python3-gnupg',

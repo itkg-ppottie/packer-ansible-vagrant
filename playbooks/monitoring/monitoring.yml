@@ -32,8 +32,8 @@
   roles:
     # - visualizer
     - cadvisor
-    # - node-exporter
-    # - docker-exporter
+    - node-exporter
+    - docker-exporter
     # - prometheus
     # - grafana
 

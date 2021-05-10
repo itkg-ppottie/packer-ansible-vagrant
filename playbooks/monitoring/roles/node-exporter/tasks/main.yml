@@ -1,0 +1,34 @@
+- name: Create a node_exporter directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_user }}"
+  with_items:
+    - "{{ node_exporter_home }}"
+
+
+- name: Template a file to node-exporter-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ node_exporter_home }}/{{ item }}"
+    owner: "{{ node_exporter_user }}"
+    group:  "{{ node_exporter_user }}"
+    mode: '0644'
+  loop:
+    - node-exporter-compose.yml
+
+
+- community.docker.docker_stack:
+    name: node-exporter
+    state: absent
+
+- name: deploy node_exporter service
+  community.docker.docker_stack:
+    state: present
+    name: node-exporter
+    with_registry_auth: yes
+    compose:
+      - "{{ node_exporter_home }}/node-exporter-compose.yml"
+
+
