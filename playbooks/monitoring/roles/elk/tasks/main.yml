@@ -1,0 +1,58 @@
+- name: Create a elk directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ELK_USER }}"
+    group: "{{ ELK_USER }}"
+  with_items:
+    - "{{ ELK_HOME }}"
+    - "{{ ELK_HOME }}/kibana"
+    - "{{ ELK_HOME }}/elasticsearch"
+    - "{{ ELK_HOME }}/apm"
+    - "{{ ELK_HOME }}/nginx-proxy"
+
+
+- name: "Copy config file elk"
+  copy:
+    src: "./templates/{{ item }}"
+    dest: "{{ ELK_HOME }}/{{ item }}"
+    owner: "{{ ELK_USER }}"
+    group:  "{{ ELK_USER }}"
+    mode: '0644'
+  loop:
+    - apm/apm-server.docker.yml
+    - elasticsearch/elasticsearch.yml
+    - kibana/kibana.yml
+    - nginx-proxy/Dockerfile
+    - nginx-proxy/.htpassword
+    - nginx-proxy/nginx.conf
+
+- name: Template a file to elk-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ ELK_HOME }}/{{ item }}"
+    owner: "{{ ELK_USER }}"
+    group:  "{{ ELK_USER }}"
+    mode: '0644'
+  loop:
+    - elk-compose.yml
+
+- name: Log into private registry and force re-authorization
+  community.docker.docker_login:
+    registry_url: "{{ private_registry.host }}"
+    username: "{{ private_registry.login }}"
+    password: "{{ private_registry.token }}"
+    reauthorize: yes
+
+- community.docker.docker_compose:
+    project_src: elk
+    state: absent
+
+- name: deploy elk service
+  community.docker.docker_compose:
+    state: present
+    project_src: elk
+    files:
+      - "{{ ELK_HOME }}/elk-compose.yml"
+
+
