@@ -51,6 +51,11 @@
     state: absent
     name: api_kilometer
 
+- debug: var=PROJECT_URL_DOMAIN
+- debug: var=POSTGRESQL_HOST
+- debug: var=LAFA_COMMON_HOST
+- debug: var=PROJECT_NAME
+
 - name: deploy api_kilometer stack
   community.docker.docker_stack:
     state: present

@@ -77,7 +77,6 @@ services:
     env_file:
       - .env
     image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
-
     logging:
       driver: "json-file"
       options:
@@ -115,7 +114,7 @@ services:
     volumes:
         - "/mnt/gluster/api-kilometer/static:/home/ngc/code/static"
   redis:
-    image: "redis:alpine"
+    image: "babel.ngc-data.fr:8443/common/docker/redis:6.0.9-alpine"
     volumes:
       - /mnt/gluster/api-kilometer/redis:/home/docker/data
     deploy:
