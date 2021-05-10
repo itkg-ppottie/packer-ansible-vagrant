@@ -1,0 +1,2 @@
+docker_exporter_user: "{{ username | default(\"debian\")}}"
+docker_exporter_home: "/home/{{ docker_exporter_user }}/docker-exporter"

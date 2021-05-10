@@ -1,0 +1,10 @@
+# Create a new Nginx configuration from Prometheus
+$ sudo nano prometheus
+And copy/paste the example below
+server {
+    listen       9323;
+
+    location / {
+        proxy_pass           http://localhost:9323/;
+    }
+}

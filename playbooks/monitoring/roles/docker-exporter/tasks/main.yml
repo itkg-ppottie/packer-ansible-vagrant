@@ -1,0 +1,49 @@
+- name: Create a docker-exporter directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ docker_exporter_user }}"
+    group: "{{ docker_exporter_user }}"
+  with_items:
+    - "{{ docker_exporter_home }}"
+
+- name: Create a directory docker-exporter on gluster volume
+  file:
+    path: "/mnt/gluster/{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - "docker-exporter"
+    
+- name: "Copy config file nginx proxy"
+  copy:
+    src: "./templates/{{ item }}"
+    dest: "/mnt/gluster/docker-exporter/{{ item }}"
+    owner: "{{ docker_exporter_user }}"
+    group:  "{{ docker_exporter_user }}"
+    mode: '0644'
+  loop:
+    - nginx-docker-exporter
+
+- name: Template a file to docker-exporter-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ docker_exporter_home }}/{{ item }}"
+    owner: "{{ docker_exporter_user }}"
+    group:  "{{ docker_exporter_user }}"
+    mode: '0644'
+  loop:
+    - docker-exporter-nginx-compose.yml
+
+- community.docker.docker_stack:
+    name: docker-exporter
+    state: absent
+
+- name: deploy docker-exporter service
+  community.docker.docker_stack:
+    state: present
+    name: docker-exporter
+    with_registry_auth: yes
+    compose:
+      - "{{ docker_exporter_home }}/docker-exporter-nginx-compose.yml"

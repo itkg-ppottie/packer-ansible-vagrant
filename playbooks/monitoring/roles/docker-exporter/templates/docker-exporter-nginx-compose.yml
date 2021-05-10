@@ -1,0 +1,21 @@
+version: '3.7'
+networks:
+  internal-monitoring:
+    external: true
+    name: internal-monitoring
+services:
+  # Using caddy to proxy prometheus access to dockerdaemon of node
+  docker-exporter:
+    image: nginx
+    networks:
+      - internal-monitoring
+    volumes:
+      - /mnt/gluster/docker-exporter/nginx-docker-exporter:/etc/nginx/sites-enabled
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          memory: 64M
