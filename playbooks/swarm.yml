@@ -1,5 +1,5 @@
 ---
-- hosts: managers
+- hosts: managers,workers
   become: yes
   become_user: root
   tasks:
