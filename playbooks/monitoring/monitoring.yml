@@ -26,7 +26,7 @@
 - hosts: elk-apm[0]
   roles:
     - elk
-    
+
 #installation d'un service dans le cluster
 - hosts: managers[0]
   roles:

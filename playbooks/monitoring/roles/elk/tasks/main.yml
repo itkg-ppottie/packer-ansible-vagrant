@@ -24,8 +24,34 @@
     - elasticsearch/elasticsearch.yml
     - kibana/kibana.yml
     - nginx-proxy/Dockerfile
-    - nginx-proxy/.htpassword
     - nginx-proxy/nginx.conf
+
+- name: Make sure we can use htpasswd module
+  become: yes
+  become_user: root
+  apt: "pkg=python3-passlib state=present"
+
+- name: generate HTTP acces on kibana
+  htpasswd:
+    path: "{{ ELK_HOME }}/nginx-proxy/.htpasswd"
+    name: "{{ ELK_HTTP_USER }}"
+    password: "{{ ELK_HTTP_PASSWORD }}"
+    owner: "{{ ELK_USER }}"
+    group: "{{ ELK_USER }}"
+    mode: '0644'
+
+
+- name: set vm.max_map_count to 262144 in sysctl
+  become: yes
+  become_user: root
+  sysctl: name={{ item.key }} value={{ item.value }}
+  with_items:
+    - { key: "vm.max_map_count", value: "262144" }
+
+- name: For a permanent setting, update vm.max_map_count in /etc/sysctl.conf
+  become: yes
+  become_user: root
+  command: sysctl -p /etc/sysctl.conf
 
 - name: Template a file to elk-compose.yml
   template:
@@ -47,11 +73,14 @@
 - community.docker.docker_compose:
     project_src: elk
     state: absent
+    files:
+      - "{{ ELK_HOME }}/elk-compose.yml"
 
 - name: deploy elk service
   community.docker.docker_compose:
     state: present
     project_src: elk
+    build: yes
     files:
       - "{{ ELK_HOME }}/elk-compose.yml"
 
