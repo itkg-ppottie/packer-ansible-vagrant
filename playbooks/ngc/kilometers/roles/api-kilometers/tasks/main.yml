@@ -1,0 +1,58 @@
+
+- name: Create a directory kilometer-api on gluster volume
+  file:
+    path: "/mnt/gluster/{{ item }}"
+    state: directory
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+  loop:
+    - "api-kilometers"
+    - "api-kilometers/nginx"
+    - "api-kilometers/nginx/conf.d"
+    - "api-kilometers/static"
+    - "api-kilometers/redis"
+- name: load vars to generate docker-compose file's
+  include_vars:
+    file: "{{ PROJECT_ENV_VARS }}"
+    name: app_environement
+
+- name: Create a directory kilometer-api
+  file:
+    path: "{{ PROJECT_HOME }}"
+    state: directory
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+
+
+
+- name: Copy docker-compose.yml and conf files to master
+  template:
+    src: "./templates/kilometers-compose.yml"
+    dest: "{{ PROJECT_HOME }}/kilometers-compose.yml"
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+    force: true
+
+- name: copy nginx config file to shared directory's
+  copy:
+    src: "./templates/conf.d/default.conf"
+    dest: "/mnt/gluster/api-kilometers/nginx/conf.d/default.conf"
+    force: true
+
+- name: remove api_kilometers stack
+  community.docker.docker_stack:
+    state: absent
+    name: api_kilometers
+
+- name: deploy api_kilometers stack
+  community.docker.docker_stack:
+    state: present
+    name: api_kilometers
+    with_registry_auth: yes
+    compose:
+      - "{{ PROJECT_HOME }}/kilometers-compose.yml"
+  # environment:
+  #   PROJECT_URL_DOMAIN: "{{ PROJECT_URL_DOMAIN }}"
+  #   POSTGRESQL_HOST: "{{ POSTGRESQL_HOST }}"
+  #   LAFA_COMMON_HOST: "{{ LAFA_COMMON_HOST }}"
+  #   PROJECT_NAME: "{{ PROJECT_NAME }}"

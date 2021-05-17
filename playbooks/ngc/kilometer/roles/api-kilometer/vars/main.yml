@@ -1,4 +1,0 @@
-PROJECT_NAME: kilometer
-PROJECT_URL_DOMAIN: "{{ PREFIX_URL_DOMAIN }}{{ PROJECT_NAME }}.{{ URL_DOMAIN }}"
-POSTGRESQL_HOST: "{{ servers[groups['databases-postgresql'][0]]['eth1'] }}"
-LAFA_COMMON_HOST: "{{ servers[groups['databases-mysql-docker'][0]]['eth1'] }}"

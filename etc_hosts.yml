@@ -6,7 +6,7 @@
 
 
     - name: include local config
-      include_vars: preprod/vars.vagrantfile.yaml
+      include_vars: configs/vm-local/vars.vagrantfile.yaml
     
     - debug: var=servers
 
