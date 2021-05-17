@@ -18,12 +18,12 @@
         - { name: "vm-swarm-master-01", size: "10"}
       register: packer
 
-    - name: create infra preprod
+    - name: create infra local virtual machines
       shell: bash -c "vagrant up" > log/infra.log
 
     - name: include local config
       include_vars:
-        file: preprod/vars.vagrantfile.yaml
+        file: configs/vm-local/vars.vagrantfile.yaml
         name: environment
 
     - name: Update the /etc/hosts file with node name

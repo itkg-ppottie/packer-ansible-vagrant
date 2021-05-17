@@ -14,9 +14,8 @@ services:
   nginx:
     depends_on:
       - web
-    hostname: '${PROJECT_NAME}-nginx.{{.Node.Hostname}}'
+    hostname: "{{ PROJECT_NAME }}-nginx.{{ NODE_HOSTNAME }}"
     image: babel.ngc-data.fr:8443/common/docker/nginx:1.18.0
-
     logging:
       driver: "json-file"
       options:
@@ -33,6 +32,8 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
+    environment:
+      PROJECT_URL_DOMAIN: "{{ PROJECT_URL_DOMAIN }}"
     deploy:
       replicas: 2
       restart_policy:
@@ -44,39 +45,46 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik-proxy"
-        - "traefik.http.routers.static-${PROJECT_NAME}.rule=Host(`${PROJECT_URL_DOMAIN}`)"
+        - "traefik.http.routers.static-${PROJECT_NAME}.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
         - "traefik.http.routers.static-${PROJECT_NAME}.entrypoints=web"
         - "traefik.http.routers.static-${PROJECT_NAME}.service=nginx"
         - "traefik.http.services.nginx.loadbalancer.server.port=80"
+  
+  
   migration:
     command:  python manage.py migrate
-    env_file:
-      - .env
     image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
     logging:
       driver: "json-file"
       options:
         max-file: "5"
         max-size: 10m
+    environment:
+{% for  name, value in app_environement.items() %}
+      {{ name }}: "{{ value }}"
+{% endfor %}
     depends_on:
       - redis
     deploy:
       replicas: 1
       resources:
         limits:
-          cpus: '0.5'
-          memory: '200M'
+          cpus: "0.5"
+          memory: "200M"
       restart_policy:
         condition: none
     networks:
       - redis
       - api
+
   web:
     command: /usr/local/bin/gunicorn --bind=0.0.0.0:8000 --pid=/home/ngc/run/gunicorn.pid --user=ngc --workers=4 --worker-class=gevent --worker-connections=1000  --user=ngc  project.wsgi:application
-    hostname: 'kilometers-api-web.{{.Node.Hostname}}'
-    env_file:
-      - .env
+    hostname: "{{ PROJECT_NAME }}-web.{{ NODE_HOSTNAME }}"
     image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
+    environment:
+{% for  name, value in app_environement.items() %}
+      {{ name }}: "{{ value }}"
+{% endfor %}
     logging:
       driver: "json-file"
       options:
@@ -98,10 +106,10 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik-proxy"
-        - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${PROJECT_URL_DOMAIN}`)"
+        - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
         - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
-        - "traefik.http.routers.${PROJECT_NAME}.service=web"
-        - "traefik.http.services.web.loadbalancer.server.port=8000"
+        - "traefik.http.routers.${PROJECT_NAME}.service={{ PROJECT_NAME }}-web"
+        - "traefik.http.services.{{ PROJECT_NAME }}-web.loadbalancer.server.port=8000"
     healthcheck:
       test: ["CMD", "python", "-c" ,"import urllib.request; print (0 if urllib.request.urlopen('http://0.0.0.0:8000/api/exploit/alive').getcode()==200 else 1)"]
       interval: "20s"
@@ -113,6 +121,7 @@ services:
       - traefik-proxy
     volumes:
         - "/mnt/gluster/api-kilometer/static:/home/ngc/code/static"
+        
   redis:
     image: "babel.ngc-data.fr:8443/common/docker/redis:6.0.9-alpine"
     volumes:

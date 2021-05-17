@@ -6,7 +6,7 @@
 - name: configure haproxy
   template:
     dest: /etc/haproxy/haproxy.cfg
-    src: "../{{ world }}/conf/haproxy.cfg"
+    src: "../configs/{{ world }}/conf/haproxy.cfg"
 - name: haproxy service start
   service:
     name: "haproxy"

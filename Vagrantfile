@@ -5,7 +5,7 @@ opts = GetoptLong.new(
   [ '--environment', GetoptLong::OPTIONAL_ARGUMENT ]
 )
 
-world='preprod'
+world='vm-local'
 
 opts.ordering=(GetoptLong::REQUIRE_ORDER)   ### this line.
 
@@ -21,7 +21,7 @@ end
 
 # Verify that vagrant.yml exists
 root_dir = File.dirname(__FILE__)
-vagrantfile = "#{world}/vars.vagrantfile.yaml"
+vagrantfile = "configs/#{world}/vars.vagrantfile.yaml"
 error_msg = "#{vagrantfile} does not exist"
 handle_error(error_msg) unless File.exists?(vagrantfile)
 

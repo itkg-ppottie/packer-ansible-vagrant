@@ -30,7 +30,7 @@
 #installation d'un service dans le cluster
 - hosts: managers[0]
   roles:
-    # - visualizer
+    - visualizer
     - cadvisor
     - node-exporter
     - docker-exporter

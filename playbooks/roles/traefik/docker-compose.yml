@@ -18,7 +18,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-proxy
-        - "traefik.http.routers.api.rule=Host(`${PREFIX_URL_DOMAIN}traefik.${URL_DOMAIN}`)"
+        - "traefik.http.routers.api.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
         - traefik.http.routers.api.service=api@internal
         - traefik.http.services.traefik.loadbalancer.server.port=8080
     logging:
