@@ -1,25 +1,25 @@
 
-- hosts: databases-postgresql
-  become: yes
-  become_user: root
-  roles:
-    - postgresql
-
+# Create new database and user
 - hosts: databases-postgresql
   become: yes
   become_method: sudo
   become_user: postgres
   roles:
-    - database
+    - role: postgresql
+      PROJECT_VARS_FILE:  "configs/{{ world }}/api-kilometers/vars.yml"
 
+
+# create overlay networks
 - hosts: managers[0]
   become: yes
   become_user: root
   roles:
     - network
 
-
+# Deploy project
 - hosts: managers[0]
   roles:
-    - api-kilometers
+    - role: api-kilometers
+      PROJECT_VARS_FILE: "configs/{{ world }}/api-kilometers/vars.yml"
+      APP_VERSION: "apm-1.0.4beta0"
 

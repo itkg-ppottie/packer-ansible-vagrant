@@ -1,20 +1,33 @@
 
 
-- name: remove docker-visualizer stack
-  community.docker.docker_swarm_service:
-    state: absent
-    name: docker-visualizer
+- name: Create a visualizer directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ visualizer_user }}"
+    group: "{{ visualizer_user }}"
+  with_items:
+    - "{{ visualizer_home }}"
 
-- name: Start docker-visualizer globally
-  run_once: true
-  shell: >
-      docker service create \
-        --name docker-visualizer  \
-        --constraint=node.role==manager \
-        --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
-        --label traefik.enable=true \
-        --label traefik.http.routers.visualizer.rule="Host(`{{ PREFIX_URL_DOMAIN }}visualizer.{{ URL_DOMAIN }}`)" \
-        --label traefik.http.routers.visualizer.service=api@internal \
-        --label traefik.http.services.api.loadbalancer.server.port=8080 \
-        --network multi-host-net \
-        dockersamples/visualizer:stable
+
+- name: Template a file to visualizer-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ visualizer_home }}/{{ item }}"
+    owner: "{{ visualizer_user }}"
+    group:  "{{ visualizer_user }}"
+    mode: '0644'
+  loop:
+    - visualizer-compose.yml
+
+- community.docker.docker_stack:
+    name: visualizer
+    state: absent
+
+- name: deploy visualizer service
+  community.docker.docker_stack:
+    state: present
+    name: visualizer
+    with_registry_auth: yes
+    compose:
+      - "{{ visualizer_home }}/visualizer-compose.yml"

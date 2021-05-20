@@ -67,6 +67,8 @@ services:
       - ES_HOSTS=["es01:9200"]
     command: --strict.perms=false -e
     restart: always
+    ports:
+     - "8200:8200"
     depends_on:
       - es01
       # - es02
@@ -74,6 +76,32 @@ services:
       - kib01
     networks:
       - elastic
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:{{ VERSION }}
+    networks:
+      - elastic
+    restart: always
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    volumes:
+      - type: bind
+        source: ./logstash/pipeline/logstash.conf
+        target: /usr/share/logstash/piepline/logstash.yml
+        read_only: true
+      # - type: bind
+      #   source: ./logstash/pipeline
+      #   target: /usr/share/logstash/pipeline
+      #   read_only: true
+    ports:
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+      - 12201:12201/udp
+    links:
+      - es01:elasticsearch
+    depends_on:
+      - es01
 
   kib01:
     image: docker.elastic.co/kibana/kibana:{{ VERSION }}
@@ -84,6 +112,7 @@ services:
     networks:
       - elastic
     restart: always
+
   proxy:
     build: ./nginx-proxy
     container_name: elk-proxy
@@ -93,10 +122,11 @@ services:
       # - es03
       - kib01
       - apm
+      - logstash
+    restart: always
     ports:
       - "8080:80"
       - "9200:9200"
-      - "8200:8200"
     networks:
       - elastic
 

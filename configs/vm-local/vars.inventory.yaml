@@ -89,6 +89,8 @@ ANSIBLE_GROUPS:
   gluster:
     - VM-PDDV-NGC-AUTO-DCK
     - VM-PDDV-NGC-TRENT-DCK
+  elk-logs:
+    - VM-PDDV-NGC-ELK-MONIT
   elk-apm:
     - VM-PDDV-NGC-ELK-MONIT
   metrics:
@@ -101,5 +103,6 @@ ANSIBLE_GROUPS:
     - databases-postgresql
     - databases-mysql-docker
     - metrics
+    - elk-logs
     - elk-apm
     - shares

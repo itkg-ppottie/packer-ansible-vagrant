@@ -21,7 +21,7 @@ end
 
 # Verify that vagrant.yml exists
 root_dir = File.dirname(__FILE__)
-vagrantfile = "configs/#{world}/vars.vagrantfile.yaml"
+vagrantfile = "configs/#{world}/vars.inventory.yaml"
 error_msg = "#{vagrantfile} does not exist"
 handle_error(error_msg) unless File.exists?(vagrantfile)
 
@@ -77,7 +77,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 swarm_bind_port: 2377,
                 private_registry: private_registry,
                 URL_DOMAIN: url_domain,
-                PREFIX_URL_DOMAIN: prefix_url_domain
+                PREFIX_URL_DOMAIN: prefix_url_domain,
+                ELK_LOGS_HOST: servers[ANSIBLE_GROUPS["elk-logs"][0]]['eth1'],
               }
               ansible.playbook = "./playbooks/playbooks.yml"
           end

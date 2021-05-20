@@ -1,8 +1,35 @@
+
+  # lOAD PROJECT ENV VARS
+
+- name: load vars to generate docker-compose file's
+  include_vars:
+    file: "../../../../../../{{ PROJECT_VARS_FILE }}"
+    name: APP_ENV
+
+
+- name: create database
+  postgresql_db:
+    name: "{{ APP_ENV['DATABASE_DEFAULT_NAME'] }}"
+
+- name: Create user, set MD5-hashed password, grant privs
+  postgresql_user:
+    name: "{{  APP_ENV['DATABASE_DEFAULT_USER'] }}"
+    password: "{{ APP_ENV['DATABASE_DEFAULT_PASSWORD'] }}"
+
+- name: Ensure we have access from the new user
+  postgresql_privs:
+    db:  "{{ APP_ENV['DATABASE_DEFAULT_NAME'] }}"
+    role: "{{  APP_ENV['DATABASE_DEFAULT_USER'] }}"
+    objs: ALL_IN_SCHEMA
+    privs: ALL
+
 - name: autorisation pg_hba.conf
-  postgresql_pg_hba: 
+  become: yes
+  become_user: root
+  postgresql_pg_hba:
     dest: "{{ path_to_icat }}/pg_hba.conf"
-    databases: "{{ database_name }}"
-    users: "{{ database_user }}"
+    databases: "{{ APP_ENV['DATABASE_DEFAULT_NAME'] }}"
+    users: "{{ APP_ENV['DATABASE_DEFAULT_USER'] }}"
     address: "0.0.0.0/0"
     contype: host
     method: password
