@@ -9,6 +9,8 @@ services:
     image: nginx
     networks:
       - internal-monitoring
+    ports:
+      - 9323:9323
     volumes:
       - /mnt/gluster/docker-exporter/nginx-docker-exporter:/etc/nginx/sites-enabled
     deploy:

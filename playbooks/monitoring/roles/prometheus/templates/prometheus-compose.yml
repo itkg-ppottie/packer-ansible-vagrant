@@ -19,7 +19,7 @@ services:
     labels:
       com.docker.stack.namespace: monitoring
       traefik.enable: "true"
-      traefik.http.routers.prometheus.rule: "Host('{{ PREFIX_URL_DOMAIN }}prometheus.{{ URL_DOMAIN }}')"
+      traefik.http.routers.prometheus.rule: "Host(`{{ PREFIX_URL_DOMAIN }}prometheus.{{ URL_DOMAIN }}`)"
       traefik.http.routers.prometheus.service: "prometheus"
       traefik.http.services.prometheus.loadbalancer.server.port: "9090"
       traefik.http.routers.prometheus.entrypoints: web
@@ -45,6 +45,4 @@ services:
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
       - "./prometheus.yml:/etc/prometheus/blackbox_targets.yml"
       - "./alert.rules:/etc/prometheus/alert.rules"
-      - "{{ prometheus_data }}:/prometheus"
-
-
+      # - "{{ prometheus_data }}:/prometheus"

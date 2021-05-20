@@ -2,7 +2,7 @@ PROJECT_NAME: kilometers
 PROJECT_USER: "{{ username | default(\"debian\")}}"
 PROJECT_HOME: "/home/{{ PROJECT_USER }}/{{ PROJECT_NAME }}"
 PROJECT_URL_DOMAIN: "{{ PREFIX_URL_DOMAIN }}{{ PROJECT_NAME }}.{{ URL_DOMAIN }}"
-PROJECT_ENV_VARS: "../../../../../../configs/{{ world }}/api-kilometers/vars.yml"
 NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"
 POSTGRESQL_HOST: "{{ servers[groups['databases-postgresql'][0]]['eth1'] }}"
 LAFA_COMMON_HOST: "{{ servers[groups['databases-mysql-docker'][0]]['eth1'] }}"
+APM_URL: "http://{{ servers[groups['elk-apm'][0]]['eth1'] }}:8200"

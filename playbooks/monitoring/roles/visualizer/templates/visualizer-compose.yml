@@ -1,0 +1,30 @@
+version: "3.7"
+networks:
+  internal-monitoring:
+    external: true
+    name: internal-monitoring
+  traefik-proxy:
+    external: true
+    name: traefik-proxy
+services:
+  visualizer:
+    image: dockersamples/visualizer
+    networks:
+      - internal-monitoring
+      - traefik-proxy
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+    labels:
+      com.docker.stack.namespace: monitoring
+      traefik.enable: "true"
+      traefik.http.routers.visualizer.rule: "Host(`{{ PREFIX_URL_DOMAIN }}visualizer.{{ URL_DOMAIN }}`)"
+      traefik.http.routers.visualizer.service: "api@internal"
+      traefik.http.services.visualizer.loadbalancer.server.port: "8080"
+      traefik.http.routers.visualizer.entrypoints: web
+      traefik.docker.network: traefik-proxy
+    volumes:
+      - /var/lib/docker:/var/lib/docker:ro
+

@@ -1,4 +1,11 @@
 
+  # lOAD PROJECT ENV VARS
+
+- name: load vars to generate docker-compose file's
+  include_vars:
+    file: "../../../../../../{{ PROJECT_VARS_FILE }}"
+    name: APP_ENV
+
 - name: Create a directory kilometer-api on gluster volume
   file:
     path: "/mnt/gluster/{{ item }}"
@@ -11,10 +18,6 @@
     - "api-kilometers/nginx/conf.d"
     - "api-kilometers/static"
     - "api-kilometers/redis"
-- name: load vars to generate docker-compose file's
-  include_vars:
-    file: "{{ PROJECT_ENV_VARS }}"
-    name: app_environement
 
 - name: Create a directory kilometer-api
   file:
@@ -22,8 +25,6 @@
     state: directory
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
-
-
 
 - name: Copy docker-compose.yml and conf files to master
   template:

@@ -1,4 +1,4 @@
-VERSION: 7.6.2
+VERSION: 7.12.1
 
 ELK_USER: "{{ username | default(\"debian\")}}"
 ELK_HOME: "/home/{{ ELK_USER }}/elk"

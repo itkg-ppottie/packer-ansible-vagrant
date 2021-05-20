@@ -11,6 +11,8 @@ services:
     - internal-monitoring
     deploy:
       mode: global
+    ports:
+      - "8098:8080"
     environment:
       - PARENT={{.Task.Name}}
       - CHILDNAME={{.Service.Name}}_sidecar.{{.Node.ID}}.{{.Task.ID}}

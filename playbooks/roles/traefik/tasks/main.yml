@@ -14,8 +14,8 @@
 
 - name: Copy docker-compose.yml of traefik on master swarm node
   template:
-    src: "../docker-compose.yml"
-    dest: "{{ PROJECT_HOME }}/docker-compose.yml"
+    src: "../templates/traefik-compose.yml"
+    dest: "{{ PROJECT_HOME }}/traefik-compose.yml"
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
 
@@ -25,7 +25,7 @@
     name: traefik
     with_registry_auth: yes
     compose:
-      - "{{ PROJECT_HOME }}/docker-compose.yml"
+      - "{{ PROJECT_HOME }}/traefik-compose.yml"
   environment:
     URL_DOMAIN: "{{ URL_DOMAIN }}"
     PREFIX_URL_DOMAIN: "{{ PREFIX_URL_DOMAIN }}"

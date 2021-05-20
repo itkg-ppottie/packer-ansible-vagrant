@@ -16,30 +16,30 @@ services:
       restart_policy:
         condition: any
       labels:
-        - traefik.enable=true
-        - traefik.docker.network=traefik-proxy
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-proxy"
         - "traefik.http.routers.api.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
-        - traefik.http.routers.api.service=api@internal
-        - traefik.http.services.traefik.loadbalancer.server.port=8080
+        - "traefik.http.routers.api.service=api@internal"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     logging:
-      driver: "json-file"
+      driver: gelf
       options:
-        max-file: "5"
-        max-size: 10m
+        gelf-address: "udp://{{ ELK_LOGS_HOST }}:12201"
+        tag: "traefik"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command:
-       - "traefik"
-       - --api
-       - --api.insecure=true
-       - --api.debug=true
-       - --accesslog
-       - --log
-       - --providers.docker=true
-       - --providers.docker.swarmmode=true
-       - --providers.docker.exposedbydefault=false
-       - --providers.docker.network=traefik-proxy
-       - --entrypoints.web.address=:80
+      - "traefik"
+      - --api
+      - --api.insecure=true
+      - --api.debug=true
+      - --accesslog
+      - --log
+      - --providers.docker=true
+      - --providers.docker.swarmmode=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=traefik-proxy
+      - --entrypoints.web.address=:80
 
 
 networks:

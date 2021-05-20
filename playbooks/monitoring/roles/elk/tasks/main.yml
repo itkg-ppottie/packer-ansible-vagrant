@@ -10,6 +10,8 @@
     - "{{ ELK_HOME }}/elasticsearch"
     - "{{ ELK_HOME }}/apm"
     - "{{ ELK_HOME }}/nginx-proxy"
+    - "{{ ELK_HOME }}/logstash"
+    - "{{ ELK_HOME }}/logstash/pipeline"
 
 
 - name: "Copy config file elk"
@@ -25,6 +27,8 @@
     - kibana/kibana.yml
     - nginx-proxy/Dockerfile
     - nginx-proxy/nginx.conf
+    - logstash/pipeline/logstash.conf
+    # - logstash/logstash.conf
 
 - name: Make sure we can use htpasswd module
   become: yes

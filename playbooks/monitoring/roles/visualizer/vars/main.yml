@@ -1,0 +1,2 @@
+visualizer_user: "{{ username | default(\"debian\")}}"
+visualizer_home: "/home/{{ visualizer_user }}/visualizer"

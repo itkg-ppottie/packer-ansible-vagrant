@@ -1,13 +1,11 @@
 - name: a play that runs entirely on the ansible host
   hosts: localhost
   connection: local
-
   tasks:
-
 
     - name: include local config
       include_vars: configs/vm-local/vars.vagrantfile.yaml
-    
+
     - debug: var=servers
 
     - name: Update the /etc/hosts file with node name

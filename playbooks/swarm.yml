@@ -16,7 +16,7 @@
       with_items:
       - { key: "log-driver", value: "json-file" }
       - { key: "log-opts", value: { max-size: "10m", max-file: "3"} }
-      - { key: "metrics-addr", value: "localhost:9323" }
+      - { key: "metrics-addr", value: "0.0.0.0:9323" }
       - { key: "experimental", value: true }
 
     - debug:
