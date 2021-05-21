@@ -1,22 +1,23 @@
 version: "3.7"
 networks:
-  internal-monitoring:
+  default:
     external: true
     name: internal-monitoring
 services:
   cadvisor:
     image: docker
     entrypoint: ["/bin/sh","-c"]
-    networks:
-    - internal-monitoring
     deploy:
       mode: global
-    ports:
-      - "8098:8080"
     environment:
       - PARENT={{.Task.Name}}
       - CHILDNAME={{.Service.Name}}_sidecar.{{.Node.ID}}.{{.Task.ID}}
       - CADVISOR_VERSION=v0.37.5
+    ports:
+      - target: 8080
+        published: 8089
+        protocol: tcp
+        mode: host
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

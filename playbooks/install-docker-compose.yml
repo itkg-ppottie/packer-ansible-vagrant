@@ -11,7 +11,7 @@
         state: latest
         name: python3-pip
 
-    - name: update docker dsk && jsondiff
+    - name: update docker sdk && jsondiff
       pip:
         name: "{{item}}"
       loop:

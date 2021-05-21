@@ -30,6 +30,12 @@
   loop:
     - prometheus-compose.yml
 
+- name: Clear eventual directory prometheus on gluster volume
+  file:
+    path: "/mnt/gluster/{{ item }}"
+    state: absent
+  loop:
+    - "prometheus"
 
 - name: Create a directory prometheus on gluster volume
   file:
