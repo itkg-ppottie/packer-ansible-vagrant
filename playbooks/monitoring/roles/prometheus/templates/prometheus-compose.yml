@@ -44,5 +44,4 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
       - "./prometheus.yml:/etc/prometheus/blackbox_targets.yml"
-      - "./alert.rules:/etc/prometheus/alert.rules"
-      # - "{{ prometheus_data }}:/prometheus"
+      - "{{ prometheus_data }}:/prometheus"

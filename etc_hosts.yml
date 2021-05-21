@@ -4,7 +4,7 @@
   tasks:
 
     - name: include local config
-      include_vars: configs/vm-local/vars.vagrantfile.yaml
+      include_vars: configs/vm-local/vars.inventory.yaml
 
     - debug: var=servers
 
@@ -13,7 +13,7 @@
       become_user: root
       lineinfile:
         path: "/etc/hosts"
-        regexp: ".*\t{{ item.value.eth1 }}\t{{ item.value.name}}"
+        regexp: ".*\t{{ item.value.eth1 }}\t{{ item.value.name }}"
         line: "{{  item.value.eth1 }}\t{{ item.value.name }}"
         state: present
         backup: yes

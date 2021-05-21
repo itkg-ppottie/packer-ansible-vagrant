@@ -1,16 +1,18 @@
 version: '3.7'
 networks:
-  internal-monitoring:
+  default:
     external: true
     name: internal-monitoring
+
 services:
-  # Using caddy to proxy prometheus access to dockerdaemon of node
+  # Using nginx to proxy prometheus access to docker daemon of node
   docker-exporter:
     image: nginx
-    networks:
-      - internal-monitoring
     ports:
-      - 9323:9323
+      - target: 9323
+        published: 9323
+        protocol: tcp
+        mode: host
     volumes:
       - /mnt/gluster/docker-exporter/nginx-docker-exporter:/etc/nginx/sites-enabled
     deploy:

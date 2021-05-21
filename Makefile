@@ -6,7 +6,8 @@ COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[3m
 
-install_api_kilometer:
+update_etc_hosts:
+	ansible-playbook etc_hosts.yml -K
 	
 
 install:

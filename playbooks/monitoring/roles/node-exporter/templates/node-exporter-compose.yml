@@ -33,14 +33,12 @@ services:
           memory: 128M
         reservations:
           memory: 64M
-    networks:
-      - internal-monitoring
 
 # This listens to port 9100 ON THE HOST.
 # This container does not have its own IP address.
 # Binding to the host is necessary for node-exporter to collect accurate
 # networking statistics about the host.
 networks:
-  internal-monitoring:
+  default:
     external: true
     name: internal-monitoring

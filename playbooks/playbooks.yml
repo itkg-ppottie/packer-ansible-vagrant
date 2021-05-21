@@ -6,13 +6,13 @@
         state: present
         key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
-# - include: load_balancers.yml
-# - include: install-docker-compose.yml
-# - include: swarm.yml
-# - include: gluster.yml
-# #- include: consul.yml
-# - include: traefik.yml
-# - include: postgresql.yml
-# - include: monitoring/monitoring.yml
-# - include: ngc/lafa/lafayette_database.yml
+- include: load_balancers.yml
+- include: install-docker-compose.yml
+- include: swarm.yml
+- include: gluster.yml
+#- include: consul.yml
+- include: traefik.yml
+- include: postgresql.yml
+- include: monitoring/monitoring.yml
+- include: ngc/lafa/lafayette_database.yml
 - include: ngc/kilometers/api-kilometers.yml
