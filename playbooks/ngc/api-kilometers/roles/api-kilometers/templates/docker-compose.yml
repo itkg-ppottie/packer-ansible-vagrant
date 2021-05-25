@@ -25,8 +25,8 @@ services:
       - api
       - traefik-proxy
     volumes:
-      - /mnt/gluster/api-kilometer/nginx/conf.d:/etc/nginx/conf.d
-      - /mnt/gluster/api-kilometer/static:/var/www/public/static
+      - /mnt/gluster/{{ PROJECT_NAME }}/nginx/conf.d:/etc/nginx/conf.d
+      - /mnt/gluster/{{ PROJECT_NAME }}/static:/var/www/public/static
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost"]
       interval: 5s
@@ -74,7 +74,7 @@ services:
       restart_policy:
         condition: none
     volumes:  
-      - /mnt/gluster/api-kilometer/static:/var/www/public/static
+      - /mnt/gluster/{{ PROJECT_NAME }}/static:/var/www/public/static
     networks:
       - redis
       - api
@@ -123,12 +123,12 @@ services:
       - api
       - traefik-proxy
     volumes:
-        - "/mnt/gluster/api-kilometer/static:/home/ngc/code/static"
+        - "/mnt/gluster/{{ PROJECT_NAME }}/static:/home/ngc/code/static"
         
   redis:
     image: "babel.ngc-data.fr:8443/common/docker/redis:6.0.9-alpine"
     volumes:
-      - /mnt/gluster/api-kilometer/redis:/home/docker/data
+      - /mnt/gluster/{{ PROJECT_NAME }}/redis:/home/docker/data
     deploy:
       placement:
         constraints: [node.role == manager]

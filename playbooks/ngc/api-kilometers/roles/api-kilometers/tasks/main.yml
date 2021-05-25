@@ -6,20 +6,20 @@
     file: "../../../../../../{{ PROJECT_VARS_FILE }}"
     name: APP_ENV
 
-- name: Create a directory kilometer-api on gluster volume
+- name: "Create a directory {{ PROJECT_NAME }} on gluster volume"
   file:
     path: "/mnt/gluster/{{ item }}"
     state: directory
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
   loop:
-    - "api-kilometers"
-    - "api-kilometers/nginx"
-    - "api-kilometers/nginx/conf.d"
-    - "api-kilometers/static"
-    - "api-kilometers/redis"
+    - "{{ PROJECT_NAME }}"
+    - "{{ PROJECT_NAME }}/nginx"
+    - "{{ PROJECT_NAME }}/nginx/conf.d"
+    - "{{ PROJECT_NAME }}/static"
+    - "{{ PROJECT_NAME }}/redis"
 
-- name: Create a directory kilometer-api
+- name: "Create a directory {{ PROJECT_NAME }}"
   file:
     path: "{{ PROJECT_HOME }}"
     state: directory
@@ -28,8 +28,8 @@
 
 - name: Copy docker-compose.yml and conf files to master
   template:
-    src: "./templates/kilometers-compose.yml"
-    dest: "{{ PROJECT_HOME }}/kilometers-compose.yml"
+    src: "./templates/docker-compose.yml"
+    dest: "{{ PROJECT_HOME }}/{{ PROJECT_NAME }}-compose.yml"
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
     force: true
@@ -37,21 +37,21 @@
 - name: copy nginx config file to shared directory's
   copy:
     src: "./templates/conf.d/default.conf"
-    dest: "/mnt/gluster/api-kilometers/nginx/conf.d/default.conf"
+    dest: "/mnt/gluster/{{ PROJECT_NAME }}/nginx/conf.d/default.conf"
     force: true
 
-- name: remove api_kilometers stack
+- name: "remove {{ PROJECT_NAME }} stack"
   community.docker.docker_stack:
     state: absent
-    name: api_kilometers
+    name: "{{ PROJECT_NAME }}"
 
-- name: deploy api_kilometers stack
+- name: "deploy {{ PROJECT_NAME }} stack"
   community.docker.docker_stack:
     state: present
-    name: api_kilometers
+    name: "{{ PROJECT_NAME }}"
     with_registry_auth: yes
     compose:
-      - "{{ PROJECT_HOME }}/kilometers-compose.yml"
+      - "{{ PROJECT_HOME }}/{{ PROJECT_NAME }}-compose.yml"
   # environment:
   #   PROJECT_URL_DOMAIN: "{{ PROJECT_URL_DOMAIN }}"
   #   POSTGRESQL_HOST: "{{ POSTGRESQL_HOST }}"

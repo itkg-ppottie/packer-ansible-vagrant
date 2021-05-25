@@ -7,7 +7,7 @@
   roles:
     - role: postgresql
       PROJECT_VARS_FILE:  "configs/{{ world }}/api-kilometers/vars.yml"
-
+      when: world == "vm-local"
 
 # create overlay networks
 - hosts: managers[0]
