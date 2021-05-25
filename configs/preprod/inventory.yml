@@ -1,0 +1,33 @@
+
+
+databases-postgresql:
+  hosts:
+    PDDV-NGC-AUTO-DCK-BDD:
+      ansible_host: 10.66.30.12
+databases-mysql-docker:
+  hosts:
+    PDDV-NGC-LAFA-DCK-BDD:
+      ansible_host: 10.66.30.23
+elk-apm:
+  hosts:
+    PDDV-NGC-ELK-MONIT:
+      ansible_host: 10.66.30.25
+managers:
+  hosts:
+    PDDV-NGC-AUTO-SWARM-M:
+      ansible_host: 10.66.30.29
+
+workers:
+  hosts:
+    PDDV-NGC-AUTO-SWARM-N1:
+      ansible_host: 10.66.30.33
+    PDDV-NGC-AUTO-SWARM-N2:
+      ansible_host: 10.66.30.34
+
+ngc:
+  children':
+    - managers
+    - workers
+    - databases-postgresql
+    - databases-mysql-docker
+    - elk-apm

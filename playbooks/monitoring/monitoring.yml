@@ -1,13 +1,6 @@
 
 - hosts: managers[0]
   tasks:
-    - name: Create  monitoring network
-      community.docker.docker_network:
-        name:  monitoring
-        driver: overlay
-        attachable: true
-        state: present
-
     - name: Create internal monitoring network
       community.docker.docker_network:
         name:  internal-monitoring
@@ -15,17 +8,8 @@
         attachable: true
         state: present
 
-# deploy influxdb server
-# - name: 'deploy Metrics server services'
-#   become: yes
-#   become_user: root
-#   hosts: metrics[0]
-#   roles:
-#     - { role: influxdb ,vars: { os_version: "{{ servers[groups['metrics'][0]]['os_version'] }}"}}
 
-- hosts: elk-apm[0]
-  roles:
-    - elk
+
 
 #installation d'un service dans le cluster
 - hosts: managers[0]

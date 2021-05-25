@@ -11,9 +11,6 @@ servers:
   PDDV-NGC-LAFA-DCK-BDD:
     name: PDDV-NGC-LAFA-DCK-BDD
     eth1: 10.66.30.23
-  PDDV-NGC-METRICS:
-    name: PDDV-NGC-METRICS
-    eth1: 10.66.30.226
   PDDV-NGC-ELK-MONIT:
     name: PDDV-NGC-ELK-MONIT
     eth1: 10.66.30.25
@@ -26,30 +23,3 @@ servers:
   PDDV-NGC-AUTO-SWARM-N2:
     name: PDDV-NGC-AUTO-SWARM-N2
     eth1: 10.66.30.34
-
-MANAGERS: 1
-WORKERS: 2
-ANSIBLE_GROUPS:
-  managers:
-    - PDDV-NGC-AUTO-SWARM-M
-  workers:
-    - PDDV-NGC-AUTO-SWARM-N1
-    - PDDV-NGC-AUTO-SWARM-N2
-  databases-postgresql:
-    - PDDV-NGC-AUTO-DCK-BDD
-  databases-mysql-docker:
-    - PDDV-NGC-LAFA-DCK-BDD
-  elk-logs:
-    - PDDV-NGC-ELK-MONIT
-  elk-apm:
-    - PDDV-NGC-ELK-MONIT
-  # elk:
-  #   - 'PDDV-NGC-DCK-ELK-[1:2]'
-  'all_groups:children':
-    - managers
-    - workers
-    - databases-postgresql
-- databases-mysql-docker
-    - elk-logs
-    - elk-apm
-

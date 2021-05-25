@@ -32,6 +32,9 @@ stop: ## stop VM clusters
 stop:
 	vagrant stop
 
+
+
+
 banner:
 	printf "\n"
 	printf "\033[32m ███████╗██╗    ██╗ █████╗ ██████╗ ███╗   ███╗     ██████╗██╗     ██╗   ██╗███████╗████████╗███████╗██████╗ \033[0m\n"
@@ -46,6 +49,7 @@ deploy-kilometer:
 	docker stack deploy --with-registry-auth --compose-file docker-compose.yml api_kilometer
 
 
+
 ##
 help:banner
 
@@ -53,3 +57,4 @@ help:banner
 help:
 	@grep -E '(^[a-zA-Z_-]+:.*?## .*$$)|(^## )' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/' | sed 's/Makefile.\(\s\)*//'
 .PHONY: help
+
