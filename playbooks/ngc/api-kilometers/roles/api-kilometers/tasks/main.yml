@@ -8,7 +8,7 @@
 
 - name: "Create a directory {{ PROJECT_NAME }} on gluster volume"
   file:
-    path: "/mnt/gluster/{{ item }}"
+    path: "/mnt/glusterfs/{{ item }}"
     state: directory
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
@@ -37,7 +37,7 @@
 - name: copy nginx config file to shared directory's
   copy:
     src: "./templates/conf.d/default.conf"
-    dest: "/mnt/gluster/{{ PROJECT_NAME }}/nginx/conf.d/default.conf"
+    dest: "/mnt/glusterfs/{{ PROJECT_NAME }}/nginx/conf.d/default.conf"
     force: true
 
 - name: "remove {{ PROJECT_NAME }} stack"

@@ -1,0 +1,27 @@
+
+
+- name: Create a alertmanager cofnig directory's
+  file:
+    path: "/home/{{ username }}/alertmanager"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy docker-compose.yml of consul on master swarm node
+  copy:
+    src: "../docker-compose.yml"
+    dest: "/home/{{ username }}/alertmanager/docker-compose.yml"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- community.docker.docker_compose:
+    project_src: alertmanager
+    state: absent
+
+- name: deploy alertmanager service
+  community.docker.docker_compose:
+    state: present
+    project_src: alertmanager
+    with_registry_auth: yes
+    compose:
+      - "/home/{{ username }}/alertmanager/docker-compose.yml"

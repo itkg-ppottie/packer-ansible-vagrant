@@ -1,2 +1,9 @@
 cadvisor_user: "{{ username | default(\"debian\")}}"
 cadvisor_home: "/home/{{ cadvisor_user }}/cadvisor"
+CADVISOR_ENV:
+  PARENT:  !unsafe "{{.Task.Name}}"
+  CHILDNAME:  !unsafe "{{.Service.Name}}_sidecar.{{.Node.ID}}.{{.Task.ID}}"
+  CADVISOR_VERSION: "{{ CADVISOR_VERSION | default(\"v0.37.5\")}}"
+  HTTPS_PROXY: "{{ HTTPS_PROXY | default(\"\")}}"
+  HTTP_PROXY: "{{ HTTP_PROXY | default(\"\")}}"
+  NO_PROXY: "{{ NO_PROXY | default(\"\")}}"

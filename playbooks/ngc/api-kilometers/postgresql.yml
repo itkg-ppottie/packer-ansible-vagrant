@@ -1,0 +1,10 @@
+
+# Create new database and user
+- hosts: databases-postgresql
+  become: yes
+  become_method: sudo
+  become_user: postgres
+  roles:
+    - role: postgresql
+      PROJECT_VARS_FILE:  "configs/{{ world }}/api-kilometers/vars.yml"
+  

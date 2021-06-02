@@ -31,15 +31,18 @@
     - prometheus-compose.yml
 
 - name: Clear eventual directory prometheus on gluster volume
+  become_user: root
+  become: yes
   file:
-    path: "/mnt/gluster/{{ item }}"
+    path: "/mnt/glusterfs/{{ item }}"
     state: absent
   loop:
     - "prometheus"
+  when: world == 'vm-local'
 
 - name: Create a directory prometheus on gluster volume
   file:
-    path: "/mnt/gluster/{{ item }}"
+    path: "/mnt/glusterfs/{{ item }}"
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"

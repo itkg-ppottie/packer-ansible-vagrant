@@ -1,4 +1,4 @@
-- hosts: managers, workers, databases-mysql-docker, elk-apm
+- hosts: managers, workers, databases-mysql, elk-apm
   become: yes
   become_user: root
   vars:

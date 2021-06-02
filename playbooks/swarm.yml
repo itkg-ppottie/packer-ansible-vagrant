@@ -152,12 +152,6 @@
     - name: Create overlay networks
       community.docker.docker_network:
         driver: overlay
-        name:  multi-host-net
-        state: present
-
-    - name: Create overlay networks
-      community.docker.docker_network:
-        driver: overlay
         attachable: true
         name:  core-infra
         state: present

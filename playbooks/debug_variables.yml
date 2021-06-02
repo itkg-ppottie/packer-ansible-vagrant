@@ -1,0 +1,26 @@
+- hosts: managers
+  tasks:
+    - name: Set authorized key for user debian copying it from current user
+      authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+- hosts: managers
+  tasks:
+    - debug: var=username
+    - debug: var=servers
+    - debug: var=groups
+    - debug: var=world
+    - debug: var=servers
+    - debug: var=username
+    - debug: var=swarm_bind_port
+    - debug: var=private_registry
+    - debug: var=URL_DOMAIN
+    - debug: var=PREFIX_URL_DOMAIN
+    - debug: var=ELK_LOGS_HOST
+    - debug: var=groups
+    - debug: var=ANSIBLE_GROUPS
+    - debug: var=hostvars[groups['databases-postgresql'][0]]
+    - debug: var=hostvars[groups['databases-postgresql'][0]]['ansible_host']
+    

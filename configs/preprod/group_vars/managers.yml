@@ -1,0 +1,4 @@
+CADVISOR_VERSION: v0.37.5
+HTTPS_PROXY: http://https-proxy.eolas-services.com:3128
+HTTP_PROXY: http://http-proxy.eolas-services.com:3128
+NO_PROXY: babel.ngc-data.fr,localhost,127.0.0.1

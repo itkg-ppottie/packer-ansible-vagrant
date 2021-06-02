@@ -9,15 +9,13 @@
         state: present
 
 
-
-
 #installation d'un service dans le cluster
 - hosts: managers[0]
   roles:
     - visualizer
     - cadvisor
     - node-exporter
-    - docker-exporter
+   # - docker-exporter # useless
     - prometheus
     - grafana
 

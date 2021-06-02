@@ -10,9 +10,9 @@ services:
     deploy:
       mode: global
     environment:
-      - PARENT={{.Task.Name}}
-      - CHILDNAME={{.Service.Name}}_sidecar.{{.Node.ID}}.{{.Task.ID}}
-      - CADVISOR_VERSION=v0.37.5
+{% for  name, value in CADVISOR_ENV.items() %}
+      {{ name }}: "{{ value }}"
+{% endfor %}
     ports:
       - target: 8080
         published: 8089
@@ -36,4 +36,4 @@ services:
             --name $${CHILDNAME} \
             --privileged \
             --device=/dev/kmsg \
-            gcr.io/cadvisor/cadvisor:$${CADVISOR_VERSION}
+            babel.ngc-data.fr:8443/common/docker/cadvisor/cadvisor:$${CADVISOR_VERSION}
