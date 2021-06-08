@@ -17,8 +17,8 @@ build: ## build box and create cluster infrastructure
 build:
 	ansible-playbook build-vm-cluster-swarm.yml
 
-rebuild: ## rebuild cluster (vagrant provision)
-rebuild:
+rebuild-local: ## rebuild cluster (vagrant provision)
+rebuild-local:
 	vagrant provision
 
 start: ## start cluster
@@ -32,6 +32,9 @@ stop: ## stop VM clusters
 stop:
 	vagrant stop
 
+
+
+
 banner:
 	printf "\n"
 	printf "\033[32m ███████╗██╗    ██╗ █████╗ ██████╗ ███╗   ███╗     ██████╗██╗     ██╗   ██╗███████╗████████╗███████╗██████╗ \033[0m\n"
@@ -42,9 +45,11 @@ banner:
 	printf "\033[32m ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝     ╚═════╝╚══════╝ ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝\033[0m\n"
 	printf "\033[32m                                                                                                            \033[0m\n"
 
-deploy-kilometer: 
-	docker stack deploy --with-registry-auth --compose-file docker-compose.yml api_kilometer
+deploy-preprod-kilometers: 
+	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/ngc/api-kilometers/api-kilometers.yml
 
+deploy-preprod-monitoring:
+	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/monitoring/monitoring.yml
 
 ##
 help:banner
@@ -53,3 +58,4 @@ help:banner
 help:
 	@grep -E '(^[a-zA-Z_-]+:.*?## .*$$)|(^## )' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/' | sed 's/Makefile.\(\s\)*//'
 .PHONY: help
+

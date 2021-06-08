@@ -4,7 +4,7 @@ docker
 docker swarm (initialisé)
 docker-compose
 glusterfs (installé & configuré)
-
+elasticsearch apm  (installé & configuré)
 
 il faut:
  - pouvoir deployer  le monitoring dans le cluster
@@ -29,7 +29,6 @@ activer les metrics sur docker
 
 
 
-
 deployement
 tester les droits et acces :
     ansible check cluster preprod
@@ -37,6 +36,13 @@ deployer le monitoring
     ansible deploy monitoring preprod 
 
 deployer une application NGC
-    ansible deploy api-kilometer preprod
+    ansible deploy api-kilometers preprod
+
+deployer une maj d'une application NGC
+    ansible upgrade [VERSION] [STACK] [SERVICE] [ENVIRONMENT]
+    ansible upgrade VERSION api-kilmeters web preprod
+
+ansible stop [SERVICE] [ENVIRONMENT]
+
 
 

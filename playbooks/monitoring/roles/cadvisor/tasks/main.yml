@@ -9,7 +9,7 @@
 
 
 - name: Template a file to cadvisor-compose.yml
-  copy:
+  template:
     src: "./templates/{{ item }}"
     dest: "{{ cadvisor_home }}/{{ item }}"
     owner: "{{ cadvisor_user }}"
@@ -20,7 +20,7 @@
 
 - community.docker.docker_stack:
     name: cadvisor
-    state: absent
+    state: absent 
 
 - name: deploy cadvisor service
   community.docker.docker_stack:

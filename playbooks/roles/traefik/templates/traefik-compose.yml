@@ -21,11 +21,7 @@ services:
         - "traefik.http.routers.api.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
         - "traefik.http.routers.api.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://{{ ELK_LOGS_HOST }}:12201"
-        tag: "traefik"
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command:

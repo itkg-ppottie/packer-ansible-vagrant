@@ -1,18 +1,6 @@
-- hosts: all
-  tasks:
-    - name: Set authorized key for user debian copying it from current user
-      authorized_key:
-        user: debian
-        state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+- include: deploy-vm-local-services.yml
+  when: world == "vm-local"
 
-- include: load_balancers.yml
-- include: install-docker-compose.yml
-- include: swarm.yml
-- include: gluster.yml
-#- include: consul.yml
 - include: traefik.yml
-- include: postgresql.yml
 - include: monitoring/monitoring.yml
-- include: ngc/lafa/lafayette_database.yml
 - include: ngc/api-kilometers/api-kilometers.yml

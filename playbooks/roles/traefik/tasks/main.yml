@@ -19,6 +19,11 @@
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
 
+- name: remove traefik stack
+  community.docker.docker_stack:
+    name: traefik
+    state: absent
+
 - name: deploy traefik stack
   community.docker.docker_stack:
     state: present

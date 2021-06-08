@@ -1,0 +1,18 @@
+username: "{{ ansible_user }}"
+world: preprod
+private_registry:
+  host: babel.ngc-data.fr:8443
+  login: ppottie
+  token: bYsV2EKMBu961kcyYyNn
+URL_DOMAIN: ngc-data.fr
+PREFIX_URL_DOMAIN: recette-
+servers:
+  PDDV-NGC-AUTO-DCK-BDD:
+    name: PDDV-NGC-AUTO-DCK-BDD
+    eth1: 10.66.30.12
+  PDDV-NGC-LAFA-DCK-BDD:
+    name: PDDV-NGC-LAFA-DCK-BDD
+    eth1: 10.66.30.23
+  PDDV-NGC-ELK-MONIT:
+    name: PDDV-NGC-ELK-MONIT
+    eth1: 10.66.30.25

@@ -21,7 +21,7 @@ end
 
 # Verify that vagrant.yml exists
 root_dir = File.dirname(__FILE__)
-vagrantfile = "configs/#{world}/vars.inventory.yaml"
+vagrantfile = "configs/#{world}/vagrant.inventory.yaml"
 error_msg = "#{vagrantfile} does not exist"
 handle_error(error_msg) unless File.exists?(vagrantfile)
 
@@ -37,6 +37,7 @@ VAGRANTFILE_API_VERSION = "2"
 private_registry = vagrant_yaml['private_registry']
 url_domain =  vagrant_yaml['url_domain']
 prefix_url_domain = vagrant_yaml['prefix_url_domain']
+LAST = vagrant_yaml['LAST']
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true
@@ -60,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           end
         end
 
-        if hostname == ANSIBLE_GROUPS["workers"][WORKERS-1] #playbook when last worker is up
+        if hostname == LAST #playbook when last worker is up
           v.vm.provision "ansible" do |ansible|
               ansible.verbose = true
               ansible.limit = "all"
@@ -79,6 +80,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 URL_DOMAIN: url_domain,
                 PREFIX_URL_DOMAIN: prefix_url_domain,
                 ELK_LOGS_HOST: servers[ANSIBLE_GROUPS["elk-logs"][0]]['eth1'],
+                LAFA_COMMON_HOST: servers[ANSIBLE_GROUPS['databases-postgresql'][0]]['eth1'],
+                POSTGRESQL_HOST: servers[ANSIBLE_GROUPS['databases-mysql'][0]]['eth1'],
+                APM_URL: servers[ANSIBLE_GROUPS['elk-apm'][0]]['eth1'],
+                CADVISOR_DOCKER_URL: vagrant_yaml['CADVISOR_DOCKER_URL']
               }
               ansible.playbook = "./playbooks/playbooks.yml"
           end

@@ -1,0 +1,18 @@
+version: "2.4"
+networks:
+  internal-monitoring:
+    external:
+      name: internal-monitoring
+services:
+  alertmanager:
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    container_name: alertmanager
+    image: prom/alertmanager
+    mem_limit: 70M
+    networks:
+      - internal-monitoring
+    restart: always
+    volumes:
+      - ./configuration.yml:/etc/alertmanager/config.yml

@@ -9,17 +9,22 @@
 
 - name: Create a directory docker-exporter on gluster volume
   file:
-    path: "/mnt/gluster/{{ item }}"
+    path: "/mnt/glusterfs/{{ item }}"
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
   loop:
     - "docker-exporter"
-    
+
+
+- name: run command to get docker gateway
+  command: "{{ GET_DOCKER_GATEWAY_IP}}"
+  register: DOCKER_GATEWAY
+
 - name: "Copy config file nginx proxy"
-  copy:
+  template:
     src: "./templates/{{ item }}"
-    dest: "/mnt/gluster/docker-exporter/{{ item }}"
+    dest: "/mnt/glusterfs/docker-exporter/{{ item }}"
     owner: "{{ docker_exporter_user }}"
     group:  "{{ docker_exporter_user }}"
     mode: '0644'
