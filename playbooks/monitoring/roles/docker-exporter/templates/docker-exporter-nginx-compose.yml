@@ -10,11 +10,11 @@ services:
     image: nginx
     ports:
       - target: 80
-        published: 9234
+        published: 9324
         protocol: tcp
         mode: host
     volumes:
-      - /mnt/glusterfs/docker-exporter/nginx-docker-exporter:/etc/nginx/sites-enabled
+      - /mnt/glusterfs/docker-exporter/nginx-docker-exporter:/etc/nginx/conf.d/default.conf
     deploy:
       mode: global
       resources:

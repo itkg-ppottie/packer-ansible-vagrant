@@ -15,13 +15,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./dashboards:/etc/grafana/dashboards
-    labels: 
-      - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`{{ PREFIX_URL_DOMAIN }}grafana.{{ URL_DOMAIN }}`)"
-      - "traefik.http.routers.grafana.service=grafana-service"
-      - "traefik.http.services.grafana-service.loadbalancer.server.port=3000"
-      - "traefik.http.routers.grafana.entrypoints=web"
-      - "traefik.docker.network=traefik-proxy"
+
     # Set environmental variables
     environment:
       # Set admin password change with first login
@@ -39,6 +33,13 @@ services:
     ports:
       - "3000:3000"
     deploy:
+      labels: 
+        - "traefik.enable=true"
+        - "traefik.http.routers.grafana.rule=Host(`{{ PREFIX_URL_DOMAIN }}grafana.{{ URL_DOMAIN }}`)"
+        - "traefik.http.routers.grafana.service=grafana-service"
+        - "traefik.http.services.grafana-service.loadbalancer.server.port=3000"
+        - "traefik.http.routers.grafana.entrypoints=web"
+        - "traefik.docker.network=traefik-proxy"
       mode: replicated
       replicas: 1
       placement:

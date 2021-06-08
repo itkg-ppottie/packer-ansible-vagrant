@@ -20,7 +20,7 @@
 
 - community.docker.docker_stack:
     name: cadvisor
-    state: absent
+    state: absent 
 
 - name: deploy cadvisor service
   community.docker.docker_stack:

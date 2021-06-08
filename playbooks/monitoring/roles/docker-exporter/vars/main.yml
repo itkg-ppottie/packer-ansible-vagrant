@@ -1,2 +1,3 @@
 docker_exporter_user: "{{ username | default(\"debian\")}}"
 docker_exporter_home: "/home/{{ docker_exporter_user }}/docker-exporter"
+GET_DOCKER_GATEWAY_IP: !unsafe "docker network inspect bridge --format='{{ (index .IPAM.Config 0).Gateway }}'"

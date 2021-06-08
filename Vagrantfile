@@ -83,6 +83,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 LAFA_COMMON_HOST: servers[ANSIBLE_GROUPS['databases-postgresql'][0]]['eth1'],
                 POSTGRESQL_HOST: servers[ANSIBLE_GROUPS['databases-mysql'][0]]['eth1'],
                 APM_URL: servers[ANSIBLE_GROUPS['elk-apm'][0]]['eth1'],
+                CADVISOR_DOCKER_URL: vagrant_yaml['CADVISOR_DOCKER_URL']
               }
               ansible.playbook = "./playbooks/playbooks.yml"
           end

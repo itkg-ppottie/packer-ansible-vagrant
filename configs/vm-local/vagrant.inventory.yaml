@@ -112,3 +112,4 @@ ANSIBLE_GROUPS:
     - elk-logs
     - elk-apm
     - shares
+CADVISOR_DOCKER_URL:  gcr.io/cadvisor/cadvisor

@@ -197,7 +197,7 @@ $ mount -t glusterfs HOSTNAME-OR-IPADDRESS:/VOLNAME MOUNTDIR
 
 exemple pour le node01:
 ```shell
-$ mount -t glusterfs node01:/gv0 /mnt/gluster
+$ mount -t glusterfs node01:/gv0 /mnt/glusterfs
 ```
 ### Montage automatique
 
@@ -209,7 +209,7 @@ HOSTNAME-OR-IPADDRESS:/VOLNAME MOUNTDIR glusterfs defaults,_netdev 0 0
 
 exemple pour le node01:
 ```
-node01/gv0 /mnt/gluster glusterfs defaults,_netdev 0 0
+node01/gv0 /mnt/glusterfs glusterfs defaults,_netdev 0 0
 ```
 
 ### Tester Le partage
@@ -217,12 +217,12 @@ node01/gv0 /mnt/gluster glusterfs defaults,_netdev 0 0
 aller sur node01 et créer un fichier dans le repertoire partagé
 
 ```shell
-$ touch /mnt/gluster/toto
+$ touch /mnt/glusterfs/toto
 ```
 
 Aller sur  node02 et constater la présence du fichier crée sur node01
 ```
-$ ls /mnt/gluster/
+$ ls /mnt/glusterfs/
 ```
 
 Adapter les droits d'ecriture sur les repertoires si besoin

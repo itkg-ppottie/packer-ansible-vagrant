@@ -36,4 +36,4 @@ services:
             --name $${CHILDNAME} \
             --privileged \
             --device=/dev/kmsg \
-            babel.ngc-data.fr:8443/common/docker/cadvisor/cadvisor:$${CADVISOR_VERSION}
+            {{ CADVISOR_DOCKER_URL }}:$${CADVISOR_VERSION}

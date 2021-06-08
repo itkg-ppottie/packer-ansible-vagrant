@@ -15,9 +15,14 @@
     group: "{{ username }}"
   loop:
     - "docker-exporter"
-    
+
+
+- name: run command to get docker gateway
+  command: "{{ GET_DOCKER_GATEWAY_IP}}"
+  register: DOCKER_GATEWAY
+
 - name: "Copy config file nginx proxy"
-  copy:
+  template:
     src: "./templates/{{ item }}"
     dest: "/mnt/glusterfs/docker-exporter/{{ item }}"
     owner: "{{ docker_exporter_user }}"

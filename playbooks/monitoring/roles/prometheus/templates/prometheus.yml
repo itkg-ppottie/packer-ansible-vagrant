@@ -68,7 +68,7 @@ scrape_configs:
     - names:
       - "tasks.docker-exporter"
       type: "A"
-      port: 9323
+      port: 80
 
   # Get metrics for node hosts
   - job_name: "node-exporter"
