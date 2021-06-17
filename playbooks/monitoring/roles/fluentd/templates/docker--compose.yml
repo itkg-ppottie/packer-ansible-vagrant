@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+  fluentd-elasticsearch:
+    image: babel.ngc-data.fr:8443/common/docker/fluentd:v1.13
+    environment:
+      FLUENTD_CONF: 'fluent.conf'
+      FLUENTD_HOSTNAME: "{{ NODE_HOSTNAME }}"
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    user: root
+    configs:
+      - source: fluent-elasticsearch-conf.v1
+        target: /fluentd/etc/fluent.conf
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+
+configs:
+  fluent-elasticsearch-conf.v1:
+    file: {{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/config/fluentd.conf
