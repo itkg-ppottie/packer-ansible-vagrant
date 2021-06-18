@@ -38,4 +38,4 @@
     name: "{{ PROJECT_NAME }}"
     with_registry_auth: yes
     compose:
-      - "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/"{{ PROJECT_NAME }}"-compose.yml"
+      - "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/{{ PROJECT_NAME }}-compose.yml"

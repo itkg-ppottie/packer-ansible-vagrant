@@ -1,4 +1,3 @@
 collections:
   - community.docker
   - community.postgresql
-  - geerlingguy.glusterfs
