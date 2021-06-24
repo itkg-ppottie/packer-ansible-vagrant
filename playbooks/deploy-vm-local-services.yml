@@ -11,7 +11,7 @@
 - include: load_balancers.yml
 - include: install-docker-compose.yml
 - include: init_swarm_cluster.yml
-- include: gluster.yml
-- include: postgresql.yml
-- include: ngc/lafa/lafayette_database.yml
-- include: elk.yml
+# - include: gluster.yml
+# - include: postgresql.yml
+# - include: ngc/lafa/lafayette_database.yml
+# - include: elk.yml

@@ -33,14 +33,12 @@
   become: yes
   become_user: root
   gather_facts: no
-
   handlers:
     - name: restart postgresql
+      become: yes
       service: name=postgresql state=restarted
-
   tasks:
     - name: postgresql should listen on all ports
       lineinfile: dest=/etc/postgresql/11/main/postgresql.conf
                   regexp="^listen_addresses"
                   line="listen_addresses = '*'" state=present
-      notify: restart postgresql

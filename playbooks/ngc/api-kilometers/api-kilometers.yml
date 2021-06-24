@@ -11,6 +11,6 @@
 - hosts: managers[0]
   roles:
     - role: api-kilometers
-      PROJECT_VARS_FILE: "configs/{{ world }}/api-kilometers/vars.yml"
-      APP_VERSION: "apm-1.0.4beta0"
+      PROJECT_VARS_FILE: "../../../../../../configs/{{ world }}/api-kilometers/vars.yml"
+      APP_VERSION: "1.0.4rc2"
 

@@ -1,4 +1,12 @@
 
+- name: Create internal fluentd network
+  community.docker.docker_network:
+    name:  internal-fluentd
+    driver: overlay
+    attachable: true
+    state: present
+
+
 - name: "Create a directory {{ PROJECT_NAME }} on gluster volume for manager nodes"
   file:
     path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"

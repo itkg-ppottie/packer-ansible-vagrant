@@ -4,7 +4,7 @@
   tasks:
 
     - name: include local config
-      include_vars: configs/vm-local/vars.inventory.yaml
+      include_vars: configs/vm-local/vagrant.inventory.yaml
 
     - debug: var=servers
 

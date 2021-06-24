@@ -6,11 +6,13 @@ COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[3m
 
+update_etc_hosts: ## update /etc/hosts file with inventory file
 update_etc_hosts:
 	ansible-playbook etc_hosts.yml -K
 	
-
+install: ## install ansible module and collection
 install:
+	ansible-galaxy install geerlingguy.glusterfs
 	ansible-galaxy collection install -r requirements.yml
 
 build: ## build box and create cluster infrastructure
@@ -50,6 +52,10 @@ deploy-preprod-kilometers:
 
 deploy-preprod-monitoring:
 	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/monitoring/monitoring.yml
+
+deploy-preprod-fluentd: ## Deploy fluentd on staging
+deploy-preprod-fluentd:
+	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/monitoring/fluentd.yml
 
 ##
 help:banner

@@ -1,68 +1,38 @@
 version: "3.7"
 networks:
-  api:
+  default:
     external: true
     name: kilometers-api
-  redis:
-    external: true
-    name: kilometers-redis
   traefik-proxy:
     external: true
     name: traefik-proxy
+volumes:
+  share_media:
+    driver: local
+    driver_opts: 
+      o: bind
+      device: {{ GLUSTER_SHARE_PATH }}{{ PROJECT_NAME }}/media
+      type: glusterfs
+  share_static: 
+    driver: local
+    driver_opts: 
+      o: bind
+      device: {{ GLUSTER_SHARE_PATH }}{{ PROJECT_NAME }}/static
+      type: glusterfs
 
 services:
-  nginx:
-    depends_on:
-      - web
-    hostname: "{{ PROJECT_NAME }}-nginx.{{ NODE_HOSTNAME }}"
-    image: babel.ngc-data.fr:8443/common/docker/nginx:1.18.0
-    logging:
-        options:
-          tag: mongo
-    networks:
-      - api
-      - traefik-proxy
-    volumes:
-      - /mnt/glusterfs/{{ PROJECT_NAME }}/nginx/conf.d:/etc/nginx/conf.d
-      - /mnt/glusterfs/{{ PROJECT_NAME }}/static:/var/www/public/static
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost"]
-      interval: 5s
-      timeout: 10s
-      retries: 3
-    environment:
-      PROJECT_URL_DOMAIN: "{{ PROJECT_URL_DOMAIN }}"
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: '50M'
-      labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik-proxy"
-        - "traefik.http.routers.static-{{ PROJECT_NAME }}.rule=Host(`{{ PROJECT_URL_DOMAIN }}`) && PathPrefix(`/static/`)"
-        - "traefik.http.routers.static-{{ PROJECT_NAME }}.entrypoints=web"
-        - "traefik.http.routers.static-{{ PROJECT_NAME }}.priority=2"
-        - "traefik.http.routers.static-{{ PROJECT_NAME }}.service=nginx-{{ PROJECT_NAME }}"
-        - "traefik.http.services.nginx-{{ PROJECT_NAME }}.loadbalancer.server.port=80"
 
   migration:
-    command:  python manage.py migrate
-    image: babel.ngc-data.fr:8443/ngc/kilometers/api:latest
+    image: babel.ngc-data.fr:8443/ngc/kilometers/api:{{ APP_VERSION }}
+    command:  python /app/manage.py migrate
     logging:
-      driver: "json-file"
       options:
-        max-file: "5"
-        max-size: 10m
+        tag: docker.{{ PROJECT_NAME }}.django
+        fluentd-async-connect: "true"
     environment:
 {% for  name, value in APP_ENV.items() %}
       {{ name }}: "{{ value }}"
 {% endfor %}
-    depends_on:
-      - redis
     deploy:
       replicas: 1
       resources:
@@ -71,77 +41,65 @@ services:
           memory: "200M"
       restart_policy:
         condition: none
-    volumes:  
-      - /mnt/glusterfs/{{ PROJECT_NAME }}/static:/var/www/public/static
-    networks:
-      - redis
-      - api
+      rollback_config:
+        failure_action: pause
+        order: start-first
+        delay: 10s
+        parallelism: 1
+      update_config:
+        failure_action: rollback
+        order: start-first
+        delay: 10s
+        parallelism: 1
 
-  web:
-    command: /usr/local/bin/gunicorn --bind=0.0.0.0:8000 --pid=/home/ngc/run/gunicorn.pid --user=ngc --workers=4 --worker-class=gevent --worker-connections=1000  --user=ngc  project.wsgi:application
-    hostname: "{{ PROJECT_NAME }}-web.{{ NODE_HOSTNAME }}"
+  django:
     image: babel.ngc-data.fr:8443/ngc/kilometers/api:{{ APP_VERSION }}
+    command: /start
+    hostname: "{{ PROJECT_NAME }}-web.{{ NODE_HOSTNAME }}"
     environment:
 {% for  name, value in APP_ENV.items() %}
       {{ name }}: "{{ value }}"
 {% endfor %}
     logging:
-      driver: "json-file"
+      driver: fluentd
       options:
-        max-file: "5"
-        max-size: 10m
-    depends_on:
-      - redis
+        tag: docker.{{ PROJECT_NAME }}.django
+        fluentd-async-connect: "true"
     deploy:
-      replicas: 1
+      replicas: 3
+      rollback_config:
+        failure_action: pause
+        order: start-first
+        delay: 10s
+        parallelism: 1
       update_config:
         failure_action: rollback
         order: start-first
+        delay: 10s
+        parallelism: 1
       restart_policy:
         condition: on-failure
       resources:
         limits:
-          cpus: '1.5'
-          memory: '1024M'
+          cpus: '2'
+          memory: 500M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik-proxy"
         - "traefik.http.routers.{{ PROJECT_NAME }}.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
         - "traefik.http.routers.{{ PROJECT_NAME }}.entrypoints=web"
-        - "traefik.http.routers.{{ PROJECT_NAME }}.priority=1"
         - "traefik.http.routers.{{ PROJECT_NAME }}.service=api-{{ PROJECT_NAME }}"
         - "traefik.http.services.api-{{ PROJECT_NAME }}.loadbalancer.server.port=8000"
     healthcheck:
-      test: ["CMD", "python", "-c" ,"import urllib.request; print (0 if urllib.request.urlopen('http://0.0.0.0:8000/api/exploit/alive').getcode()==200 else 1)"]
+      test: ["CMD", "python", "-c" ,"import urllib.request; print (0 if urllib.request.urlopen('http://localhost:8000/api/exploit/alive').getcode()==200 else 1)"]
       interval: "20s"
       timeout: "10s"
       retries: 3
     networks:
-      - redis
-      - api
       - traefik-proxy
     volumes:
-        - "/mnt/glusterfs/{{ PROJECT_NAME }}/static:/home/ngc/code/static"
-        
-  redis:
-    image: "babel.ngc-data.fr:8443/common/docker/redis:6.0.9-alpine"
-    volumes:
-      - /mnt/glusterfs/{{ PROJECT_NAME }}/redis:/home/docker/data
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-      restart_policy:
-        condition: on-failure
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
-    command: redis-server --appendonly yes
-    networks:
-      - redis
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 6s
-      timeout: 3s
-      retries: 30
+      - "share_static:/app/staticfiles:z"
+      - "share_media:/app/media:z"

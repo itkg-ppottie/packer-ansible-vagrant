@@ -1,3 +1,0 @@
-gluster_brick_dir: "/var/gluster"
-gluster_mount_dir: "/mnt/glusterfs"
-gluster_brick_name: "gluster"

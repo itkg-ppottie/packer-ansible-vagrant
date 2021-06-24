@@ -14,8 +14,11 @@ services:
       - internal-monitoring
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./dashboards:/etc/grafana/dashboards
-
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.monitoring.grafana
+        fluentd-async-connect: "true"
     # Set environmental variables
     environment:
       # Set admin password change with first login
@@ -61,5 +64,8 @@ services:
           memory: 400M
 volumes:
   grafana_data:
-    name: metrics-grafana-data
     driver: local
+    driver_opts: 
+      o: bind
+      device: {{ grafana_data }}
+      type: glusterfs  

@@ -4,6 +4,6 @@ all:
   children:
     managers:
       hosts:
-        PDDV-NGC-AUTO-SWARM-M:
+        PDDV-NGC-AUTO-SWARM-M1:
           ansible_host: '10.66.30.29'
           ansible_user: ngc

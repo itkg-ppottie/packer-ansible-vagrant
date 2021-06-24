@@ -1,3 +1,4 @@
+GLUSTER_SHARE_PATH: /mnt/glusterfs/
 username: "{{ ansible_user }}"
 world: preprod
 private_registry:

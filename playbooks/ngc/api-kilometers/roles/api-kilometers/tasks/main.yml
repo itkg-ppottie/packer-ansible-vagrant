@@ -3,57 +3,63 @@
 
 - name: load vars to generate docker-compose file's
   include_vars:
-    file: "../../../../../../{{ PROJECT_VARS_FILE }}"
+    file: "{{ PROJECT_VARS_FILE }}"
     name: APP_ENV
 
-- name: "Create a directory {{ PROJECT_NAME }} on gluster volume"
+- name: "Create a directory {{ PROJECT_NAME }} on gluster volume for all nodes"
   file:
-    path: "/mnt/glusterfs/{{ item }}"
+    path: "{{ GLUSTER_SHARE_PATH }}{{ item }}"
     state: directory
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
   loop:
     - "{{ PROJECT_NAME }}"
-    - "{{ PROJECT_NAME }}/nginx"
-    - "{{ PROJECT_NAME }}/nginx/conf.d"
+    - "{{ PROJECT_NAME }}/media"
     - "{{ PROJECT_NAME }}/static"
-    - "{{ PROJECT_NAME }}/redis"
 
-- name: "Create a directory {{ PROJECT_NAME }}"
+
+
+- name: "Create a directory {{ PROJECT_NAME }} on gluster volume for manager nodes"
   file:
-    path: "{{ PROJECT_HOME }}"
+    path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
     state: directory
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
+  loop:
+    - "{{ PROJECT_NAME }}"
 
-- name: Copy docker-compose.yml and conf files to master
+- name: Generate docker-compose.yml  files to master
   template:
     src: "./templates/docker-compose.yml"
-    dest: "{{ PROJECT_HOME }}/{{ PROJECT_NAME }}-compose.yml"
+    dest: "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/{{ PROJECT_NAME }}-compose.yml"
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
     force: true
 
-- name: copy nginx config file to shared directory's
-  copy:
-    src: "./templates/conf.d/default.conf"
-    dest: "/mnt/glusterfs/{{ PROJECT_NAME }}/nginx/conf.d/default.conf"
-    force: true
 
-- name: "remove {{ PROJECT_NAME }} stack"
-  community.docker.docker_stack:
-    state: absent
-    name: "{{ PROJECT_NAME }}"
 
+- name: Get info from a application service
+  community.docker.docker_swarm_service_info:
+    name: "{{ PROJECT_NAME }}_django"
+  register: swarm_service_info
+
+- set_fact: 
+    env_vars_tmp: |
+        {% for name, value in APP_ENV.items() %} --env-add {{ name }}="{{ value |trim |regex_replace ('!','\\!') }}" {% endfor %}
+  when: swarm_service_info.exists
+
+
+- name: force update service
+  shell: "docker service update  {{ env_vars_tmp |trim }} --with-registry-auth --image babel.ngc-data.fr:8443/ngc/kilometers/api:{{ APP_VERSION }} {{ PROJECT_NAME }}_django"
+  when: swarm_service_info.exists
+
+  
 - name: "deploy {{ PROJECT_NAME }} stack"
   community.docker.docker_stack:
     state: present
     name: "{{ PROJECT_NAME }}"
+    prune: true
     with_registry_auth: yes
     compose:
-      - "{{ PROJECT_HOME }}/{{ PROJECT_NAME }}-compose.yml"
-  # environment:
-  #   PROJECT_URL_DOMAIN: "{{ PROJECT_URL_DOMAIN }}"
-  #   POSTGRESQL_HOST: "{{ POSTGRESQL_HOST }}"
-  #   LAFA_COMMON_HOST: "{{ LAFA_COMMON_HOST }}"
-  #   PROJECT_NAME: "{{ PROJECT_NAME }}"
+      - "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/{{ PROJECT_NAME }}-compose.yml"
+  when: swarm_service_info.exists == false

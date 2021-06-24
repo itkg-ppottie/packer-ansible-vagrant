@@ -2,5 +2,5 @@
 #installation d'un service dans le cluster
 - hosts: managers[0]
   roles:
-    - fluentd
+    - grafana
 

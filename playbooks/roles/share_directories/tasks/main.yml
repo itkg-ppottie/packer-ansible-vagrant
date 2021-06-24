@@ -1,0 +1,17 @@
+- include_role:
+    name: share_directories
+  vars:
+    GLUSTER_BRICK_NAME: "{{ MASTER_SHARE_BRICK_NAME }}"
+    GLUSTER_BRICK_DIR: "{{ MASTER_SHARE_BRICK_DIR }}"
+    GLUSTER_MOUNT_DIR: "{{ MASTER_SHARE_MOUNT_DIR }}"
+    GROUP_NODE: "managers"
+
+- include_role:
+    name: share_directories
+  vars:
+    GLUSTER_BRICK_NAME: "{{ gluster_brick_name}}"
+    GLUSTER_BRICK_DIR: "{{ gluster_brick_dir }}"
+    GLUSTER_MOUNT_DIR: "{{ gluster_mount_dir }}"
+    GROUP_NODE: "gluster"
+
+

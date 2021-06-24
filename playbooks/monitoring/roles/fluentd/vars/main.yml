@@ -1,7 +1,5 @@
 PROJECT_NAME: fluentd
 PROJECT_USER: "{{ username | default(\"debian\")}}"
 # path to install files and directory shares between all nodes
-GLUSTER_SHARE_PATH: /mnt/glusterfs/
-# path to install docker-compose file shared whit all swarm manager nodes
-GLUSTER_MANAGER_PATH: /mnt/glusterfs/
+
 NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"
