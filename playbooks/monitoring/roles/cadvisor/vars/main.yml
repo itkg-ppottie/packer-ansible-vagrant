@@ -1,5 +1,5 @@
 cadvisor_user: "{{ username | default(\"debian\")}}"
-cadvisor_home: "/home/{{ cadvisor_user }}/cadvisor"
+cadvisor_home: "{{ GLUSTER_MANAGER_PATH }}cadvisor"
 CADVISOR_ENV:
   PARENT:  !unsafe "{{.Task.Name}}"
   CHILDNAME:  !unsafe "{{.Service.Name}}_sidecar.{{.Node.ID}}.{{.Task.ID}}"

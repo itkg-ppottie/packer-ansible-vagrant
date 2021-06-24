@@ -6,6 +6,8 @@ COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[3m
 
+DELOY_CDMD = ansible-playbook   -u ngc -e "ansible_python_interpreter=/usr/bin/python3" 
+
 update_etc_hosts: ## update /etc/hosts file with inventory file
 update_etc_hosts:
 	ansible-playbook etc_hosts.yml -K
@@ -48,15 +50,23 @@ banner:
 	printf "\033[32m                                                                                                            \033[0m\n"
 
 deploy-preprod-kilometers: 
-	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/ngc/api-kilometers/api-kilometers.yml
+	${DELOY_CDMD} -i configs/preprod/inventory.yml   playbooks/ngc/api-kilometers/api-kilometers.yml
 
+deploy-preprod-monitoring: ## Deploy all metrics,monitoring,logs services on staging
 deploy-preprod-monitoring:
-	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/monitoring/monitoring.yml
+	${DELOY_CDMD} -i configs/preprod/inventory.yml  playbooks/monitoring/monitoring.yml
 
 deploy-preprod-fluentd: ## Deploy fluentd on staging
 deploy-preprod-fluentd:
-	ansible-playbook -i configs/preprod/inventory.yml   -u ngc -e "ansible_python_interpreter=/usr/bin/python3"   playbooks/monitoring/fluentd.yml
+	${DELOY_CDMD} -i configs/preprod/inventory.yml playbooks/monitoring/fluentd.yml
 
+deploy-preprod-node-exporter: ## Deploy fluentd on staging
+deploy-preprod-node-exporter:
+	${DELOY_CDMD} -i configs/preprod/inventory.yml playbooks/monitoring/node-exporter.yml
+
+deploy-preprod-traefik: ## Deploy traefik on staging
+deploy-preprod-traefik:
+	${DELOY_CDMD} -i configs/preprod/inventory.yml playbooks/traefik.yml
 ##
 help:banner
 

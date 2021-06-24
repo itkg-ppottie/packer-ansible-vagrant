@@ -8,6 +8,15 @@
     - "{{ grafana_home }}"
     - "{{ grafana_home }}/dashboards"
 
+- name: Create a grafana data directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "472"
+    group: "root"
+  with_items:
+    - "{{ grafana_home }}/data"
+    
 - name: "Copy config file dashboards"
   copy:
     src: "./templates/dashboards/{{ item }}"

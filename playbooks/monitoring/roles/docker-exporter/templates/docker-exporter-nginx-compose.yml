@@ -22,6 +22,8 @@ services:
         fluentd-async-connect: "true"
     deploy:
       mode: global
+      update_config: # Need for mode: host (line 15)
+        order: stop-first
       resources:
         limits:
           cpus: '0.5'

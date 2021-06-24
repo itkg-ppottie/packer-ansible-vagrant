@@ -33,6 +33,9 @@ services:
       org.label-schema.group: "monitoring"
     deploy:
       mode: global
+      update_config: # Need for mode: host (line 11)
+        order: stop-first
+
       resources:
         limits:
           memory: 128M

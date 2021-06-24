@@ -9,6 +9,7 @@ services:
     environment:
       FLUENTD_CONF: 'fluent.conf'
       FLUENTD_HOSTNAME: "{{ NODE_HOSTNAME }}"
+
     ports:
       - 24224:24224
       - 24224:24224/udp
