@@ -1,5 +1,5 @@
 VERSION: 2.26.0
 # MONITORING
 prometheus_user: "{{ username | default(\"debian\")}}"
-prometheus_home: "/home/{{ prometheus_user }}/prometheus"
-prometheus_data: "/mnt/glusterfs/prometheus"
+prometheus_home: "{{ GLUSTER_MANAGER_PATH }}prometheus"
+prometheus_data: "{{ GLUSTER_MANAGER_PATH }}prometheus"

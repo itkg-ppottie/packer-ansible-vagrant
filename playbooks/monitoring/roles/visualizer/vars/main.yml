@@ -1,2 +1,2 @@
 visualizer_user: "{{ username | default(\"debian\")}}"
-visualizer_home: "/home/{{ visualizer_user }}/visualizer"
+visualizer_home: "{{ GLUSTER_MANAGER_PATH }}visualizer"

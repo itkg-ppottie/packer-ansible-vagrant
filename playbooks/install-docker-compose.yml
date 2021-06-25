@@ -2,7 +2,7 @@
   become: yes
   become_user: root
   vars:
-    DOCKER_COMPOSE_VERSION: 1.29.1
+    DOCKER_COMPOSE_VERSION: 1.29.2
   tasks:
 
     - name: update pip3 to setup ansible <---> docker

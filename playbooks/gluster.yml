@@ -4,4 +4,4 @@
   become_user: root
   roles:
     - geerlingguy.glusterfs
-    - gluster
+    - share_directories

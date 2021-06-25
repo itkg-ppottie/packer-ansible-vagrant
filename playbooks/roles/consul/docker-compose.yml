@@ -10,10 +10,10 @@ services:
       restart_policy:
         condition: on-failure
     logging:
-      driver: "json-file"
+      driver: fluentd
       options:
-        max-file: "5"
-        max-size: 10m
+        tag: docker.consul.bootstrap
+        fluentd-async-connect: "true"
     ports:
       - 8500:8500
     command: "agent -server -bootstrap-expect 1 -ui -client 0.0.0.0 -bind '{{ GetInterfaceIP \"eth0\" }}'"
@@ -25,12 +25,22 @@ services:
       replicas: 2
       restart_policy:
         condition: on-failure
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.consul.server
+        fluentd-async-connect: "true"
     depends_on:
       - server-bootstrap
 
   client:
     image: consul:latest
     command: "agent -retry-join server-bootstrap -client 0.0.0.0 -bind '{{ GetInterfaceIP \"eth0\" }}'"
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.consul.client
+        fluentd-async-connect: "true"
     deploy:
       replicas: 2
       restart_policy:

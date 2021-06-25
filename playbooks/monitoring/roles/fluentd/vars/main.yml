@@ -1,0 +1,5 @@
+PROJECT_NAME: fluentd
+PROJECT_USER: "{{ username | default(\"debian\")}}"
+# path to install files and directory shares between all nodes
+
+NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"

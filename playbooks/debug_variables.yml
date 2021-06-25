@@ -18,7 +18,7 @@
     - debug: var=private_registry
     - debug: var=URL_DOMAIN
     - debug: var=PREFIX_URL_DOMAIN
-    - debug: var=ELK_LOGS_HOST
+    - debug: var=ELK_LOGS_HOSTS
     - debug: var=groups
     - debug: var=ANSIBLE_GROUPS
     - debug: var=hostvars[groups['databases-postgresql'][0]]

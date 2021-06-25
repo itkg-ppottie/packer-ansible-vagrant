@@ -16,6 +16,11 @@ services:
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
     image: babel.ngc-data.fr:8443/common/docker/prometheus:{{ VERSION }}
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.monitoring.prometheus
+        fluentd-async-connect: "true"
     ports:
       - 9090:9090
     deploy:

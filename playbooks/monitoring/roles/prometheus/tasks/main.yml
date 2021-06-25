@@ -34,7 +34,7 @@
   become_user: root
   become: yes
   file:
-    path: "/mnt/glusterfs/{{ item }}"
+    path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
     state: absent
   loop:
     - "prometheus"
@@ -42,7 +42,7 @@
 
 - name: Create a directory prometheus on gluster volume
   file:
-    path: "/mnt/glusterfs/{{ item }}"
+    path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
@@ -59,6 +59,6 @@
     name: prometheus
     with_registry_auth: yes
     compose:
-      - "/home/{{ username }}/prometheus/prometheus-compose.yml"
+      - "{{ prometheus_home }}/prometheus-compose.yml"
 
 

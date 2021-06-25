@@ -1,31 +1,47 @@
-- name: Create List of nodes to be added into Cluster
+
+
+- name: Create List of master nodes to be added into Cluster
   set_fact:
-    nodelist: "{{ groups['gluster']|map('extract', servers, 'eth1')|list }}"
+    nodelist: "{{ groups[GROUP_NODE]|map('extract', servers, 'eth1')|list }}"
+
 
 - name: Show the list we obtained for ansible_all_ipv4_addresses
   debug: msg="{{nodelist}}"
 
+
 - name: Ensure Gluster brick and mount directories exist.
   file: "path={{ item }} state=directory mode=0775"
   with_items:
-    - "{{ gluster_brick_dir }}"
-    - "{{ gluster_mount_dir }}"
+    - "{{ GLUSTER_BRICK_DIR }}"
+    - "{{ GLUSTER_MOUNT_DIR }}"
 
 - name: Configure Gluster volume.
   gluster_volume:
     state: present
-    name: "{{ gluster_brick_name }}"
-    brick: "{{ gluster_brick_dir }}"
+    name: "{{ GLUSTER_BRICK_NAME }}"
+    brick: "{{ GLUSTER_BRICK_DIR }}"
     rebalance: yes
     cluster: "{{ nodelist }}"
     host: "{{ inventory_hostname }}"
     force: yes
   run_once: true
 
+- name: Configure Gluster volume.
+  gluster_volume:
+    state: present
+    name: "{{ MASTER_SHARE_BRICK_NAME }}"
+    brick: "{{ MASTER_SHARE_BRICK_DIR }}"
+    rebalance: yes
+    cluster: "{{ nodelist }}"
+    host: "{{ inventory_hostname }}"
+    force: yes
+  run_once: true
+
+
 - name: Ensure Gluster volume is mounted.
   mount:
-    name: "{{ gluster_mount_dir }}"
-    src: "{{ inventory_hostname }}:/{{ gluster_brick_name }}"
+    name: "{{ GLUSTER_MOUNT_DIR }}"
+    src: "{{ inventory_hostname }}:/{{ GLUSTER_BRICK_NAME }}"
     fstype: glusterfs
     opts: "defaults,_netdev"
     state: mounted
@@ -33,7 +49,7 @@
 
 - name: directory permissions
   file:
-    path: "{{ gluster_mount_dir }}"
+    path: "{{ GLUSTER_MOUNT_DIR }}"
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"

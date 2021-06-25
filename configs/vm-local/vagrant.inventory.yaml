@@ -63,38 +63,43 @@ servers:
     eth1: 192.168.30.25
     mem: '2048'
     cpu: '2'
-  VM-PDDV-NGC-AUTO-DCK:
-    name: VM-PDDV-NGC-AUTO-DCK
-    type: swarm
+  VM-PDDV-NGC-AUTO-SWARM-M1:
+    name: VM-PDDV-NGC-AUTO-SWARM-M1
     box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
-    eth1: 192.168.30.13
+    eth1: 192.168.30.29
     mem: '2048'
     cpu: '2'
-  VM-PDDV-NGC-TRENT-DCK:
-    name: VM-PDDV-NGC-TRENT-DCK
-    type: swarm
+  VM-PDDV-NGC-AUTO-SWARM-M2:
+    name: VM-PDDV-NGC-AUTO-SWARM-M2
     box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
-    eth1: 192.168.30.27
+    eth1: 192.168.30.34
+    mem: '2048'
+    cpu: '2'
+  VM-PDDV-NGC-AUTO-SWARM-M3:
+    name: VM-PDDV-NGC-AUTO-SWARM-M3
+    box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
+    eth1: 192.168.30.34
     mem: '2048'
     cpu: '2'
 
-
-LAST: VM-PDDV-NGC-TRENT-DCK
+LAST: VM-PDDV-NGC-AUTO-SWARM-M3
 
 ANSIBLE_GROUPS:
   # load-balancer:
   #   - VM-PDDV-HAPROXY
   managers:
-    - VM-PDDV-NGC-AUTO-DCK
+    - VM-PDDV-NGC-AUTO-SWARM-M1
+    - VM-PDDV-NGC-AUTO-SWARM-M2
+    - VM-PDDV-NGC-AUTO-SWARM-M3
   workers:
-    - VM-PDDV-NGC-TRENT-DCK
   databases-postgresql:
     - VM-PDDV-NGC-AUTO-DCK-BDD
   databases-mysql:
     - VM-PDDV-NGC-LAFA-DCK-BDD
   gluster:
-    - VM-PDDV-NGC-AUTO-DCK
-    - VM-PDDV-NGC-TRENT-DCK
+    - VM-PDDV-NGC-AUTO-SWARM-M1
+    - VM-PDDV-NGC-AUTO-SWARM-M2
+    - VM-PDDV-NGC-AUTO-SWARM-M3
   elk-logs:
     - VM-PDDV-NGC-ELK-MONIT
   elk-apm:

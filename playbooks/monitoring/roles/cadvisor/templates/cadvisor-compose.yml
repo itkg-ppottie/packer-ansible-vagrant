@@ -9,6 +9,8 @@ services:
     entrypoint: ["/bin/sh","-c"]
     deploy:
       mode: global
+      update_config: # Need for mode: host (line 22)
+        order: stop-first
     environment:
 {% for  name, value in CADVISOR_ENV.items() %}
       {{ name }}: "{{ value }}"

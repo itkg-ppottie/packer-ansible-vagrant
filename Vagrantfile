@@ -80,10 +80,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 URL_DOMAIN: url_domain,
                 PREFIX_URL_DOMAIN: prefix_url_domain,
                 ELK_LOGS_HOST: servers[ANSIBLE_GROUPS["elk-logs"][0]]['eth1'],
-                LAFA_COMMON_HOST: servers[ANSIBLE_GROUPS['databases-postgresql'][0]]['eth1'],
-                POSTGRESQL_HOST: servers[ANSIBLE_GROUPS['databases-mysql'][0]]['eth1'],
-                APM_URL: servers[ANSIBLE_GROUPS['elk-apm'][0]]['eth1'],
-                CADVISOR_DOCKER_URL: vagrant_yaml['CADVISOR_DOCKER_URL']
+                ELK_LOGS_HOSTS: "",
+                ELK_LOGS_USER: "elk",
+                ELK_LOGS_PASSWORD: "elk",
+                LAFA_COMMON_HOST: servers[ANSIBLE_GROUPS['databases-mysql'][0]]['eth1'],
+                POSTGRESQL_HOST: servers[ANSIBLE_GROUPS['databases-postgresql'][0]]['eth1'],
+                APM_URL: "http://"+servers[ANSIBLE_GROUPS['elk-apm'][0]]['eth1']+":8200",
+                CADVISOR_DOCKER_URL: vagrant_yaml['CADVISOR_DOCKER_URL'],
+                GLUSTER_SHARE_PATH: '/mnt/glusterfs/'
+                GLUSTER_MANAGER_PATH: '/mnt/glusterfs/'
               }
               ansible.playbook = "./playbooks/playbooks.yml"
           end

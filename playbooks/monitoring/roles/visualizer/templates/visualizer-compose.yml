@@ -14,6 +14,11 @@ services:
       - traefik-proxy
     ports: 
       - 8090:8080
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.monitoring.visualizer
+        fluentd-async-connect: "true"
     deploy:
       placement:
         constraints: [node.role == manager]

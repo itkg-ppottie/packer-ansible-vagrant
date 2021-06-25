@@ -12,6 +12,11 @@ services:
     environment:
       - "NODE_ID={{ NODE_ID }}"
       - "NODE_NAME={{ NODE_NAME }}"
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.monitoring.node-exporter
+        fluentd-async-connect: "true"
     volumes:
       # Remember to use read-only bind mounts.
       - /proc:/host/proc:ro
@@ -28,6 +33,9 @@ services:
       org.label-schema.group: "monitoring"
     deploy:
       mode: global
+      update_config: # Need for mode: host (line 11)
+        order: stop-first
+
       resources:
         limits:
           memory: 128M
