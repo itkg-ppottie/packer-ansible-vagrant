@@ -1,0 +1,32 @@
+
+
+- name: "Create a directory {{ PROJECT_NAME }} on gluster volume for manager nodes"
+  file:
+    path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
+    state: directory
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+  loop:
+    - "{{ PROJECT_NAME }}"
+
+- name: Generate docker-compose.yml  files to master
+  template:
+    src: "./templates/docker-compose.yml"
+    dest: "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/{{ PROJECT_NAME }}-compose.yml"
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+    force: true
+
+- name: "destroy {{ PROJECT_NAME }} stack if exists"
+  community.docker.docker_stack:
+    state: absent
+    name: "{{ PROJECT_NAME }}"
+
+- name: "deploy {{ PROJECT_NAME }} stack"
+  community.docker.docker_stack:
+    state: present
+    name: "{{ PROJECT_NAME }}"
+    prune: true
+    with_registry_auth: yes
+    compose:
+      - "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/{{ PROJECT_NAME }}-compose.yml"
