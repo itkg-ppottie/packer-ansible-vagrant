@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  system-prune:
+    image: alpinelinux/docker-cli
+    hostname: "{{ PROJECT_NAME }}-system-prune.{{ NODE_HOSTNAME }}"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: docker system prune --force
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.system.{{ PROJECT_NAME }}
+        fluentd-async-connect: "true"
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 24h
