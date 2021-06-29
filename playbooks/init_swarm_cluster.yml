@@ -86,7 +86,7 @@
 
 
 # rejoindre le cluser pour les machines workers
-- hosts: workers, managers[1:]
+- hosts: workers
   tasks:
     - name: Starting swarm workers to join cluster
       shell: >
@@ -97,7 +97,7 @@
       when: '"Swarm: active" not in docker_info.stdout'
 
 # rejoindre le cluser pour les machines manager
-- hosts: managers[0]
+- hosts: managers[1:]
   tasks:
     - name: Starting secondary swarm managers to join cluster
       shell: >
@@ -105,7 +105,7 @@
           --token {{ hostvars[manager_primary]['manager_token']  }} \
           {{ hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
       register: init_result
-      when: '"Swarm: active" in docker_info.stdout'
+      when: '"Swarm: active" not in docker_info.stdout'
 
 # Labellisation des noeuds
 - hosts: managers, workers

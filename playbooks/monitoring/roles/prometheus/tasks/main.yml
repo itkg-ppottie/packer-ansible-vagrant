@@ -1,3 +1,14 @@
+
+- name: Clear eventual directory prometheus on gluster volume
+  become_user: root
+  become: yes
+  file:
+    path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
+    state: absent
+  loop:
+    - "prometheus"
+  when: world == 'vm-local'
+
 - name: Create a prometheus directory's
   file:
     path: "{{ item }}"
@@ -20,6 +31,8 @@
     - swarm_task.rules.yml
     - prometheus.yml
 
+
+
 - name: Template a file to prometheus-compose.yml
   template:
     src: "./templates/{{ item }}"
@@ -30,15 +43,7 @@
   loop:
     - prometheus-compose.yml
 
-- name: Clear eventual directory prometheus on gluster volume
-  become_user: root
-  become: yes
-  file:
-    path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
-    state: absent
-  loop:
-    - "prometheus"
-  when: world == 'vm-local'
+
 
 - name: Create a directory prometheus on gluster volume
   file:

@@ -6,4 +6,3 @@ NO_PROXY: babel.ngc-data.fr,localhost,127.0.0.1
 ELK_LOGS_HOSTS: 10.66.30.25:9200
 ELK_LOGS_USER: ngc-apm
 ELK_LOGS_PASSWORD: cA5dzzcPiAWmw6E8Juji
-GLUSTER_MANAGER_PATH: /mnt/glusterfs/

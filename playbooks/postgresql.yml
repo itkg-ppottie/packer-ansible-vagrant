@@ -36,6 +36,8 @@
   handlers:
     - name: restart postgresql
       become: yes
+      become_user: root
+      become_method: sudo
       service: name=postgresql state=restarted
   tasks:
     - name: postgresql should listen on all ports
