@@ -21,7 +21,11 @@ services:
         - "traefik.http.routers.api.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
         - "traefik.http.routers.api.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.internal.traefik
+        fluentd-async-connect: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command:
