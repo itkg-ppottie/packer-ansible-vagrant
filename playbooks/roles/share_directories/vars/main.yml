@@ -1,7 +1,11 @@
 gluster_brick_dir: "/var/gluster"
-gluster_mount_dir: "/mnt/glusterfs"
+gluster_mount_dir: "/mnt/datas"
 gluster_brick_name: "gluster"
 
-MASTER_SHARE_BRICK_DIR: "/var/gluster_master"
-MASTER_SHARE_MOUNT_DIR: "/mnt/glustermaster"
+MASTER_SHARE_BRICK_DIR: "/var/gluster_manager"
+MASTER_SHARE_MOUNT_DIR: "/mnt/managers"
 MASTER_SHARE_BRICK_NAME: "gluster_master"
+
+MONITORING_MOUNT_DIR: "/var/gluster_monitoring"
+MONITORING_BRICK_DIR: "/mnt/monitoring"
+MONITORING_BRICK_NAME: "gluster_monitoring"
