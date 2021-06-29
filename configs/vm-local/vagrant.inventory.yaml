@@ -72,7 +72,7 @@ servers:
   VM-PDDV-NGC-AUTO-SWARM-M2:
     name: VM-PDDV-NGC-AUTO-SWARM-M2
     box: ./packer_debian10-10G-vm-swarm-master-01_virtualbox.box
-    eth1: 192.168.30.34
+    eth1: 192.168.30.33
     mem: '2048'
     cpu: '2'
   VM-PDDV-NGC-AUTO-SWARM-M3:
