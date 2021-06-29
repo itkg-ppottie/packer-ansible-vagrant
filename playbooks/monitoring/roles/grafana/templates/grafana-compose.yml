@@ -32,7 +32,7 @@ services:
       # - GF_SMTP_PASSWORD=xxxxxxx
       # - GF_SMTP_FROM_ADDRESS=grafana@xxxxxxxxxx.xx
       # Configure prometheus datasource
-      - "PROMETHEUS_ENDPOINT=http://{{ PREFIX_URL_DOMAIN }}prometheus.{{ URL_DOMAIN }}:9090"
+      - "PROMETHEUS_ENDPOINT=http://prometheus:9090"
     ports:
       - "3000:3000"
     deploy:
