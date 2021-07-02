@@ -5,37 +5,35 @@ networks:
     name: internal-monitoring
 services:
   cadvisor:
-    image: docker
-    entrypoint: ["/bin/sh","-c"]
-    deploy:
-      mode: global
-      update_config: # Need for mode: host (line 22)
-        order: stop-first
-    environment:
-{% for  name, value in CADVISOR_ENV.items() %}
-      {{ name }}: "{{ value }}"
-{% endfor %}
-    ports:
-      - target: 8080
-        published: 8089
-        protocol: tcp
-        mode: host
+    image: "{{ CADVISOR_DOCKER_URL }}:{{ CADVISOR_VERSION }}"
+    container_name: cadvisor
     volumes:
       - /:/rootfs:ro
-      - /var/run:/var/run:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run:/var/run:rw
       - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /sys/fs/cgroup:/cgroup:ro
       - /dev/disk/:/dev/disk:ro
-      - /dev/kmsg:/dev/kmsg:ro
-    command: 
-    - |
-      exec docker run -i --rm --network="container:$${PARENT}" \
-            --volume=/:/rootfs:ro \
-            --volume=/var/run:/var/run:ro  \
-            --volume=/sys:/sys:ro  \
-            --volume=/var/lib/docker/:/var/lib/docker:ro \
-            --volume=/dev/disk/:/dev/disk:ro \
-            --name $${CHILDNAME} \
-            --privileged \
-            --device=/dev/kmsg \
-            {{ CADVISOR_DOCKER_URL }}:$${CADVISOR_VERSION}
+    deploy:
+      mode: global
+      update_config: # Need for mode: host 
+        order: stop-first
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 200M
+        reservations:
+          cpus: '0.25'
+          memory: 100M
+    command:
+      - '-housekeeping_interval=10s'
+      - '-docker_only=true'
+    restart: unless-stopped
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    security_opt:
+      - no-new-privileges:true
+    expose:
+      - 8080
+
