@@ -78,6 +78,9 @@ fluentd_deploy: deploy
 node_exporter_deploy: PLAYBOOK = playbooks/monitoring/node-exporter.yml
 node_exporter_deploy: deploy
 
+cadvisor_deploy: PLAYBOOK = playbooks/monitoring/cadvisor.yml
+cadvisor_deploy: deploy
+
 traefik_deploy: PLAYBOOK = playbooks/traefik.yml
 traefik_deploy: deploy
 
@@ -100,6 +103,8 @@ deploy-preprod-traefik: ## Deploy traefik on staging
 deploy-preprod-traefik: preprod_inventory traefik_deploy
 
 
+deploy-preprod-cadvisor: ## Deploy cadvisor on staging
+deploy-preprod-cadvisor: preprod_inventory cadvisor_deploy
 
 deploy-prod-kilometers: ## Deploy kilometers api on production
 deploy-prod-kilometers: prod_inventory kilometers_deploy 
