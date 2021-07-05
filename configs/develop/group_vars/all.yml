@@ -1,0 +1,12 @@
+username: "{{ ansible_user }}"
+world: develop
+private_registry:
+  host: babel.ngc-data.fr:8443
+  login: ppottie
+  token: bYsV2EKMBu961kcyYyNn
+URL_DOMAIN: ngc-data.fr
+PREFIX_URL_DOMAIN: development-
+servers:
+  dddv-ngc-auto-dck:
+    name: dddv-ngc-auto-dck
+    eth1: 10.128.42.130
