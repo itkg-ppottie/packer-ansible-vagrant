@@ -1,0 +1,9 @@
+vars: 
+  ansible_python_interpreter: /usr/bin/python3
+all:
+  children:
+    managers:
+      hosts:
+        dddv-ngc-auto-dck:
+          ansible_host: '10.128.42.130'
+          ansible_user: ngc

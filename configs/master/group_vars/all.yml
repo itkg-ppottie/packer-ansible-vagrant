@@ -1,0 +1,12 @@
+GLUSTER_SHARE_PATH: /mnt/glusterfs/
+GLUSTER_MANAGER_PATH: /mnt/docker-compose/
+username: "{{ ansible_user }}"
+world: prod
+private_registry:
+  host: babel.ngc-data.fr:8443
+  login: ppottie
+  token: bYsV2EKMBu961kcyYyNn
+URL_DOMAIN: ngc-data.fr
+PREFIX_URL_DOMAIN: qualification-
+servers:
+  
