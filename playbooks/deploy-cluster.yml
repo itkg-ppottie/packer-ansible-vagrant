@@ -1,0 +1,14 @@
+
+# lecture de l'état du swarm sur le noeud du cluster
+- hosts: managers, workers
+  tasks:
+    - name: Log into private registry and force re-authorization
+      community.docker.docker_login:
+        registry_url: "{{ private_registry.host }}"
+        username: "{{ private_registry.login }}"
+        password: "{{ private_registry.token }}"
+        reauthorize: yes
+
+- include: traefik.yml
+- include: monitoring/monitoring.yml
+- include: observability/portainer.yml

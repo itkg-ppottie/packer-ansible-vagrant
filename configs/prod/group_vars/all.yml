@@ -1,5 +1,5 @@
 GLUSTER_SHARE_PATH: /mnt/glusterfs/
-GLUSTER_MANAGER_PATH: /mnt/docker-compose/
+GLUSTER_MANAGER_PATH: /mnt/glusterfs/
 username: "{{ ansible_user }}"
 world: prod
 private_registry:

@@ -84,11 +84,15 @@ cadvisor_deploy: deploy
 traefik_deploy: PLAYBOOK = playbooks/traefik.yml
 traefik_deploy: deploy
 
+firstime_deploy: PLAYBOOK = playbooks/deploy-cluster.yml
+firstime_deploy: deploy
+
 deploy-preprod-kilometers: ## Deploy kilometers api on staging
 deploy-preprod-kilometers: preprod_inventory kilometers_deploy 
 
 deploy-preprod-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
 deploy-preprod-docker-prune: preprod_inventory docker_prune_deploy
+
 
 deploy-preprod-monitoring: ## Deploy all metrics,monitoring,logs services on staging
 deploy-preprod-monitoring: preprod_inventory monitoring_deploy
@@ -123,6 +127,12 @@ deploy-prod-node_exporter: prod_inventory node_exporter_deploy
 
 deploy-prod-traefik: ## Deploy traefik on production
 deploy-prod-traefik: prod_inventory traefik_deploy
+
+deploy-production-portainer: ## Deploy portainer on production
+deploy-production-portainer: production_inventory portainer_deploy
+
+deploy-production-firsttime: ## Init production cluster
+deploy-production-firsttime: production_inventory firstime_deploy
 
 ##
 help:banner

@@ -4,6 +4,12 @@
     name:  traefik-proxy
     state: present
     attachable: true
+- name: Create overlay networks core-infra
+  community.docker.docker_network:
+    driver: overlay
+    name:  core-infra
+    state: present
+    attachable: true
 
 - name: Create a traefik directory's
   file:
