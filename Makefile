@@ -49,12 +49,14 @@ banner:
 	printf "\033[32m ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝     ╚═════╝╚══════╝ ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝\033[0m\n"
 	printf "\033[32m                                                                                                            \033[0m\n"
 
+develop_inventory: INVENTORY = configs/develop/inventory.yml
+develop_inventory: add_inventory
 
-prod_inventory: INVENTORY = configs/prod/inventory.yml
-prod_inventory: add_inventory
+production_inventory: INVENTORY = configs/production/inventory.yml
+production_inventory: add_inventory
 
-preprod_inventory: INVENTORY = configs/preprod/inventory.yml
-preprod_inventory: add_inventory
+staging_inventory: INVENTORY = configs/staging/inventory.yml
+staging_inventory: add_inventory
 
 add_inventory:
 	$(eval DELOY_CMD := $(DELOY_CMD) -i ${INVENTORY})
@@ -84,45 +86,55 @@ cadvisor_deploy: deploy
 traefik_deploy: PLAYBOOK = playbooks/traefik.yml
 traefik_deploy: deploy
 
-deploy-preprod-kilometers: ## Deploy kilometers api on staging
-deploy-preprod-kilometers: preprod_inventory kilometers_deploy 
+firstime_deploy: PLAYBOOK = playbooks/deploy-cluster.yml
+firstime_deploy: deploy
 
-deploy-preprod-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
-deploy-preprod-docker-prune: preprod_inventory docker_prune_deploy
+deploy-staging-kilometers: ## Deploy kilometers api on staging
+deploy-staging-kilometers: staging_inventory kilometers_deploy 
 
-deploy-preprod-monitoring: ## Deploy all metrics,monitoring,logs services on staging
-deploy-preprod-monitoring: preprod_inventory monitoring_deploy
+deploy-staging-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
+deploy-staging-docker-prune: staging_inventory docker_prune_deploy
+
+
+deploy-staging-monitoring: ## Deploy all metrics,monitoring,logs services on staging
+deploy-staging-monitoring: staging_inventory monitoring_deploy
 	
-deploy-preprod-fluentd: ## Deploy fluentd on staging
-deploy-preprod-fluentd: preprod_inventory fluentd_deploy
+deploy-staging-fluentd: ## Deploy fluentd on staging
+deploy-staging-fluentd: staging_inventory fluentd_deploy
 
-deploy-preprod-node_exporter: ## Deploy fluentd on staging
-deploy-preprod-node_exporter: preprod_inventory node_exporter_deploy
+deploy-staging-node_exporter: ## Deploy fluentd on staging
+deploy-staging-node_exporter: staging_inventory node_exporter_deploy
 
-deploy-preprod-traefik: ## Deploy traefik on staging
-deploy-preprod-traefik: preprod_inventory traefik_deploy
+deploy-staging-traefik: ## Deploy traefik on staging
+deploy-staging-traefik: staging_inventory traefik_deploy
 
 
-deploy-preprod-cadvisor: ## Deploy cadvisor on staging
-deploy-preprod-cadvisor: preprod_inventory cadvisor_deploy
+deploy-staging-cadvisor: ## Deploy cadvisor on staging
+deploy-staging-cadvisor: staging_inventory cadvisor_deploy
 
-deploy-prod-kilometers: ## Deploy kilometers api on production
-deploy-prod-kilometers: prod_inventory kilometers_deploy 
+deploy-production-kilometers: ## Deploy kilometers api on production
+deploy-production-kilometers: production_inventory kilometers_deploy 
 
-deploy-prod-docker-prune: ## deploy docker-prune stack to clean node all 24h on production
-deploy-prod-docker-prune: prod_inventory docker_prune_deploy
+deploy-production-docker-prune: ## deploy docker-prune stack to clean node all 24h on production
+deploy-production-docker-prune: production_inventory docker_prune_deploy
 
-deploy-prod-monitoring: ## Deploy all metrics,monitoring,logs services on production
-deploy-prod-monitoring: prod_inventory monitoring_deploy
+deploy-production-monitoring: ## Deploy all metrics,monitoring,logs services on production
+deploy-production-monitoring: production_inventory monitoring_deploy
 	
-deploy-prod-fluentd: ## Deploy fluentd on production
-deploy-prod-fluentd: prod_inventory fluentd_deploy
+deploy-production-fluentd: ## Deploy fluentd on production
+deploy-production-fluentd: production_inventory fluentd_deploy
 
-deploy-prod-node_exporter: ## Deploy fluentd on production
-deploy-prod-node_exporter: prod_inventory node_exporter_deploy
+deploy-production-node_exporter: ## Deploy fluentd on production
+deploy-production-node_exporter: production_inventory node_exporter_deploy
 
-deploy-prod-traefik: ## Deploy traefik on production
-deploy-prod-traefik: prod_inventory traefik_deploy
+deploy-production-traefik: ## Deploy traefik on production
+deploy-production-traefik: production_inventory traefik_deploy
+
+deploy-production-portainer: ## Deploy portainer on production
+deploy-production-portainer: production_inventory portainer_deploy
+
+deploy-production-firsttime: ## Init production cluster
+deploy-production-firsttime: production_inventory firstime_deploy
 
 ##
 help:banner
