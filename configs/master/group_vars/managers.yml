@@ -1,8 +1,0 @@
-CADVISOR_VERSION: v0.37.5
-CADVISOR_DOCKER_URL: babel.ngc-data.fr:8443/common/docker/cadvisor/cadvisor
-HTTPS_PROXY: http://https-proxy.eolas-services.com:3128
-HTTP_PROXY: http://http-proxy.eolas-services.com:3128
-NO_PROXY: babel.ngc-data.fr,localhost,127.0.0.1
-ELK_LOGS_HOSTS: 10.66.30.25:9200
-ELK_LOGS_USER: ngc-apm
-ELK_LOGS_PASSWORD: cA5dzzcPiAWmw6E8Juji
