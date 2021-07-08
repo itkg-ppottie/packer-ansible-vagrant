@@ -86,6 +86,9 @@ cadvisor_deploy: deploy
 traefik_deploy: PLAYBOOK = playbooks/traefik.yml
 traefik_deploy: deploy
 
+portainer_deploy: PLAYBOOK = playbooks/observability/portainer.yml
+portainer_deploy: deploy
+
 firstime_deploy: PLAYBOOK = playbooks/deploy-cluster.yml
 firstime_deploy: deploy
 
@@ -129,6 +132,12 @@ deploy-production-node_exporter: production_inventory node_exporter_deploy
 
 deploy-production-traefik: ## Deploy traefik on production
 deploy-production-traefik: production_inventory traefik_deploy
+
+deploy-production-portainer: ## Deploy portainer on production
+deploy-production-portainer: production_inventory portainer_deploy
+
+deploy-production-firsttime: ## Init production cluster
+deploy-production-firsttime: production_inventory firstime_deploy
 
 deploy-production-portainer: ## Deploy portainer on production
 deploy-production-portainer: production_inventory portainer_deploy
