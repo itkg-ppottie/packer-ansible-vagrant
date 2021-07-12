@@ -1,6 +1,4 @@
 - include: deploy-vm-local-services.yml
   when: world == "vm-local"
 
-- include: traefik.yml
-- include: monitoring/monitoring.yml
-- include: ngc/api-kilometers/api-kilometers.yml
+- include: deploy-internal-services-cluster.yml
