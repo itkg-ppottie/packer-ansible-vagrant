@@ -1,0 +1,33 @@
+
+
+- name: Create a portainer directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ portainer_user }}"
+    group: "{{ portainer_user }}"
+  with_items:
+    - "{{ portainer_home }}"
+
+
+- name: Template a file to portainer-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ portainer_home }}/{{ item }}"
+    owner: "{{ portainer_user }}"
+    group:  "{{ portainer_user }}"
+    mode: '0644'
+  loop:
+    - portainer-compose.yml
+
+- community.docker.docker_stack:
+    name: portainer
+    state: absent
+
+- name: deploy portainer service
+  community.docker.docker_stack:
+    state: present
+    name: portainer
+    with_registry_auth: yes
+    compose:
+      - "{{ portainer_home }}/portainer-compose.yml"
