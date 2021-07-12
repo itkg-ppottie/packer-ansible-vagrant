@@ -1,38 +1,6 @@
 ---
-- hosts: managers,workers
-  become: yes
-  become_user: root
-  tasks:
-    - name: Ensure json file exists
-      copy:
-        content: "{}"
-        dest: /etc/docker/daemon.json
-        force: false
-
-  
-    - name: append more key/values
-      set_fact:
-        docker_vars: "{{ docker_vars | default([]) | combine({ item.key : item.value }) }}"
-      with_items:
-      - { key: "log-driver", value: "json-file" }
-      - { key: "log-opts", value: { max-size: "10m", max-file: "3"} }
-      - { key: "metrics-addr", value: "0.0.0.0:9323" }
-      - { key: "experimental", value: true }
-
-    - debug:
-        var: docker_vars
-
-    - name: write var to file
-      copy:
-        content: "{{ docker_vars | to_nice_json }}"
-        dest: /etc/docker/daemon.json
-
-    - name: Restart service docker daemon
-      ansible.builtin.systemd:
-        state: restarted
-        daemon_reload: yes
-        name: docker
-
+- include: config_docker_daemon.yml
+  when: world == "vm-local"
 
 # lecture de l'état du swarm sur le noeud du cluster
 - hosts: managers, workers
@@ -44,10 +12,7 @@
         password: "{{ private_registry.token }}"
         reauthorize: yes
 
-
 - hosts: managers, workers
-  become: yes
-  become_user: root
   tasks:
     - name: Check if Swarm Mode is already activated
       command: docker info
@@ -56,11 +21,10 @@
 
 # Initialisation du cluster sur le manageur principal
 - hosts: managers[0]
-  become: yes
   tasks:
     - name: Starting primary swarm manager
       shell: >
-        docker swarm init --advertise-addr {{ vagrant_primary_manager_ip }}
+        docker swarm init --advertise-addr {{ vagrant_primary_manager_ip  | default(ansible_default_ipv4.address) }}
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
@@ -78,7 +42,7 @@
 
     - set_fact:
         worker_token: "{{ worker_token_result.stdout }}"
-        primary_manager_ip: "{{ vagrant_primary_manager_ip }}"
+        primary_manager_ip: "{{ vagrant_primary_manager_ip | default(ansible_default_ipv4.address) }}"
         manager_token: "{{ manager_token_result.stdout }}"
 
     - debug: var=worker_token
@@ -91,8 +55,8 @@
     - name: Starting swarm workers to join cluster
       shell: >
         docker swarm join \
-          --token {{ hostvars[manager_primary]['worker_token']  }} \
-          {{  hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
+          --token {{ hostvars[groups['managers'][0]]['worker_token']  }} \
+          {{  hostvars[groups['managers'][0]]['primary_manager_ip'] }}:{{ swarm_bind_port | default('2377')}}
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
@@ -101,51 +65,30 @@
   tasks:
     - name: Starting secondary swarm managers to join cluster
       shell: >
-        docker node join \
-          --token {{ hostvars[manager_primary]['manager_token']  }} \
-          {{ hostvars[manager_primary]['primary_manager_ip'] }}:{{ swarm_bind_port }}
+        docker swarm join \
+          --token {{ hostvars[groups['managers'][0]]['manager_token']  }} \
+          {{ hostvars[groups['managers'][0]]['primary_manager_ip'] }}:{{ swarm_bind_port | default('2377')}}
       register: init_result
       when: '"Swarm: active" not in docker_info.stdout'
 
-# Labellisation des noeuds
-- hosts: managers, workers
-  serial: 1
-  become: yes
-  become_user: root
-  tasks:
-    - name: Label nodes
-      shell: >
-        docker node update --label-add {{ item }}=true {{ inventory_hostname }}
-      when: "item != 'all_groups'"
-      with_items:
-        - "{{ group_names }}"
-      delegate_to: "{{ groups['managers'][0] }}"
-      tags:
-        - label
-
-#lecture de l'etat du cluster
-- hosts: managers[0]
-  become: yes
-  become_user: root
-  tasks:
-    - name: Examine the swarm
-      shell: >
-        curl --unix-socket /var/run/docker.sock http://localhost/info | sed -n -e "/^{/p"| python -m json.tool
-      register: docker_swarm_result
-      no_log: true
-
-    - set_fact:
-        docker_swarm_info: "{{ docker_swarm_result.stdout | from_json }}"
-
-    - debug: var=docker_swarm_info.Swarm
+# # Labellisation des noeuds
+# - hosts: managers, workers
+#   serial: 1
+#   tasks:
+#     - name: Label nodes
+#       shell: >
+#         docker node update --label-add {{ item }}=true {{ inventory_hostname }}
+#       when: "item != 'all_groups'"
+#       with_items:
+#         - "{{ group_names }}"
+#       delegate_to: "{{ groups['managers'][0] }}"
+#       tags:
+#         - label
 
 
 # create overlay networks for infra swarm nodes
 - hosts: managers[0]
-  become: yes
-  become_user: root
   tasks:
-
     - name: Create overlay networks
       community.docker.docker_network:
         driver: overlay

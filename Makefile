@@ -39,6 +39,7 @@ stop:
 
 
 
+
 banner:
 	printf "\n"
 	printf "\033[32m ███████╗██╗    ██╗ █████╗ ██████╗ ███╗   ███╗     ██████╗██╗     ██╗   ██╗███████╗████████╗███████╗██████╗ \033[0m\n"
@@ -64,6 +65,10 @@ add_inventory:
 deploy:
 	echo "${DELOY_CMD}  ${PLAYBOOK}"
 	${DELOY_CMD}  ${PLAYBOOK}
+
+
+init-docker-swarm-cluster: PLAYBOOK = playbooks/init_swarm_cluster.yml
+init-docker-swarm-cluster: deploy
 
 kilometers_deploy: PLAYBOOK = playbooks/ngc/api-kilometers/api-kilometers.yml 
 kilometers_deploy: deploy
@@ -145,6 +150,9 @@ deploy-production-portainer: production_inventory portainer_deploy
 deploy-production-firsttime: ## Init production cluster
 deploy-production-firsttime: production_inventory firstime_deploy
 
+
+init-staging-cluster: ## Initialize a docker-swarm for staging configuration
+init-staging-cluster: staging_inventory init-docker-swarm-cluster
 ##
 help:banner
 
