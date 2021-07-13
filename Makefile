@@ -79,6 +79,10 @@ docker_prune_deploy: deploy
 monitoring_deploy: PLAYBOOK = playbooks/monitoring/monitoring.yml
 monitoring_deploy: deploy
 
+internal_services_deploy: PLAYBOOK = playbooks/deploy-internal-services-cluster.yml
+internal_services_deploy: deploy
+
+
 fluentd_deploy: PLAYBOOK = playbooks/monitoring/fluentd.yml
 fluentd_deploy: deploy
 
@@ -94,8 +98,6 @@ traefik_deploy: deploy
 portainer_deploy: PLAYBOOK = playbooks/observability/portainer.yml
 portainer_deploy: deploy
 
-firstime_deploy: PLAYBOOK = playbooks/deploy-cluster.yml
-firstime_deploy: deploy
 
 deploy-staging-kilometers: ## Deploy kilometers api on staging
 deploy-staging-kilometers: staging_inventory kilometers_deploy 
@@ -147,8 +149,11 @@ deploy-production-firsttime: production_inventory firstime_deploy
 deploy-production-portainer: ## Deploy portainer on production
 deploy-production-portainer: production_inventory portainer_deploy
 
-deploy-production-firsttime: ## Init production cluster
-deploy-production-firsttime: production_inventory firstime_deploy
+deploy-production-internal_services: ## Init production cluster
+deploy-production-internal_services: production_inventory internal_services_deploy
+
+deploy-staging-internal_services: ## Init staging cluster
+deploy-staging-internal_services: staging_inventory internal_services_deploy
 
 
 init-staging-cluster: ## Initialize a docker-swarm for staging configuration

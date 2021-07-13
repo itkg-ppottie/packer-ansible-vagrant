@@ -47,6 +47,6 @@ services:
     user: root
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
-      - "./prometheus.yml:/etc/prometheus/blackbox_targets.yml"
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "./prometheus.yml:/etc/prometheus/blackbox_targets.yml:ro"
       - "{{ prometheus_data }}:/prometheus"

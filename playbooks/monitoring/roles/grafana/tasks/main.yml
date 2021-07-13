@@ -12,8 +12,6 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ grafana_user }}"
-    group: "{{ grafana_user }}"
   with_items:
     - "{{ grafana_home }}/data"
     

@@ -14,7 +14,7 @@ services:
         protocol: tcp
         mode: host
     volumes:
-      - /mnt/glusterfs/docker-exporter/nginx-docker-exporter:/etc/nginx/conf.d/default.conf
+      - "{{ GLUSTER_SHARE_PATH }}/docker-exporter/nginx-docker-exporter:/etc/nginx/conf.d/default.conf"
     logging:
       driver: fluentd
       options:
