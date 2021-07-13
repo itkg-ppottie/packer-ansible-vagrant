@@ -1,5 +1,6 @@
 GLUSTER_SHARE_PATH: /mnt/glusterfs/
-GLUSTER_MANAGER_PATH: /mnt/glusterfs/
+GLUSTER_MANAGER_PATH: /mnt/manager-deploy/
+GLUSTER_MONITORING_PATH: /mnt/monitoring/
 username: "{{ ansible_user }}"
 world: prod
 private_registry:

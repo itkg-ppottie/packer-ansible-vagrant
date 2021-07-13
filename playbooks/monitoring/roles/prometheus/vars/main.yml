@@ -2,4 +2,4 @@ VERSION: 2.26.0
 # MONITORING
 prometheus_user: "{{ username | default(\"debian\")}}"
 prometheus_home: "{{ GLUSTER_MANAGER_PATH }}prometheus"
-prometheus_data: "{{ GLUSTER_MANAGER_PATH }}prometheus"
+prometheus_data: "{{ GLUSTER_MONITORING_PATH }}prometheus"
