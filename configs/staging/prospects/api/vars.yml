@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 MAILER_URL: null://localhost
 MAILER_USER: no-answer@autoviza.fr
 API_PATH: http://internal.prospects.api_httpd/api/
 CORS_ALLOW_ORIGIN: '*'
 
 
+=======
+VERSION: staging
+>>>>>>> b705fd6 (add api)
 NGCVIN5_SERVER: 10.66.30.100
 DATABASE_SERVER: 10.66.30.12
 ELK_NODE_1: 10.66.30.21

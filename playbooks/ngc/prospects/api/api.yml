@@ -3,4 +3,3 @@
   roles:
     - { role: "network" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: api}
     - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: api, SECRETS: "../../../../../../configs/{{ world }}/prospects/api/vars.yml"  }
-

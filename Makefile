@@ -263,6 +263,8 @@ deploy-production-traefik: production_inventory traefik_deploy
 
 
 
+deploy-staging-prospects-redis: ## Deploy redis for prospects on staging
+deploy-staging-prospects-redis: staging_inventory prospects-redis-deploy
 
 ##
 help:banner

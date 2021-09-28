@@ -1,7 +1,5 @@
 - include: postgresql.yml
   when: world == "vm-local"
-  
 
 - include: redis/redis.yml
 - include: api/api.yml
-
