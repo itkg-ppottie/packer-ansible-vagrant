@@ -8,6 +8,5 @@ private_registry:
   login: ppottie
   token: bYsV2EKMBu961kcyYyNn
 URL_DOMAIN: ngc-data.fr
-PREFIX_URL_DOMAIN: qualification-
+PREFIX_URL_DOMAIN: pra-
 servers:
-  

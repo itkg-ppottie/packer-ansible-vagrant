@@ -1,0 +1,15 @@
+vars: 
+  ansible_python_interpreter: /usr/bin/python3
+all:
+  children:
+    managers:
+      hosts:
+        EDDV-NGC-PRAOVH-SWARM-M1:
+          ansible_host: '54.38.40.153'
+          ansible_user: ngc
+        EDDV-NGC-PRAOVH-SWARM-M2:
+          ansible_host: '54.37.23.34'
+          ansible_user: ngc
+        EDDV-NGC-PRAOVH-SWARM-M3:
+          ansible_host: '147.135.192.158'
+          ansible_user: ngc
