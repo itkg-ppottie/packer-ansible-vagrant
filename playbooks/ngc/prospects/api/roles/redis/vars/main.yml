@@ -1,0 +1,10 @@
+PROJECT_NAME: "{{ GLOBAL_PROJECT_NAME | default('prospects') }}"
+PROJECT_SERVICE_NAME: "{{ GLOBAL_SERVICE_NAME | default('api') }}"
+PROJECT_USER: "{{ username | default(\"debian\")}}"
+PROJECT_HOME: "/home/{{ PROJECT_USER }}/{{ PROJECT_NAME }}"
+# path to install files and directory shares between all nodes
+GLUSTER_SHARE_PATH: /mnt/shared_datas/
+# path to install docker-compose file shared whit all swarm manager nodes
+GLUSTER_MANAGER_PATH: /mnt/manager_deploy/
+NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"
+PROJECT_VERSION: "{{ VERSION | default('latest') }}"

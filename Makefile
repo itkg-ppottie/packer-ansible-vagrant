@@ -85,7 +85,7 @@ init-docker-swarm-cluster: deploy
 docker_prune_deploy: PLAYBOOK = playbooks/docker-prune.yml
 docker_prune_deploy: deploy
 
-## MONITORING	
+## MONITORING
 #### ALL INTERNAL SERVICES
 internal_services_deploy: PLAYBOOK = playbooks/deploy-internal-services-cluster.yml
 internal_services_deploy: deploy
@@ -114,11 +114,17 @@ traefik_deploy: deploy
 portainer_deploy: PLAYBOOK = playbooks/observability/portainer.yml
 portainer_deploy: deploy
 
+prometheus_deploy: PLAYBOOK = playbooks/monitoring/prometheus.yml
+prometheus_deploy: deploy
+
+
+
 ### NGC services
-kilometers_deploy: PLAYBOOK = playbooks/ngc/api-kilometers/api-kilometers.yml 
+kilometers_deploy: PLAYBOOK = playbooks/ngc/api-kilometers/api-kilometers.yml
 kilometers_deploy: deploy
 
-
+prospects-redis-deploy: PLAYBOOK = playbooks/ngc/prospects/redis/redis.yml
+prospects-redis-deploy: deploy
 #############
 ## STAGING ##
 #############
@@ -126,6 +132,9 @@ kilometers_deploy: deploy
 init-staging-cluster: ## Initialize a docker-swarm for staging configuration
 init-staging-cluster: staging_inventory init-docker-swarm-cluster
 
+
+
+## STAGING DEPLOY
 deploy-staging-kilometers: ## Deploy kilometers api on staging
 deploy-staging-kilometers: staging_inventory kilometers_deploy 
 
@@ -235,7 +244,7 @@ deploy-pra-docker-prune: pra_inventory docker_prune_deploy
 
 deploy-pra-monitoring: ## Deploy all metrics,monitoring,logs services on pra
 deploy-pra-monitoring: pra_inventory monitoring_deploy
-	
+
 deploy-pra-fluentd: ## Deploy fluentd on pra
 deploy-pra-fluentd: pra_inventory fluentd_deploy
 
@@ -316,6 +325,8 @@ deploy-production-prometheus: production_inventory prometheus_deploy
 deploy-production-grafana: ## Deploy grafana on production
 deploy-production-grafana: production_inventory grafana_deploy
 
+deploy-staging-prospects-redis: ## Deploy redis for prospects on staging
+deploy-staging-prospects-redis: staging_inventory prospects-redis-deploy
 
 ##
 help:banner

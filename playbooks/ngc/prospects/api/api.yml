@@ -1,0 +1,5 @@
+- hosts: managers[0]
+  roles:
+    - { role: "networks" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: api}
+    - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: api }
+

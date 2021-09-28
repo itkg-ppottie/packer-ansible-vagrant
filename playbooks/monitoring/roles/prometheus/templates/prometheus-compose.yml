@@ -6,6 +6,12 @@ networks:
   internal-monitoring:
     external: true
     name: internal-monitoring
+
+configs:
+  node_rules:
+    file: "{{ prometheus_home }}/swarm_node.rules.yml"
+  task_rules:
+    file: "{{ prometheus_home }}/swarm_task.rules.yml"
 services:
   prometheus:
     hostname: "prometheus"
@@ -45,6 +51,11 @@ services:
       - internal-monitoring
       - traefik-proxy
     user: root
+    configs:
+      - source: node_rules
+        target: /etc/prometheus/swarm_node.rules.yml
+      - source: task_rules
+        target: /etc/prometheus/swarm_task.rules.yml
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./prometheus.yml:/etc/prometheus/prometheus.yml:ro"

@@ -15,7 +15,7 @@ services:
       - 24224:24224/udp
     user: root
     volumes:
-      - {{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/config/fluentd.conf:/fluentd/etc/fluent.conf
+      - "{{ GLUSTER_MANAGER_PATH }}{{ PROJECT_NAME }}/config/fluentd.conf:/fluentd/etc/fluent.conf"
     deploy:
       mode: global
       restart_policy:

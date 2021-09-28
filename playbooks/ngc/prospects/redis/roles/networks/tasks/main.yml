@@ -1,0 +1,6 @@
+- name: "Create application cluster network"
+  community.docker.docker_network:
+    driver: overlay
+    attachable: true
+    name: "{{ PROJECT_NAME }}-{{ GLOBAL_SERVICE_NAME }}"
+    state: present
