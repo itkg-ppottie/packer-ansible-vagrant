@@ -335,6 +335,8 @@ deploy-production-prometheus: production_inventory prometheus_deploy
 deploy-production-grafana: ## Deploy grafana on production
 deploy-production-grafana: production_inventory grafana_deploy
 
+deploy-staging-prospects-redis: ## Deploy redis for prospects on staging
+deploy-staging-prospects-redis: staging_inventory prospects-redis-deploy
 
 ##
 help:banner
