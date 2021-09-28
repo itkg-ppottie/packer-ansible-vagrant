@@ -5,3 +5,4 @@ packer/output-debian_10
 packer_*.box
 .history
 .vscode
+.idea
