@@ -1,0 +1,138 @@
+version: "3.7"
+x-default-rollback:
+  &default_rollback_config
+    failure_action: "pause"
+    order: "start-first"
+    delay: "10s"
+    parallelism: 1
+x-default-update-config:
+  &default_update_config
+    failure_action: "rollback"
+    order: "start-first"
+    delay: "10s"
+    parallelism: 1
+
+networks:
+  default:
+    external:
+      name: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}"
+  redis:
+    external:
+      name: "{{ PROJECT_NAME }}-redis"
+  traefik-proxy:
+    external: true
+    name: "traefik-proxy"
+
+volumes:
+  share_public:
+    driver: "local"
+    driver_opts: 
+      o: "bind"
+      device: "{{ GLUSTER_SHARE_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/public"
+      type: "glusterfs"
+
+services:
+  api_httpd:
+    image: babel.ngc-data.fr:8443/transversal/docker/nginx:1.21-env-conf
+    hostname: "{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}-httpd.{{ NODE_HOSTNAME }}"
+    environment:
+        STREAM_HOST: php
+        STREAM_PORT: 9000
+        STREAM_STATICS_PATH: bundles
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}.httpd
+        fluentd-async-connect: "true"
+    deploy:
+      replicas: 2
+      rollback_config: *default_rollback_config
+      update_config: *default_update_config
+      restart_policy:
+        condition: "on-failure"
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "500M"
+        reservations:
+          cpus: "0.05"
+          memory: "20M"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-proxy"
+        - "traefik.http.routers.{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}-httpd.rule=Host(`api-{{ FQDN }}`)"
+        - "traefik.http.routers.{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}-httpd.entrypoints=web"
+        - "traefik.http.routers.{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}-httpd.service={{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}-httpd"
+        - "traefik.http.services.{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}-httpd.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3s
+    links:
+      - api_php:php
+    volumes:
+      - share_public:/srv/public
+    networks:
+      - api
+      - traefik-proxy
+    command: /bin/sh -c "envsubst '$$STREAM_HOST $$STREAM_PORT' < /etc/nginx/conf.d/php-fpm-with-statics.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+
+  api_php:
+    image: babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:${VERSION}
+      container_name: prospects_api_php_1
+      restart: always
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.{{ PROJECT_SLUG }}-{{ PROJECT_SERVICE_NAME }}.httpd
+        fluentd-async-connect: "true"
+    environment:
+      FRONT_URL: ${FRONT_URL}
+      MAILER_URL: null://localhost
+      MAILER_USER: no-answer@autoviza.fr
+      API_PATH: http://api/api/
+      CORS_ALLOW_ORIGIN: '*'
+      APP_ENV: ${APP_ENV}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_DB: ${REDIS_DB}
+      REDIS_SESSION_DB: ${REDIS_SESSION_DB}
+      REDIS_PORT: ${REDIS_PORT}
+      SENTRY_DSN: ${SENTRY_DSN}
+      JWT_PRIVATE_KEY_PATH: config/jwt/private.pem
+      JWT_PUBLIC_KEY_PATH: config/jwt/public.pem
+      JWT_PASSPHRASE: autoviza
+      JWT_TOKEN_TTL: ${JWT_TOKEN_TTL}
+      NGCVIN_URL: ${NGC_VIN_URL}
+      NGCVIN_TOKEN: ${NGCVIN_TOKEN}
+      DATABASE_URL: ${DATABASE_URL}
+      APP_XDEBUG: disabled
+      APP_AUTO_LOAD_FIXTURES: disabled
+      APP_AUTO_DOCTRINE_CACHE_CLEAR: enabled
+      APP_AUTO_CREATE_DATABASE: disabled
+      APP_AUTO_UPDATE: enabled
+      APP_AUTO_CREATE_INDEX_ELASTIC: disabled
+      SENTRY_ENVIRONMENT: ${SENTRY_ENV}
+      SECURITY_TOKEN: ${SECURITY_TOKEN}
+      APM_ENV: ${APM_ENV}
+      APM_URL: ${APM_URL}
+      APM_ENABLED: ${APM_ENABLED}
+      MJ_APIKEY_PUBLIC: ${MJ_APIKEY_PUBLIC}
+      MJ_APIKEY_PRIVATE: ${MJ_APIKEY_PRIVATE}
+      MJ_API_ENABLED: ${MJ_API_ENABLED}
+      MJ_VERSION: ${MJ_VERSION}
+      VERSION: ${VERSION}
+      WOW_APPS_SLACK_BOT_API_URL: ${WOW_APPS_SLACK_BOT_API_URL}
+      STATUS_TOKEN: ${STATUS_TOKEN}
+    networks:
+      - api
+      - redis
+    extra_hosts:
+      - db:${DATABASE_SERVER}
+      - elk_node1:${ELK_NODE_1}
+      - elk_node2:${ELK_NODE_2}
+      - preprod-next-ngcvin5.ngc-data.fr:${NGCVIN5_SERVER}
+    external_links:
+      - redis
+
+    

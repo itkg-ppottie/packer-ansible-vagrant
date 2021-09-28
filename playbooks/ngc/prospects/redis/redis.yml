@@ -1,0 +1,5 @@
+- hosts: managers[0]
+  roles:
+    - { role: "networks" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: redis}
+    - { role: "redis" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: redis }
+

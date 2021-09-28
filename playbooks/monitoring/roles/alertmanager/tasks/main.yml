@@ -1,0 +1,38 @@
+
+- name: Create a alertmanager directory's
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+  with_items:
+    - "{{ alertmanager_home }}"
+
+
+- name: "Copy config file prometheus"
+  copy:
+    src: "./templates/{{ item }}"
+    dest: "{{ alertmanager_home }}/{{ item }}"
+    owner: "{{ alertmanager_user }}"
+    group:  "{{ alertmanager_user }}"
+    mode: '0644'
+  loop:
+    - configuration.yml
+
+- name: Template a file to alertmanager-compose.yml
+  template:
+    src: "./templates/{{ item }}"
+    dest: "{{ alertmanager_home }}/{{ item }}"
+    owner: "{{ alertmanager_user }}"
+    group:  "{{ alertmanager_user }}"
+    mode: '0644'
+  loop:
+    - alertmanager-compose.yml
+
+- name: deploy alertmanager service
+  community.docker.docker_stack:
+    state: present
+    name: alertmanager
+    with_registry_auth: yes
+    compose:
+      - "{{ alertmanager_home }}/alertmanager-compose.yml"
