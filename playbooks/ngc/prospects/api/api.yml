@@ -10,7 +10,6 @@
 # Deploy project
 - hosts: managers[0]
   roles:
-    - role: api
-      SECRETS: "../../../../../../../configs/{{ world }}/prospects/api/vars.yml"
-      VERSION: "V1.1.1.rc3"
+    - { role: "networks" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: api}
+    - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: api, SERCRETS: "../../../../../../configs/{{ world }}/prospects/vars.yml"  }
 
