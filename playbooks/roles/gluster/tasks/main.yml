@@ -26,18 +26,6 @@
     force: yes
   run_once: true
 
-- name: Configure Gluster volume.
-  gluster_volume:
-    state: present
-    name: "{{ MASTER_SHARE_BRICK_NAME }}"
-    brick: "{{ MASTER_SHARE_BRICK_DIR }}"
-    rebalance: yes
-    cluster: "{{ nodelist }}"
-    host: "{{ inventory_hostname }}"
-    force: yes
-  run_once: true
-
-
 - name: Ensure Gluster volume is mounted.
   mount:
     name: "{{ GLUSTER_MOUNT_DIR }}"

@@ -87,7 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 POSTGRESQL_HOST: servers[ANSIBLE_GROUPS['databases-postgresql'][0]]['eth1'],
                 APM_URL: "http://"+servers[ANSIBLE_GROUPS['elk-apm'][0]]['eth1']+":8200",
                 CADVISOR_DOCKER_URL: vagrant_yaml['CADVISOR_DOCKER_URL'],
-                GLUSTER_SHARE_PATH: '/mnt/glusterfs/',
+                GLUSTER_SHARE_PATH: '/mnt/shared_datas/',
                 GLUSTER_MANAGER_PATH: '/mnt/managers/',
                 GLUSTER_MONITORING_PATH: '/mnt/monitoring/',
               }

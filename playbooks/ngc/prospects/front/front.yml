@@ -1,0 +1,13 @@
+
+# create overlay networks
+- hosts: managers[0]
+  roles:
+    - network
+
+# Deploy project
+- hosts: managers[0]
+  roles:
+    - role: api
+      SECRETS: "../../../../../../../configs/{{ world }}/prospects/front/vars.yml"
+      VERSION: "V1.1.0.rc1"
+

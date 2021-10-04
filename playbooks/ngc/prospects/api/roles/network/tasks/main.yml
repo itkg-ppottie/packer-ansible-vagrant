@@ -1,0 +1,6 @@
+- name: Create overlay prospects-api
+  community.docker.docker_network:
+    driver: overlay
+    attachable: true
+    name:  prospects-api
+    state: present

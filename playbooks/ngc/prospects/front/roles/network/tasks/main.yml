@@ -1,0 +1,6 @@
+- name: Create overlay prospects-front
+  community.docker.docker_network:
+    driver: overlay
+    attachable: true
+    name:  prospects-front
+    state: present

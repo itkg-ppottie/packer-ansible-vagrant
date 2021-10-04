@@ -6,7 +6,7 @@ CORS_ALLOW_ORIGIN: '*'
 
 
 NGCVIN5_SERVER: 10.66.30.100
-DATABASE_SERVER: 10.66.30.12
+DATABASE_SERVER: "{{ POSTGRESQL_HOST | default('')}}"
 ELK_NODE_1: 10.66.30.21
 ELK_NODE_2: 10.66.30.28
 DATABASE_URL: pgsql://autoviza-prospects:Iecu5aeghoi3aekeechocaiZ@db:5432/autoviza-prospects?charset=UTF-8
@@ -41,5 +41,3 @@ APP_AUTO_DOCTRINE_CACHE_CLEAR: disabled
 APP_AUTO_CREATE_DATABASE: disabled
 APP_AUTO_UPDATE: disabled
 APP_AUTO_CREATE_INDEX_ELASTIC: disabled
-
-VERSION: "{{ API_VERSION }}"

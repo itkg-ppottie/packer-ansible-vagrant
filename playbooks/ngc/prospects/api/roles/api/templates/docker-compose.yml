@@ -1,0 +1,135 @@
+version: "3.7"
+x-default-rollback: &default_rollback_config
+    failure_action: "pause"
+    order: "start-first"
+    delay: "10s"
+    parallelism: 1
+x-default-update-config: &default_update_config
+    failure_action: "rollback"
+    order: "start-first"
+    delay: "10s"
+    parallelism: 1
+x-default-extra-hosts: &default-extra-hosts
+    db: "{{ ENVIRONS['DATABASE_SERVER'] }}"
+    elk_node1: "{{ ENVIRONS['ELK_NODE_1'] }}"
+    elk_node2: "{{ ENVIRONS['ELK_NODE_2'] }}"
+    preprod-next-ngcvin5.ngc-data.fr: "{{  ENVIRONS['NGCVIN5_SERVER'] }}"
+
+networks:
+    api:
+        external: true
+        name: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}"
+    redis:
+        external: true
+        name: "{{ PROJECT_NAME }}-redis"
+    traefik-proxy:
+        external: true
+        name: "traefik-proxy"
+
+volumes:
+    share_public:
+        driver: "local"
+        driver_opts:
+            o: "bind"
+            device: "{{ GLUSTER_SHARE_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/public"
+            type: "glusterfs"
+
+services:
+    api_httpd:
+        image: babel.ngc-data.fr:8443/transversal/docker/nginx:1.21-env-conf
+        hostname: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-httpd.{{ NODE_HOSTNAME }}"
+        environment:
+            STREAM_HOST: api_php
+            STREAM_PORT: 9000
+            STREAM_STATICS_PATH: bundles
+        logging:
+            driver: fluentd
+            options:
+                tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.httpd
+                fluentd-async-connect: "true"
+        deploy:
+            replicas: 2
+            rollback_config: *default_rollback_config
+            update_config: *default_update_config
+            restart_policy:
+                condition: "on-failure"
+            resources:
+                limits:
+                    cpus: "0.25"
+                    memory: "500M"
+                reservations:
+                    cpus: "0.05"
+                    memory: "20M"
+        # healthcheck:
+        #   test: ["CMD", "curl", "--fail", "http://localhost/nginx-health"]
+        #   interval: 1m30s
+        #   timeout: 10s
+        #   retries: 3s
+        volumes:
+            - share_public:/srv/public
+        networks:
+            - api
+            - traefik-proxy
+        command: /bin/sh -c "envsubst '$$STREAM_HOST $$STREAM_PORT' < /etc/nginx/conf.d/php-fpm-with-statics.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+
+    migration:
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ VERSION }}"
+        command: exit 0
+        logging:
+            driver: fluentd
+            options:
+                tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.migrations
+                fluentd-async-connect: "true"
+        env_file:
+            - ".env_api"
+        environment:
+            APP_AUTO_UPDATE: enabled
+            APP_AUTO_DOCTRINE_CACHE_CLEAR: enabled
+        networks:
+            - api
+            - redis
+        extra_hosts: *default-extra-hosts
+        deploy:
+            replicas: 1
+            rollback_config: *default_rollback_config
+            update_config: *default_update_config
+            restart_policy:
+                condition: "none"
+            resources:
+                limits:
+                    cpus: "0.25"
+                    memory: "500M"
+                reservations:
+                    cpus: "0.05"
+                    memory: "20M"
+    api_php:
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ VERSION }}"
+        logging:
+            driver: fluentd
+            options:
+                tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.php
+                fluentd-async-connect: "true"
+        env_file:
+            - ".env_api"
+        networks:
+            - api
+            - redis
+        extra_hosts: *default-extra-hosts
+        deploy:
+            replicas: 2
+            rollback_config: *default_rollback_config
+            update_config: *default_update_config
+            restart_policy:
+                condition: "on-failure"
+            resources:
+                limits:
+                    cpus: "0.25"
+                    memory: "500M"
+                reservations:
+                    cpus: "0.05"
+                    memory: "20M"
+        # healthcheck:
+        #   test: ["CMD", "curl", "--fail", "http://api-httpd/phpfpm_ping"]
+        #   interval: 1m30s
+        #   timeout: 10s
+        #   retries: 3s
