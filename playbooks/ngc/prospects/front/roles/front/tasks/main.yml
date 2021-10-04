@@ -1,0 +1,52 @@
+
+- name: Load environment variables from CI/CD secrets
+  include_vars:
+    file: "{{ SECRETS }}"
+    name: ENVIRONS
+
+
+- name: "Create a public directory {{ PROJECT_NAME }} {{ PROJECT_SERVICE_NAME }} on gluster volume for shared datas between nodes"
+  file:
+      path: "{{ GLUSTER_SHARE_PATH }}{{ item }}"
+      state: directory
+      owner: "{{ PROJECT_USER }}"
+      group: "{{ PROJECT_USER }}"
+  loop:
+      - "{{ PROJECT_NAME }}"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/public"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/upload"
+
+- name: "Create a directory {{ PROJECT_NAME }} on gluster volume for manager nodes"
+  file:
+      path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
+      state: directory
+      owner: "{{ PROJECT_USER }}"
+      group: "{{ PROJECT_USER }}"
+  loop:
+      - "{{ PROJECT_NAME }}"
+
+- name: "Generate env files onto cluster"
+  template:
+    src: "./templates/.env"
+    dest: "{{ GLUSTER_MANAGER_PATH }}/{{ PROJECT_NAME }}/.env_{{ PROJECT_SERVICE_NAME }}"
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+    force: true
+    
+- name: "Generate docker-compose.yml file"
+  template:
+    src: "./templates/docker-compose.yml"
+    dest: "{{ GLUSTER_MANAGER_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}-docker-compose.yml"
+    owner: "{{ PROJECT_USER }}"
+    group: "{{ PROJECT_USER }}"
+    force: true
+
+- name: "Deploy {{ PROJECT_NAME }} {{ PROJECT_SERVICE_NAME }} stack"
+  community.docker.docker_stack:
+    state: present
+    name: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}"
+    prune: true
+    with_registry_auth: yes
+    compose:
+      - "{{ GLUSTER_MANAGER_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}-docker-compose.yml"

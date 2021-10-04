@@ -27,7 +27,7 @@ rebuild-local:
 
 start: ## start cluster
 start:
-	vargrant up
+	vagrant up
 
 destroy: ## destroy cluster
 	vagrant destroy
@@ -35,9 +35,6 @@ destroy: ## destroy cluster
 stop: ## stop VM clusters
 stop:
 	vagrant stop
-
-
-
 
 
 banner:
@@ -81,7 +78,12 @@ pra_inventory: add_inventory
 init-docker-swarm-cluster: PLAYBOOK = playbooks/init_swarm_cluster.yml
 init-docker-swarm-cluster: deploy
 
-## CLEAR SERVICE
+kilometers_deploy: PLAYBOOK = playbooks/ngc/api-kilometers/api-kilometers.yml 
+kilometers_deploy: deploy
+
+prospects_api_deploy: PLAYBOOK = playbooks/ngc/prospects/api/api.yml 
+prospects_api_deploy: deploy
+
 docker_prune_deploy: PLAYBOOK = playbooks/docker-prune.yml
 docker_prune_deploy: deploy
 
@@ -137,6 +139,14 @@ init-staging-cluster: staging_inventory init-docker-swarm-cluster
 ## STAGING DEPLOY
 deploy-staging-kilometers: ## Deploy kilometers api on staging
 deploy-staging-kilometers: staging_inventory kilometers_deploy 
+
+
+deploy-staging-prospects-redis: ## Deploy redis for prospects on staging
+deploy-staging-prospects-redis: staging_inventory prospects-redis-deploy
+
+deploy-staging-prospects-api: ## Deploy palteforme prospects api on staging
+deploy-staging-prospects-api: staging_inventory prospects_api_deploy 
+
 
 deploy-staging-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
 deploy-staging-docker-prune: staging_inventory docker_prune_deploy
@@ -325,8 +335,6 @@ deploy-production-prometheus: production_inventory prometheus_deploy
 deploy-production-grafana: ## Deploy grafana on production
 deploy-production-grafana: production_inventory grafana_deploy
 
-deploy-staging-prospects-redis: ## Deploy redis for prospects on staging
-deploy-staging-prospects-redis: staging_inventory prospects-redis-deploy
 
 ##
 help:banner

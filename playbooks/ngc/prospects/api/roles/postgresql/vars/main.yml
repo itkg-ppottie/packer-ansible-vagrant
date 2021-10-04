@@ -1,0 +1,3 @@
+allow_world_readable_tmpfiles: true
+ansible_ssh_pipelining: true
+path_to_icat: /etc/postgresql/11/main

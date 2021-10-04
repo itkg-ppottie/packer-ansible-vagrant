@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.visualizer.service=visualizer"
       - "traefik.http.services.visualizer.loadbalancer.server.port=8080"
       - "traefik.http.routers.visualizer.entrypoints=web"
-      - "traefik.docker.network: traefik-proxy"
+      - "traefik.docker.network:traefik-proxy"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 

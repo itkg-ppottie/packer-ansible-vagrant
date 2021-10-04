@@ -1,0 +1,4 @@
+PROJECT_NAME: prospects
+PROJECT_USER: "{{ username | default(\"debian\")}}"
+PROJECT_SERVICE_NAME: api
+NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"

@@ -26,7 +26,7 @@ JWT_PUBLIC_KEY_PATH: config/jwt/public.pem
 JWT_PASSPHRASE: autoviza
 
 SECURITY_TOKEN: XRLeteqbKbZVFNDAdRvNfvVthsHbCWcvrwnn9evs4AWEuADvnYHVGnCYJojxaS77
-#config Mailjet notificaiton email
+#config Mailjet notification email
 MJ_APIKEY_PUBLIC: 083bed4c6ea1dc23f27ff3cc0d60e32e
 MJ_APIKEY_PRIVATE: b9e82349739a6c0d2fe9752a158268ad
 MJ_API_ENABLED: 1

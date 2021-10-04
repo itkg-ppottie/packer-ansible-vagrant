@@ -3,4 +3,5 @@
   
 
 - include: redis/redis.yml
+- include: api/api.yml
 
