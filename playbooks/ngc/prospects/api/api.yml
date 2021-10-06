@@ -1,12 +1,3 @@
-- include: postgresql.yml
-  when: world == "vm-local"
-  
-
-# create overlay networks
-- hosts: managers[0]
-  roles:
-    - network
-
 
 - name: Load environment variables from CI/CD secrets
   include_vars:
@@ -16,6 +7,6 @@
 # Deploy project
 - hosts: managers[0]
   roles:
-    - { role: "networks" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: api}
-    - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: api, SERCRETS: "../../../../../../configs/{{ world }}/prospects/vars.yml"  }
+    - { role: "network" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: api}
+    - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: api, SERCRETS: "../../../../../../configs/{{ world }}/prospects/api/vars.yml"  }
 
