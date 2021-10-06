@@ -1,3 +1,3 @@
 portainer_user: "{{ username | default(\"debian\")}}"
 portainer_home: "{{ GLUSTER_MANAGER_PATH }}portainer"
-PORTAINER_VERSION: 2.6.3-alpine
+PORTAINER_VERSION: 2.9.0-alpine

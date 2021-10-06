@@ -1,0 +1,6 @@
+
+#installation d'un service alertmanager dans le cluster
+- hosts: managers[0]
+  roles:
+    - alertmanager
+

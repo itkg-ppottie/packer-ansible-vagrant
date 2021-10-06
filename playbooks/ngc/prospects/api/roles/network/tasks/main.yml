@@ -1,6 +1,6 @@
-- name: Create overlay prospects-api
+- name: "Create overlay {{GLOBAL_PROJECT_NAME}}-{{GLOBAL_SERVICE_NAME}}"
   community.docker.docker_network:
     driver: overlay
     attachable: true
-    name:  prospects-api
+    name:  "{{GLOBAL_PROJECT_NAME}}-{{GLOBAL_SERVICE_NAME}}"
     state: present
