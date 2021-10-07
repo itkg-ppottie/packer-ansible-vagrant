@@ -4,8 +4,6 @@
   file:
     path: "{{ GLUSTER_SHARE_PATH }}/{{ item }}"
     state: directory
-    owner: "{{ PROJECT_USER }}"
-    group: "{{ PROJECT_USER }}"
   loop:
     - "{{ PROJECT_NAME }}/"    
     - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}"

@@ -39,7 +39,7 @@ services:
         image: babel.ngc-data.fr:8443/transversal/docker/nginx:1.21-env-conf
         hostname: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-httpd.{{ NODE_HOSTNAME }}"
         environment:
-            STREAM_HOST: api_php
+            STREAM_HOST: internal.prospects.api_php
             STREAM_PORT: 9000
             STREAM_STATICS_PATH: bundles
         logging:
@@ -68,12 +68,16 @@ services:
         volumes:
             - share_public:/srv/public
         networks:
-            - api
-            - traefik-proxy
+            api:
+                aliases:
+                    - internal.prospects.api_httpd
+            traefik-proxy:
+                aliases:
+                    - prospects.api_httpd
         command: /bin/sh -c "envsubst '$$STREAM_HOST $$STREAM_PORT' < /etc/nginx/conf.d/php-fpm-with-statics.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
 
     migration:
-        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ VERSION }}"
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ ENVIRONS['VERSION'] }}"
         command: exit 0
         logging:
             driver: fluentd
@@ -81,13 +85,17 @@ services:
                 tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.migrations
                 fluentd-async-connect: "true"
         env_file:
-            - ".env_api"
+            - ".env_{{ PROJECT_SERVICE_NAME }}"
         environment:
             APP_AUTO_UPDATE: enabled
             APP_AUTO_DOCTRINE_CACHE_CLEAR: enabled
         networks:
-            - api
-            - redis
+            api:
+                aliases:
+                    - internal.prospects.api_migration
+            redis:
+                aliases:
+                    - internal.prospects.redis.api_migration
         extra_hosts: *default-extra-hosts
         deploy:
             replicas: 1
@@ -103,17 +111,21 @@ services:
                     cpus: "0.05"
                     memory: "20M"
     api_php:
-        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ VERSION }}"
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ ENVIRONS['VERSION'] }}"
         logging:
             driver: fluentd
             options:
                 tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.php
                 fluentd-async-connect: "true"
         env_file:
-            - ".env_api"
+            - ".env_{{ PROJECT_SERVICE_NAME }}"
         networks:
-            - api
-            - redis
+            api:
+                aliases:
+                    - internal.prospects.api_php
+            redis:
+                aliases:
+                    - internal.prospects.redis.api_php
         extra_hosts: *default-extra-hosts
         deploy:
             replicas: 2

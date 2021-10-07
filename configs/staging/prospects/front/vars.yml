@@ -1,43 +1,26 @@
-
-MAILER_URL: null://localhost
-MAILER_USER: no-answer@autoviza.fr
-API_PATH: http://api/api/
-CORS_ALLOW_ORIGIN: '*'
-
-
-NGCVIN5_SERVER: 10.66.30.100
-DATABASE_SERVER: 10.66.30.12
-ELK_NODE_1: 10.66.30.21
-ELK_NODE_2: 10.66.30.28
-DATABASE_URL: pgsql://autoviza-prospects:Iecu5aeghoi3aekeechocaiZ@db:5432/autoviza-prospects?charset=UTF-8
-NGC_VIN_URL: https://preprod-next-ngcvin5.ngc-data.fr/api
-NGCVIN_TOKEN: ab34608816189cd67f3844943c78799849ae2214
-APP_ENV: staging
+APP_XDEBUG: disabled
+PUBLIC_SHARED: enabled
+UPLOAD_SHARED: enabled
+API_URL: http://api/api
+APP_ENV: prod
+SENTRY_DSN: ${SENTRY_DSN}
+SENTRY_ENVIRONMENT: ${SENTRY_ENV}
 REDIS_HOST: redis
-REDIS_PORT: 6379
-REDIS_DB: 3
-REDIS_SESSION_DB: 4
-SENTRY_DSN: https://9f29f82208d34e16a62881d5e342e79b@o223249.ingest.sentry.io/2986159?environment=staging&release=$${VERSION}
-SENTRY_ENV: staging
-
-JWT_TOKEN_TTL: 43200
+GULP_HTTP_DOMAIN: https://plateforme.autoviza.fr
+REDIS_PORT: '6379'
+REDIS_DB: ${REDIS_DB}
+REDIS_SESSION_DB: ${REDIS_SESSION_DB}
 JWT_PRIVATE_KEY_PATH: config/jwt/private.pem
 JWT_PUBLIC_KEY_PATH: config/jwt/public.pem
 JWT_PASSPHRASE: autoviza
+JWT_TOKEN_TTL: 43200
+LOGIN_PAGE: disabled
 
+REDIS_DB: '5'
+REDIS_SESSION_DB: '6'
+SENTRY_ENV: staging
+SENTRY_DSN: https://bd6b3365c2314c25ad339dbf1214bd76@o223249.ingest.sentry.io/3459128?environment=${SENTRY_ENV}&release=${VERSION}
 SECURITY_TOKEN: XRLeteqbKbZVFNDAdRvNfvVthsHbCWcvrwnn9evs4AWEuADvnYHVGnCYJojxaS77
-#config Mailjet notification email
-MJ_APIKEY_PUBLIC: 083bed4c6ea1dc23f27ff3cc0d60e32e
-MJ_APIKEY_PRIVATE: b9e82349739a6c0d2fe9752a158268ad
-MJ_API_ENABLED: 1
-MJ_VERSION: v3.1
-FRONT_URL: https://plateforme-peprod.autoviza.fr
-WOW_APPS_SLACK_BOT_API_URL: 
-STATUS_TOKEN: 5e09a7099414454505f50663898ac048
+STATUS_TOKEN: 1b88a8e0571813f16a2b4e4aeb0e23a7
 
-APP_XDEBUG: disabled
-APP_AUTO_LOAD_FIXTURES: disabled
-APP_AUTO_DOCTRINE_CACHE_CLEAR: disabled
-APP_AUTO_CREATE_DATABASE: disabled
-APP_AUTO_UPDATE: disabled
-APP_AUTO_CREATE_INDEX_ELASTIC: disabled
+VERSION: "{{ FRONT_VERSION }}"

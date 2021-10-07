@@ -1,6 +1,6 @@
 MAILER_URL: null://localhost
 MAILER_USER: no-answer@autoviza.fr
-API_PATH: http://api/api/
+API_PATH: http://internal.prospects.api_httpd/api/
 CORS_ALLOW_ORIGIN: '*'
 
 

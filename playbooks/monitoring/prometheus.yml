@@ -3,4 +3,3 @@
 - hosts: managers[0]
   roles:
     - prometheus
-
