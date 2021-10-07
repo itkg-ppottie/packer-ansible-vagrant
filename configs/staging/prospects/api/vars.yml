@@ -1,6 +1,6 @@
 MAILER_URL: null://localhost
 MAILER_USER: no-answer@autoviza.fr
-API_PATH: http://api/api/
+API_PATH: http://internal.prospects.api_httpd/api/
 CORS_ALLOW_ORIGIN: '*'
 
 
@@ -41,4 +41,4 @@ APP_AUTO_CREATE_DATABASE: disabled
 APP_AUTO_UPDATE: disabled
 APP_AUTO_CREATE_INDEX_ELASTIC: disabled
 
-VERSION: "{{ API_VERSION }}"
+VERSION: "V1.1.2.rc1"
