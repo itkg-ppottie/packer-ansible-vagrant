@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 MAILER_URL: null://localhost
 MAILER_USER: no-answer@autoviza.fr
-API_PATH: http://internal.prospects.api_httpd/api/
 CORS_ALLOW_ORIGIN: '*'
 
 
-=======
-VERSION: staging
->>>>>>> b705fd6 (add api)
 NGCVIN5_SERVER: 10.66.30.100
 DATABASE_SERVER: 10.66.30.12
 ELK_NODE_1: 10.66.30.21
@@ -16,12 +11,14 @@ DATABASE_URL: pgsql://autoviza-prospects:Iecu5aeghoi3aekeechocaiZ@db:5432/autovi
 NGC_VIN_URL: https://preprod-next-ngcvin5.ngc-data.fr/api
 NGCVIN_TOKEN: ab34608816189cd67f3844943c78799849ae2214
 APP_ENV: staging
+
 REDIS_HOST: redis
 REDIS_PORT: 6379
 REDIS_DB: 3
 REDIS_SESSION_DB: 4
-SENTRY_DSN: https://9f29f82208d34e16a62881d5e342e79b@o223249.ingest.sentry.io/2986159?environment=staging&release=$${VERSION}
-SENTRY_ENV: staging
+
+SENTRY_DSN: https://9f29f82208d34e16a62881d5e342e79b@o223249.ingest.sentry.io/2986159?environment=staging&release=${VERSION}
+SENTRY_ENVIRONMENT: staging
 
 JWT_TOKEN_TTL: 43200
 JWT_PRIVATE_KEY_PATH: config/jwt/private.pem
@@ -29,6 +26,7 @@ JWT_PUBLIC_KEY_PATH: config/jwt/public.pem
 JWT_PASSPHRASE: autoviza
 
 SECURITY_TOKEN: XRLeteqbKbZVFNDAdRvNfvVthsHbCWcvrwnn9evs4AWEuADvnYHVGnCYJojxaS77
+
 #config Mailjet notificaiton email
 MJ_APIKEY_PUBLIC: 083bed4c6ea1dc23f27ff3cc0d60e32e
 MJ_APIKEY_PRIVATE: b9e82349739a6c0d2fe9752a158268ad
@@ -44,5 +42,6 @@ APP_AUTO_DOCTRINE_CACHE_CLEAR: disabled
 APP_AUTO_CREATE_DATABASE: disabled
 APP_AUTO_UPDATE: disabled
 APP_AUTO_CREATE_INDEX_ELASTIC: disabled
+PUBLIC_SHARED: disabled
 
 VERSION: "V1.1.2.rc1"

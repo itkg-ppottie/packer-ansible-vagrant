@@ -7,18 +7,19 @@
 
 - name: "Create a public directory {{ PROJECT_NAME }} {{ PROJECT_SERVICE_NAME }} on gluster volume for shared datas between nodes"
   file:
-      path: "{{ GLUSTER_SHARE_PATH }}{{ item }}"
+      path: "{{ GLUSTER_SHARE_PATH }}/{{ item }}"
       state: directory
       owner: "{{ PROJECT_USER }}"
       group: "{{ PROJECT_USER }}"
   loop:
       - "{{ PROJECT_NAME }}"
       - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}"
-      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/public"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ ENVIRONS['VERSION'] }}"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ ENVIRONS['VERSION'] }}/public/"
 
 - name: "Create a directory {{ PROJECT_NAME }} on gluster volume for manager nodes"
   file:
-      path: "{{ GLUSTER_MANAGER_PATH }}{{ item }}"
+      path: "{{ GLUSTER_MANAGER_PATH }}/{{ item }}"
       state: directory
       owner: "{{ PROJECT_USER }}"
       group: "{{ PROJECT_USER }}"
