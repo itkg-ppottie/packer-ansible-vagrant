@@ -17,9 +17,6 @@ networks:
     api:
         external: true
         name: "{{ PROJECT_NAME }}-api"
-    redis:
-        external: true
-        name: "{{ PROJECT_NAME }}-redis"
     traefik-proxy:
         external: true
         name: "traefik-proxy"
@@ -39,14 +36,13 @@ volumes:
             type: "glusterfs"
 
 services:
-    front_httpd:
+    back_httpd:
         image: babel.ngc-data.fr:8443/transversal/docker/nginx:1.21-env-conf
         hostname: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-httpd.{{ NODE_HOSTNAME }}"
         environment:
-            STREAM_HOST: "internal-{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-php"
+            STREAM_HOST: internal-{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-php
             STREAM_PORT: 9000
-            STREAM_STATICS_PATH: css|exemple|fronts|images|js|upload
-            STREAM_API_HOST: "internal-{{ PROJECT_NAME }}-api-php"
+            STREAM_STATICS_PATH: assets|manifest.json|upload
         logging:
             driver: fluentd
             options:
@@ -58,14 +54,7 @@ services:
             update_config: *default_update_config
             restart_policy:
                 condition: "on-failure"
-            labels:
-                - "traefik.enable=true"
-                - "traefik.docker.network=traefik-proxy"
-                - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}=Host(`{{ FQDN }}`)"
-                - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.entrypoints=web"
-                - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.service={{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}"
-                - "traefik.http.services.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.loadbalancer.server.port=80"
-            &resources:
+            resources:
                 limits:
                     cpus: "0.25"
                     memory: "500M"
@@ -85,10 +74,10 @@ services:
             - api
             - traefik-proxy
             - front
-        command: /bin/sh -c "envsubst '$$STREAM_HOST $$STREAM_PORT $$STREAM_STATICS_PATH $$STREAM_API_HOST' < /etc/nginx/conf.d/plateforme-front.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+        command: /bin/sh -c "envsubst '$$STREAM_HOST $$STREAM_PORT $$STREAM_STATICS_PATH' < /etc/nginx/conf.d/php-fpm-with-statics.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
 
     migration:
-        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/front/php:{{ VERSION }}"
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/back/php:{{ VERSION }}"
         command: kill -USR2 1
         logging:
             driver: fluentd
@@ -103,7 +92,7 @@ services:
             PUBLIC_SHARED: enabled
             UPLOAD_SHARED: enabled
         networks:
-            - front
+            - back
             - redis
         extra_hosts: *default-extra-hosts
         deploy:
@@ -119,8 +108,8 @@ services:
                 reservations:
                     cpus: "0.05"
                     memory: "20M"
-    front_php:
-            image: "babel.ngc-data.fr:8443/ngc-projects/avzp/front/php:{{ VERSION }}"
+    back_php:
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/back/php:{{ VERSION }}"
         logging:
             driver: fluentd
             options:
@@ -129,7 +118,7 @@ services:
         env_file:
             - ".env_{{ PROJECT_SERVICE_NAME }}"
         networks:
-            front:
+            back:
                 aliases:
                     - "internal-{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-php"
             api:
@@ -151,4 +140,3 @@ services:
         volumes:
             - share_public_{{ ENVIRONS['VERSION'] }}:/srv/var/public
             - share_upload:/srv/upload
-

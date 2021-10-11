@@ -78,14 +78,10 @@ pra_inventory: add_inventory
 init-docker-swarm-cluster: PLAYBOOK = playbooks/init_swarm_cluster.yml
 init-docker-swarm-cluster: deploy
 
-kilometers_deploy: PLAYBOOK = playbooks/ngc/api-kilometers/api-kilometers.yml 
-kilometers_deploy: deploy
-
-prospects_api_deploy: PLAYBOOK = playbooks/ngc/prospects/api/api.yml 
-prospects_api_deploy: deploy
-
+## CLEAR DOCKER SYSTEM SERVICE
 docker_prune_deploy: PLAYBOOK = playbooks/docker-prune.yml
 docker_prune_deploy: deploy
+
 
 ## MONITORING
 #### ALL INTERNAL SERVICES
@@ -127,6 +123,14 @@ kilometers_deploy: deploy
 
 prospects-redis-deploy: PLAYBOOK = playbooks/ngc/prospects/redis/redis.yml
 prospects-redis-deploy: deploy
+
+
+prospects_api_deploy: PLAYBOOK = playbooks/ngc/prospects/api/api.yml 
+prospects_api_deploy: deploy
+
+prospects_front_deploy: PLAYBOOK = playbooks/ngc/prospects/front/front.yml 
+prospects_front_deploy: deploy
+
 #############
 ## STAGING ##
 #############
@@ -136,7 +140,8 @@ init-staging-cluster: staging_inventory init-docker-swarm-cluster
 
 
 
-## STAGING DEPLOY
+## STAGING DEPLOY STACK SERVICES
+### NGC SERVICES DEPLOY
 deploy-staging-kilometers: ## Deploy kilometers api on staging
 deploy-staging-kilometers: staging_inventory kilometers_deploy 
 
@@ -147,10 +152,14 @@ deploy-staging-prospects-redis: staging_inventory prospects-redis-deploy
 deploy-staging-prospects-api: ## Deploy palteforme prospects api on staging
 deploy-staging-prospects-api: staging_inventory prospects_api_deploy 
 
+deploy-staging-prospects-front: ## Deploy palteforme prospects front on staging
+deploy-staging-prospects-front: staging_inventory prospects_front_deploy 
 
+### CLEAN SERVICES DEPLOY
 deploy-staging-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
 deploy-staging-docker-prune: staging_inventory docker_prune_deploy
 
+### MONITORNG SERVICES DEPLOY
 deploy-staging-monitoring: ## Deploy all metrics,monitoring,logs services on staging
 deploy-staging-monitoring: staging_inventory monitoring_deploy
 	

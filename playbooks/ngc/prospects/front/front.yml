@@ -2,5 +2,5 @@
 - hosts: managers[0]
   roles:
     - { role: "network" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: front}
-    - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: front, SERCRETS: "../../../../../../configs/{{ world }}/prospects/front/vars.yml"  }
+    - { role: "front" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: front, SECRETS: "../../../../../../configs/{{ world }}/prospects/front/vars.yml"  }
 

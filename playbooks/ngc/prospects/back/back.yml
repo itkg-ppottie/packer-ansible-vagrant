@@ -1,0 +1,6 @@
+# Deploy project
+- hosts: managers[0]
+  roles:
+    - { role: "network" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: back}
+    - { role: "back" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: back, SECRETS: "../../../../../../configs/{{ world }}/prospects/back/vars.yml"  }
+
