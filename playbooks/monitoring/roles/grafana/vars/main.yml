@@ -1,5 +1,5 @@
 # path to install docker-compose file shared whit all swarm manager nodes
 grafana_user: "{{ username | default(\"debian\")}}"
 grafana_home: "{{ GLUSTER_MANAGER_PATH }}grafana"
-grafana_data: "{{ GLUSTER_MONITORING_PATH }}grafana/data/"
+grafana_data: "{{ GLUSTER_MONITORING_PATH }}grafana"
 GRAFANA_PASSWORD: admin

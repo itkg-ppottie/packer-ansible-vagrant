@@ -69,6 +69,10 @@ production_inventory: add_inventory
 staging_inventory: INVENTORY = configs/staging/inventory.yml
 staging_inventory: add_inventory
 
+
+staging-swarm_inventory: INVENTORY = configs/staging-swarm/inventory.yml
+staging-swarm_inventory: add_inventory
+
 pra_inventory: INVENTORY = configs/pra/inventory.yml
 pra_inventory: add_inventory
 
@@ -97,6 +101,12 @@ node_exporter_deploy: deploy
 
 cadvisor_deploy: PLAYBOOK = playbooks/monitoring/cadvisor.yml
 cadvisor_deploy: deploy
+
+prometheus_deploy: PLAYBOOK = playbooks/monitoring/prometheus.yml
+prometheus_deploy: deploy
+
+grafana_deploy: PLAYBOOK = playbooks/monitoring/grafana.yml
+grafana_deploy: deploy
 
 traefik_deploy: PLAYBOOK = playbooks/traefik.yml
 traefik_deploy: deploy
@@ -140,6 +150,12 @@ deploy-staging-cadvisor: staging_inventory cadvisor_deploy
 deploy-staging-portainer: ## Deploy portainer on staging
 deploy-staging-portainer: staging_inventory portainer_deploy
 
+deploy-staging-prometheus: ## Deploy prometheus on staging
+deploy-staging-prometheus: staging_inventory prometheus_deploy
+
+deploy-staging-grafana: ## Deploy grafana on staging
+deploy-staging-grafana: staging_inventory grafana_deploy
+
 deploy-staging-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
 deploy-staging-docker-prune: staging_inventory docker_prune_deploy
 
@@ -155,6 +171,57 @@ deploy-staging-node_exporter: staging_inventory node_exporter_deploy
 deploy-staging-traefik: ## Deploy traefik on staging
 deploy-staging-traefik: staging_inventory traefik_deploy
 
+###################
+## staging-swarm ##
+###################
+
+init-staging-swarm-cluster: ## Initialize a docker-swarm for staging-swarm configuration
+init-staging-swarm-cluster: staging-swarm_inventory init-docker-swarm-cluster
+
+deploy-staging-swarm-kilometers: ## Deploy kilometers api on staging-swarm
+deploy-staging-swarm-kilometers: staging-swarm_inventory kilometers_deploy 
+
+deploy-staging-swarm-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging-swarm
+deploy-staging-swarm-docker-prune: staging-swarm_inventory docker_prune_deploy
+
+deploy-staging-swarm-monitoring: ## Deploy all metrics,monitoring,logs services on staging-swarm
+deploy-staging-swarm-monitoring: staging-swarm_inventory monitoring_deploy
+	
+deploy-staging-swarm-fluentd: ## Deploy fluentd on staging-swarm
+deploy-staging-swarm-fluentd: staging-swarm_inventory fluentd_deploy
+
+deploy-staging-swarm-node_exporter: ## Deploy fluentd on staging-swarm
+deploy-staging-swarm-node_exporter: staging-swarm_inventory node_exporter_deploy
+
+deploy-staging-swarm-traefik: ## Deploy traefik on staging-swarm
+deploy-staging-swarm-traefik: staging-swarm_inventory traefik_deploy
+
+deploy-staging-swarm-cadvisor: ## Deploy cadvisor on staging-swarm
+deploy-staging-swarm-cadvisor: staging-swarm_inventory cadvisor_deploy
+
+deploy-staging-swarm-portainer: ## Deploy portainer on staging-swarm
+deploy-staging-swarm-portainer: staging-swarm_inventory portainer_deploy
+
+deploy-staging-swarm-prometheus: ## Deploy prometheus on staging-swarm
+deploy-staging-swarm-prometheus: staging-swarm_inventory prometheus_deploy
+
+deploy-staging-swarm-grafana: ## Deploy grafana on staging-swarm
+deploy-staging-swarm-grafana: staging-swarm_inventory grafana_deploy
+
+deploy-staging-swarm-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging-swarm
+deploy-staging-swarm-docker-prune: staging-swarm_inventory docker_prune_deploy
+
+deploy-staging-swarm-monitoring: ## Deploy all metrics,monitoring,logs services on staging-swarm
+deploy-staging-swarm-monitoring: staging-swarm_inventory monitoring_deploy
+
+deploy-staging-swarm-fluentd: ## Deploy fluentd on staging-swarm
+deploy-staging-swarm-fluentd: staging-swarm_inventory fluentd_deploy
+
+deploy-staging-swarm-node_exporter: ## Deploy fluentd on staging-swarm
+deploy-staging-swarm-node_exporter: staging-swarm_inventory node_exporter_deploy
+
+deploy-staging-swarm-traefik: ## Deploy traefik on staging-swarm
+deploy-staging-swarm-traefik: staging-swarm_inventory traefik_deploy
 ###########
 ### PRA ###
 ###########
@@ -199,6 +266,12 @@ deploy-pra-node_exporter: pra_inventory node_exporter_deploy
 deploy-pra-traefik: ## Deploy traefik on pra
 deploy-pra-traefik: pra_inventory traefik_deploy
 
+deploy-pra-prometheus: ## Deploy prometheus on pra
+deploy-pra-prometheus: pra_inventory prometheus_deploy
+
+deploy-pra-grafana: ## Deploy grafana on pra
+deploy-pra-grafana: pra_inventory grafana_deploy
+
 ### PROD ###
 
 deploy-production-kilometers: ## Deploy kilometers api on production
@@ -237,7 +310,11 @@ deploy-production-traefik: ## Deploy traefik on production
 deploy-production-traefik: production_inventory traefik_deploy
 
 
+deploy-production-prometheus: ## Deploy prometheus on production
+deploy-production-prometheus: production_inventory prometheus_deploy
 
+deploy-production-grafana: ## Deploy grafana on production
+deploy-production-grafana: production_inventory grafana_deploy
 
 
 ##

@@ -1,0 +1,16 @@
+vars: 
+  ansible_python_interpreter: /usr/bin/python3
+all:
+  children:
+    managers:
+      hosts:
+        PDDV-NGC-AUTO-SWARM-M1:
+          ansible_host: '10.66.30.35'
+          ansible_user: ngc
+        PDDV-NGC-AUTO-SWARM-M2:
+          ansible_host: '10.66.30.37'
+          ansible_user: ngc
+        PDDV-NGC-AUTO-SWARM-M3:
+          ansible_host: '10.66.30.38'
+          ansible_user: ngc
+

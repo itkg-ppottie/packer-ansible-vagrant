@@ -13,7 +13,7 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ grafana_home }}/data"
+    - "{{ grafana_data }}"
     
 - name: "Copy config file dashboards"
   copy:
