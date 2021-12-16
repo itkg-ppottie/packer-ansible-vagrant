@@ -15,6 +15,8 @@ services:
       - /var/lib/docker:/var/lib/docker:ro
       - /sys/fs/cgroup:/cgroup:ro
       - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
     deploy:
       mode: global
       update_config: # Need for mode: host 
@@ -30,8 +32,9 @@ services:
       - '-housekeeping_interval=10s'
       - '-docker_only=true'
     restart: unless-stopped
-    devices:
-      - /dev/kmsg:/dev/kmsg
+
+    # devices:
+    #   - /dev/kmsg:/dev/kmsg
     security_opt:
       - no-new-privileges:true
     expose:
