@@ -13,4 +13,9 @@ all:
         PDDV-NGC-AUTO-SWARM-M3:
           ansible_host: '10.66.30.38'
           ansible_user: ngc
+    workers:
+      hosts:
+        PDDV-NGC-AUTO-SWARM-W1:
+          ansible_host: '10.66.30.40'
+          ansible_user: ngc
 

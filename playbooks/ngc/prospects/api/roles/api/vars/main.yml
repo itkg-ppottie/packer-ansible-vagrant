@@ -1,5 +1,3 @@
-PROJECT_NAME: prospects
 PROJECT_USER: "{{ username | default(\"debian\")}}"
-PROJECT_SERVICE_NAME: api
 NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"
-PROJECT_URL_DOMAIN: "{{ PREFIX_URL_DOMAIN }}{{PROJECT_SERVICE_NAME }}-{{ PROJECT_NAME }}.{{ URL_DOMAIN }}"
+FQDN: "{{ PREFIX_URL_DOMAIN }}{{PROJECT_SERVICE_NAME }}-{{ PROJECT_NAME }}.{{ URL_DOMAIN }}"

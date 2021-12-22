@@ -18,4 +18,86 @@ servers:
     eth1: 10.66.30.23
   PDDV-NGC-ELK-MONIT:
     name: PDDV-NGC-ELK-MONIT
-    eth1: 10.66.30.25
+    eth1: 10.128.39.227
+
+
+# APPLICATIONS SERVICES CONFIGURATION
+CONFIG_PROSPECTS:
+  api:
+    version: V1.1.2.rc3
+    services:
+      php:
+        resources:
+          limits:
+            cpus: '"0.25"'
+            memory: "500M"
+          reservations:
+            cpus: '"0.05"'
+            memory: "20M"
+        replicas: 2
+      httpd:
+        FQDN: recette-api-prospects.ngc-data.fr
+        resources:
+          limits:
+            cpus: '"0.25"'
+            memory: "500M"
+          reservations:
+            cpus: '"0.05"'
+            memory: "20M"
+        replicas: 2
+
+  back:
+    version: V1.0.9.rc2
+    services:
+      php:
+        resources:
+          limits:
+            cpus: '"0.25"'
+            memory: "500M"
+          reservations:
+            cpus: '"0.05"'
+            memory: "20M"
+        replicas: 1
+      httpd:
+        FQDN: plateforme-back-preprod.autoviza.fr
+        resources:
+          limits:
+            cpus: '"0.25"'
+            memory: "500M"
+          reservations:
+            cpus: '"0.05"'
+            memory: "20M"
+        replicas: 1
+  front:
+    version: V1.1.1.rc2
+    services:
+      php:
+        resources:
+          limits:
+            cpus: '"0.25"'
+            memory: "500M"
+          reservations:
+            cpus: '"0.05"'
+            memory: "20M"
+        replicas: 2
+      httpd:
+        FQDN: plateforme-preprod.autoviza.fr
+        resources:
+          limits:
+            cpus: '"0.25"'
+            memory: "500M"
+          reservations:
+            cpus: ''"0.05"''
+            memory: "20M"
+        replicas: 2
+  redis:
+    version: 6.2.4
+    replicas: "1"
+    resources:
+      limits:
+        cpus: '"1"'
+        memory: "1G"
+      reservations:
+        cpus: '"0.15"'
+        memory: "20M"
+

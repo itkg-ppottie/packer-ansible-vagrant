@@ -2,5 +2,5 @@
   community.docker.docker_network:
     driver: overlay
     attachable: true
-    name: "{{ PROJECT_NAME }}-{{ GLOBAL_SERVICE_NAME }}"
+    name: "{{PROJECT_NAME}}-{{PROJECT_SERVICE_NAME}}"
     state: present

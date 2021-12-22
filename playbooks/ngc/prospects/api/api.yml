@@ -1,11 +1,6 @@
 
-- name: Load environment variables from CI/CD secrets
-  include_vars:
-    file: "../../../../../../../configs/{{ world }}/prospects/api/VERSION"
-    name: VERSION
-
 # Deploy project
 - hosts: managers[0]
   roles:
-    - { role: "network" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: api}
-    - { role: "api" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: api, SECRETS: "../../../../../../configs/{{ world }}/prospects/api/vars.yml"  }
+    - { role: "network",  PROJECT_NAME: "prospects",PROJECT_SERVICE_NAME: "api"}
+    - { role: "api" , PROJECT_NAME: "prospects",PROJECT_SERVICE_NAME: "api", SECRETS: "../../../../../../configs/{{ world }}/prospects/api/vars.yml" , CONFIG_DEPLOY: "{{ CONFIG_PROSPECTS['api'] }}"}

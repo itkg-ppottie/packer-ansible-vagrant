@@ -13,7 +13,7 @@ x-default-extra-hosts: &default-extra-hosts
     db: "{{ ENVIRONS['DATABASE_SERVER'] }}"
     elk_node1: "{{ ENVIRONS['ELK_NODE_1'] }}"
     elk_node2: "{{ ENVIRONS['ELK_NODE_2'] }}"
-    preprod-next-ngcvin5.ngc-data.fr: "{{  ENVIRONS['NGCVIN5_SERVER'] }}"
+    preprod-next-ngcvin5.ngc-data.fr: "{{ ENVIRONS['NGCVIN5_SERVER'] }}"
 
 networks:
     api:
@@ -27,21 +27,21 @@ networks:
         name: "traefik-proxy"
 
 volumes:
-    share_public_{{ ENVIRONS['VERSION'] }}:
+    share_public_{{ CONFIG_DEPLOY['php']['version'] }}:
         driver: "local"
         driver_opts:
             o: "bind"
-            device: "{{ GLUSTER_SHARE_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ ENVIRONS['VERSION'] }}/public"
+            device: "{{ GLUSTER_SHARE_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ CONFIG_DEPLOY['php']['version'] }}/public"
             type: "glusterfs"
 
 services:
 
     api_php:
-        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ ENVIRONS['VERSION'] }}"
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ CONFIG_DEPLOY['php']['version'] }}"
         logging:
             driver: fluentd
             options:
-                tag: "docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.php"
+                tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.php
                 fluentd-async-connect: "true"
         env_file:
             - ".env_{{ PROJECT_SERVICE_NAME }}"
@@ -52,27 +52,27 @@ services:
             redis:
         extra_hosts: *default-extra-hosts
         volumes:
-            - share_public_{{ ENVIRONS['VERSION'] }}:/srv/var/public
+            - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/var/public
         deploy:
-            replicas: 2
+            replicas: {{ CONFIG_DEPLOY['php']['replicas'] }}
             rollback_config: *default_rollback_config
             update_config: *default_update_config
             restart_policy:
                 condition: "on-failure"
             resources:
-                limits:
-                    cpus: "0.25"
-                    memory: "500M"
-                reservations:
-                    cpus: "0.05"
-                    memory: "20M"
+{% for  type, devices in CONFIG_DEPLOY['php']['resources'].items() %}
+                {{ type |trim}}:
+{% for  device, value in devices.items() %}
+                    {{ device |trim}}: {{ value |trim}}
+{% endfor %}{% endfor %}
+
         healthcheck:
             interval: 60s
             timeout: 60s
             retries: 3
-            start_period: 2s
+            start_period: 30s
     api_httpd:
-        image: babel.ngc-data.fr:8443/transversal/docker/nginx:1.21-env-conf
+        image: "babel.ngc-data.fr:8443/transversal/docker/nginx:{{ CONFIG_DEPLOY['httpd']['version'] }}"
         hostname: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-httpd.{{ NODE_HOSTNAME }}"
         environment:
             STREAM_HOST: "internal-{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-php"
@@ -81,25 +81,24 @@ services:
         logging:
             driver: fluentd
             options:
-                tag: "docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.httpd"
+                tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.httpd
                 fluentd-async-connect: "true"
         deploy:
-            replicas: 2
+            replicas: {{ CONFIG_DEPLOY['httpd']['replicas'] }}
             rollback_config: *default_rollback_config
             update_config: *default_update_config
             restart_policy:
                 condition: "on-failure"
             resources:
-                limits:
-                    cpus: "0.25"
-                    memory: "500M"
-                reservations:
-                    cpus: "0.05"
-                    memory: "20M"
+{% for  type, devices in CONFIG_DEPLOY['httpd']['resources'].items() %}
+                {{ type |trim}}:
+{% for  device, value in devices.items() %}
+                    {{ device |trim}}: {{ value |trim}}
+{% endfor %}{% endfor %}            
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=traefik-proxy"
-                - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.rule=Host(`{{ PROJECT_URL_DOMAIN }}`)"
+                - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.rule=Host(`{{ CONFIG_DEPLOY['httpd']['FQDN'] }}`)"
                 - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.entrypoints=web"
                 - "traefik.http.routers.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.service={{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}"
                 - "traefik.http.services.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.loadbalancer.server.port=80"
@@ -110,18 +109,48 @@ services:
             retries: 3
             start_period: 5s
         volumes:
-            - share_public_{{ ENVIRONS['VERSION'] }}:/srv/public
+            - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/public
         networks:
             api:
                 aliases:
                     - "internal-{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-httpd"
             traefik-proxy:
-                aliases:
-                    - "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}-httpd"
         command: /bin/sh -c "envsubst '$$STREAM_HOST $$STREAM_PORT $$STREAM_STATICS_PATH' < /etc/nginx/conf.d/php-fpm-with-statics.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
 
+    cronjob:
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ CONFIG_DEPLOY['php']['version'] }}"
+        command:  bin/console offers:notification:test
+        user: foo
+        logging:
+            driver: fluentd
+            options:
+                tag: docker.{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.migrations
+                fluentd-async-connect: "true"
+        env_file:
+            - ".env_{{ PROJECT_SERVICE_NAME }}"
+        environment:
+            PUBLIC_SHARED: enabled
+        networks:
+            - api
+            - redis
+        extra_hosts: *default-extra-hosts
+        volumes:
+            - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/public
+        deploy:
+            replicas: 1
+            rollback_config: *default_rollback_config
+            update_config: *default_update_config
+            restart_policy:
+                condition: any
+                delay: 24h
+            resources:
+{% for  type, devices in CONFIG_DEPLOY['php']['resources'].items() %}
+                {{ type |trim}}:
+{% for  device, value in devices.items() %}
+                    {{ device |trim}}: {{ value |trim}}
+{% endfor %}{% endfor %}
     migration:
-        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ ENVIRONS['VERSION'] }}"
+        image: "babel.ngc-data.fr:8443/ngc-projects/avzp/api/php:{{ CONFIG_DEPLOY['php']['version'] }}"
         command: kill -USR2 1
         user: foo
         logging:
@@ -139,6 +168,8 @@ services:
             - api
             - redis
         extra_hosts: *default-extra-hosts
+        volumes:
+            - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/public
         deploy:
             replicas: 1
             rollback_config: *default_rollback_config
@@ -146,10 +177,8 @@ services:
             restart_policy:
                 condition: "none"
             resources:
-                limits:
-                    cpus: "0.25"
-                    memory: "500M"
-                reservations:
-                    cpus: "0.05"
-                    memory: "20M"
-
+{% for  type, devices in CONFIG_DEPLOY['php']['resources'].items() %}
+                {{ type |trim}}:
+{% for  device, value in devices.items() %}
+                    {{ device |trim}}: {{ value |trim}}
+{% endfor %}{% endfor %}

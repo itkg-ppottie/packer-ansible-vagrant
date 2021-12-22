@@ -13,19 +13,18 @@ volumes:
       type: "glusterfs"
 services:
   redis:
-    image: babel.ngc-data.fr:8443/common/docker/redis:{{ REDIS_VERSION }}
+    image: "babel.ngc-data.fr:8443/common/docker/redis:{{ CONFIG_DEPLOY['version'] }}"
     hostname: "{{ PROJECT_NAME }}-{{ PROJECT_SERVICE_NAME }}.{{ NODE_HOSTNAME }}"
     deploy:
-      replicas: 1
+      replicas: {{ CONFIG_DEPLOY['replicas'] }}
       restart_policy:
         condition: "any"
       resources:
-        limits:
-          cpus: "1"
-          memory: "1G"
-        reservations:
-          cpus: "0.15"
-          memory: "20M"
+{% for  type, devices in CONFIG_DEPLOY['resources'].items() %}
+        {{ type |trim}}:
+{% for  device, value in devices.items() %}
+          {{ device |trim}}: {{ value |trim}}
+{% endfor %}{% endfor %}
     healthcheck:
       test: "redis-cli ping"
       interval: "20s"

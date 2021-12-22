@@ -1,0 +1,31 @@
+API_URL: http://internal-prospects-api-httpd/api
+APP_ENV: staging
+
+GULP_HTTP_DOMAIN: https://plateforme.autoviza.fr
+
+JWT_PRIVATE_KEY_PATH: config/jwt/private.pem
+JWT_PUBLIC_KEY_PATH: config/jwt/public.pem
+JWT_PASSPHRASE: autoviza
+JWT_TOKEN_TTL: 43200
+LOGIN_PAGE: disabled
+
+REDIS_HOST: redis
+REDIS_PORT: '6379'
+REDIS_DB: '5'
+REDIS_SESSION_DB: '6'
+
+SENTRY_ENVIRONMENT: staging
+SENTRY_DSN: https://bd6b3365c2314c25ad339dbf1214bd76@o223249.ingest.sentry.io/3459128?environment=${SENTRY_ENVIRONMENT}&release=${VERSION}
+
+SECURITY_TOKEN: XRLeteqbKbZVFNDAdRvNfvVthsHbCWcvrwnn9evs4AWEuADvnYHVGnCYJojxaS77
+STATUS_TOKEN: 1b88a8e0571813f16a2b4e4aeb0e23a7
+
+APP_XDEBUG: disabled
+APP_AUTO_LOAD_FIXTURES: disabled
+APP_AUTO_DOCTRINE_CACHE_CLEAR: disabled
+APP_AUTO_CREATE_DATABASE: disabled
+APP_AUTO_UPDATE: disabled
+APP_AUTO_CREATE_INDEX_ELASTIC: disabled
+PUBLIC_SHARED: disabled
+
+VERSION: "V1.1.1.rc2"

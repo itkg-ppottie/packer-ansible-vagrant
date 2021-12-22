@@ -1,5 +1,5 @@
 - hosts: managers[0]
   roles:
-    - { role: "networks" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: redis}
-    - { role: "redis" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: redis }
+    - { role: "networks" , PROJECT_NAME: "prospects" , PROJECT_SERVICE_NAME: redis}
+    - { role: "redis" ,  PROJECT_NAME: "prospects", PROJECT_SERVICE_NAME: redis , CONFIG_DEPLOY: "{{ CONFIG_PROSPECTS['redis'] }}"}
 

@@ -11,7 +11,7 @@
 
 - name: "Generate docker-compose.yml file"
   template:
-    src: "./templates/docker-compose.yml"
+    src: "./templates/docker-compose.j2"
     dest: "{{ GLUSTER_MANAGER_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}-compose.yml"
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"

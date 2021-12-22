@@ -47,7 +47,36 @@ banner:
 	printf "\033[32m ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝     ╚═════╝╚══════╝ ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝\033[0m\n"
 	printf "\033[32m                                                                                                            \033[0m\n"
 
+MANAGER_TYPE=1
+WORKER_TYPE=2
 
+
+
+# get_type_node:
+# 	@while [ "${MANAGER_TYPE}" != "$${TYPE_NODE}" ] && [ "${WORKER_TYPE}" != "$${TYPE_NODE}" ]; do \
+# 		echo " Type of node" ;\
+# 		echo "   ${MANAGER_TYPE} - Manager"; \
+# 		echo "   ${WORKER_TYPE} - Worker"; \
+# 		read -r -p "your choice: " TYPE_NODE;\
+# 	done ; 
+
+# get_ip_node:
+# 	@while [ -z "$${IP_NODE}" ]; do \
+# 		read -r -p "IP of node: " IP_NODE;\
+# 		if ! expr "$$IP_NODE" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$$' >/dev/null; then IP_NODE=""; fi \
+# 	done ; 
+
+# get_hostname_node:
+# 	echo "${HOSTNAME_NODE}";
+# 	@while [ -z "$${HOSTNAME_NODE}" ]; do \
+# 		read -r -p "hostname of node: " HOSTNAME_NODE;\
+# 	done ; 
+
+# add_node: get_type_node get_ip_node get_hostname_node
+# 	@echo  >>${INVENTORY}
+
+
+	
 
 add_inventory:
 	$(eval DELOY_CMD := $(DELOY_CMD) -i ${INVENTORY})
@@ -77,6 +106,10 @@ pra_inventory: add_inventory
 ### INIT SWARM
 init-docker-swarm-cluster: PLAYBOOK = playbooks/init_swarm_cluster.yml
 init-docker-swarm-cluster: deploy
+
+add-last-worker-to-swarm-cluster: PLAYBOOK = playbooks/add_last_worker.yml
+add-last-worker-to-swarm-cluster: deploy
+
 
 ## CLEAR DOCKER SYSTEM SERVICE
 docker_prune_deploy: PLAYBOOK = playbooks/docker-prune.yml
@@ -131,6 +164,9 @@ prospects_api_deploy: deploy
 prospects_front_deploy: PLAYBOOK = playbooks/ngc/prospects/front/front.yml 
 prospects_front_deploy: deploy
 
+prospects_back_deploy: PLAYBOOK = playbooks/ngc/prospects/back/back.yml 
+prospects_back_deploy: deploy
+
 #############
 ## STAGING ##
 #############
@@ -138,7 +174,8 @@ prospects_front_deploy: deploy
 init-staging-cluster: ## Initialize a docker-swarm for staging configuration
 init-staging-cluster: staging_inventory init-docker-swarm-cluster
 
-
+add-last-worker-to-staging-cluster: ## add last worker of inventory to  staging cluster
+add-last-worker-to-staging-cluster: staging_inventory add-last-worker-to-swarm-cluster
 
 ## STAGING DEPLOY STACK SERVICES
 ### NGC SERVICES DEPLOY
@@ -154,6 +191,9 @@ deploy-staging-prospects-api: staging_inventory prospects_api_deploy
 
 deploy-staging-prospects-front: ## Deploy palteforme prospects front on staging
 deploy-staging-prospects-front: staging_inventory prospects_front_deploy 
+
+deploy-staging-prospects-back: ## Deploy palteforme prospects back on staging
+deploy-staging-prospects-back: staging_inventory prospects_back_deploy 
 
 ### CLEAN SERVICES DEPLOY
 deploy-staging-docker-prune: ## deploy docker-prune stack to clean node all 24h on staging
@@ -202,6 +242,24 @@ deploy-staging-traefik: staging_inventory traefik_deploy
 ###################
 ## staging-swarm ##
 ###################
+
+init-staging-swarm-cluster: ## Initialize a docker-swarm for staging-swarm configuration
+init-staging-swarm-cluster: staging-swarm_inventory init-docker-swarm-cluster
+
+add-last-worker-to-staging-swarm-cluster: ## add last worker of inventory to swarm staging-swarm cluster
+add-last-worker-to-staging-swarm-cluster: staging-swarm_inventory add-last-worker-to-swarm-cluster
+
+deploy-staging-swarm-prospects-api: ## Deploy palteforme prospects api on staging-swarm
+deploy-staging-swarm-prospects-api: staging-swarm_inventory prospects_api_deploy 
+
+deploy-staging-swarm-prospects-back: ## Deploy palteforme prospects back on staging-swarm
+deploy-staging-swarm-prospects-back: staging-swarm_inventory prospects_back_deploy 
+
+deploy-staging-swarm-prospects-front: ## Deploy palteforme prospects front on staging-swarm
+deploy-staging-swarm-prospects-front: staging-swarm_inventory prospects_front_deploy 
+
+deploy-staging-swarm-prospects-redis: ## Deploy redis for prospects on staging-swarm
+deploy-staging-swarm-prospects-redis: staging-swarm_inventory prospects-redis-deploy
 
 init-staging-swarm-cluster: ## Initialize a docker-swarm for staging-swarm configuration
 init-staging-swarm-cluster: staging-swarm_inventory init-docker-swarm-cluster
@@ -257,6 +315,8 @@ deploy-staging-swarm-traefik: staging-swarm_inventory traefik_deploy
 init-pra-cluster: ## Initialize a docker-swarm for PRA configuration
 init-pra-cluster: pra_inventory init-docker-swarm-cluster
 
+add-last-worker-to-pra-cluster: ## add last worker of inventory to pra  cluster
+add-last-worker-to-pra-cluster: pra_inventory add-last-worker-to-swarm-cluster
 
 deploy-pra-docker-prune: ## deploy docker-prune stack to clean node all 24h on pra
 deploy-pra-docker-prune: pra_inventory docker_prune_deploy
@@ -301,6 +361,10 @@ deploy-pra-grafana: ## Deploy grafana on pra
 deploy-pra-grafana: pra_inventory grafana_deploy
 
 ### PROD ###
+
+
+add-last-worker-to-production-cluster: ## add last worker of inventory to production  cluster
+add-last-worker-to-production-cluster: production_inventory add-last-worker-to-swarm-cluster
 
 deploy-production-kilometers: ## Deploy kilometers api on production
 deploy-production-kilometers: production_inventory kilometers_deploy 

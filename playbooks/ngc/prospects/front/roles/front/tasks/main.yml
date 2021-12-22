@@ -15,8 +15,8 @@
       - "{{ PROJECT_NAME }}"
       - "{{ PROJECT_NAME }}/upload"
       - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}"
-      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ ENVIRONS['VERSION'] }}"
-      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ ENVIRONS['VERSION'] }}/public/"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ CONFIG_DEPLOY['php']['version'] }}"
+      - "{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}/{{ CONFIG_DEPLOY['php']['version'] }}/public/"
 
 - name: "Create a directory {{ PROJECT_NAME }} on gluster volume for manager nodes"
   file:
@@ -29,7 +29,7 @@
 
 - name: "Generate env files onto cluster"
   template:
-    src: "./templates/.env"
+    src: "./templates/.env.j2"
     dest: "{{ GLUSTER_MANAGER_PATH }}/{{ PROJECT_NAME }}/.env_{{ PROJECT_SERVICE_NAME }}"
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"
@@ -37,7 +37,7 @@
     
 - name: "Generate docker-compose.yml file"
   template:
-    src: "./templates/docker-compose.yml"
+    src: "./templates/docker-compose.j2"
     dest: "{{ GLUSTER_MANAGER_PATH }}/{{ PROJECT_NAME }}/{{ PROJECT_SERVICE_NAME }}-docker-compose.yml"
     owner: "{{ PROJECT_USER }}"
     group: "{{ PROJECT_USER }}"

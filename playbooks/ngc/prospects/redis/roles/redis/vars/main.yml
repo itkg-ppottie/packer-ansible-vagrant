@@ -1,6 +1,2 @@
-PROJECT_NAME: "{{ GLOBAL_PROJECT_NAME | default('prospects') }}"
-PROJECT_SERVICE_NAME: "{{ GLOBAL_SERVICE_NAME | default('redis') }}"
 PROJECT_USER: "{{ username | default(\"debian\")}}"
-PROJECT_HOME: "/home/{{ PROJECT_USER }}/{{ PROJECT_NAME }}"
 NODE_HOSTNAME: !unsafe "{{.Node.Hostname}}"
-REDIS_VERSION: "{{ PROSPECTS_REDIS_VERSION | default('6.2.4') }}"

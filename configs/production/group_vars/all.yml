@@ -11,3 +11,84 @@ URL_DOMAIN: ngc-data.fr
 PREFIX_URL_DOMAIN: qualification-
 servers:
   
+
+# APPLICATIONS SERVICES CONFIGURATION
+CONFIG_PROSPECTS:
+  api:
+    version: V1.1.2
+    services:
+      php:
+        resources:
+          limits:
+            cpus: "0.25"
+            memory: "500M"
+          reservations:
+            cpus: "0.05"
+            memory: "20M"
+        replicas: 2
+      httpd:
+        FQDN: api-prospects.ngc-data.fr
+        resources:
+          limits:
+            cpus: "0.25"
+            memory: "500M"
+          reservations:
+            cpus: "0.05"
+            memory: "20M"
+        replicas: 2
+
+  back:
+    version: V1.0.9
+    services:
+      php:
+        resources:
+          limits:
+            cpus: "0.25"
+            memory: "500M"
+          reservations:
+            cpus: "0.05"
+            memory: "20M"
+        replicas: 1
+      httpd:
+        FQDN: plateforme-back.autoviza.fr
+        resources:
+          limits:
+            cpus: "0.25"
+            memory: "500M"
+          reservations:
+            cpus: "0.05"
+            memory: "20M"
+        replicas: 1
+  front:
+    version: V1.1.1
+    services:
+      php:
+        resources:
+          limits:
+            cpus: "0.25"
+            memory: "500M"
+          reservations:
+            cpus: "0.05"
+            memory: "20M"
+        replicas: 2
+      httpd:
+        FQDN: plateforme.autoviza.fr
+        resources:
+          limits:
+            cpus: "0.25"
+            memory: "500M"
+          reservations:
+            cpus: "0.05"
+            memory: "20M"
+        replicas: 2
+  redis:
+    version: 6.2.4
+    replicas: "1"
+    resources:
+      limits:
+        cpus: '"1"'
+        memory: "1G"
+      reservations:
+        cpus: '"0.15"'
+        memory: "20M"
+

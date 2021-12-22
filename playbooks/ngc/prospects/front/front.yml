@@ -1,6 +1,6 @@
 # Deploy project
 - hosts: managers[0]
   roles:
-    - { role: "network" , GLOBAL_PROJECT_NAME: "prospects" , GLOBAL_SERVICE_NAME: front}
-    - { role: "front" ,  GLOBAL_PROJECT_NAME: "prospects", GLOBAL_SERVICE_NAME: front, SECRETS: "../../../../../../configs/{{ world }}/prospects/front/vars.yml"  }
+    - { role: "network" , PROJECT_NAME: "prospects" , PROJECT_SERVICE_NAME: front}
+    - { role: "front" ,  PROJECT_NAME: "prospects", PROJECT_SERVICE_NAME: front, SECRETS: "../../../../../../configs/{{ world }}/prospects/front/vars.yml" ,CONFIG_DEPLOY: "{{ CONFIG_PROSPECTS['front'] }}" }
 
