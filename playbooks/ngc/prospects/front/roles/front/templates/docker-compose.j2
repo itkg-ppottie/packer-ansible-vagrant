@@ -89,6 +89,7 @@ services:
     migration:
         image: "babel.ngc-data.fr:8443/ngc-projects/avzp/front/php:{{ CONFIG_DEPLOY['php']['version'] }}"
         command: kill -USR2 1
+        user: foo
         logging:
             driver: fluentd
             options:
@@ -98,6 +99,7 @@ services:
             - ".env_{{ PROJECT_SERVICE_NAME }}"
         volumes:
             - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/var/public
+            - share_upload:/srv/upload
         environment:
             PUBLIC_SHARED: enabled
             UPLOAD_SHARED: enabled
@@ -146,4 +148,3 @@ services:
         volumes:
             - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/var/public
             - share_upload:/srv/upload
-

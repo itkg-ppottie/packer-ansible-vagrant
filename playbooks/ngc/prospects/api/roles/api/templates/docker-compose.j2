@@ -136,6 +136,7 @@ services:
         extra_hosts: *default-extra-hosts
         volumes:
             - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/public
+            - share_upload:/srv/upload
         deploy:
             replicas: 1
             rollback_config: *default_rollback_config
@@ -170,6 +171,7 @@ services:
         extra_hosts: *default-extra-hosts
         volumes:
             - share_public_{{ CONFIG_DEPLOY['php']['version'] }}:/srv/public
+            - share_upload:/srv/upload
         deploy:
             replicas: 1
             rollback_config: *default_rollback_config

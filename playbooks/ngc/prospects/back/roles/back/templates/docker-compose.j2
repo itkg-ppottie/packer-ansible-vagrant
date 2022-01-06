@@ -89,6 +89,7 @@ services:
     migration:
         image: "babel.ngc-data.fr:8443/ngc-projects/avzp/back/php:{{ CONFIG_DEPLOY['php']['version'] }}"
         command: kill -USR2 1
+        user: foo
         logging:
             driver: fluentd
             options:

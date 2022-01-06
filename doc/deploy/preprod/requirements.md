@@ -12,7 +12,7 @@ il faut:
 
 
 
-Le cluster de preprod: 
+Le cluster de staging: 
         X masters
         Y workers
 
@@ -31,16 +31,16 @@ activer les metrics sur docker
 
 deployement
 tester les droits et acces :
-    ansible check cluster preprod
+    ansible check cluster staging-swarm
 deployer le monitoring    
-    ansible deploy monitoring preprod 
+    ansible deploy monitoring staging-swarm 
 
 deployer une application NGC
-    ansible deploy api-kilometers preprod
+    ansible deploy api-kilometers staging-swarm
 
 deployer une maj d'une application NGC
     ansible upgrade [VERSION] [STACK] [SERVICE] [ENVIRONMENT]
-    ansible upgrade VERSION api-kilmeters web preprod
+    ansible upgrade VERSION api-kilmeters web staging-swarm
 
 ansible stop [SERVICE] [ENVIRONMENT]
 

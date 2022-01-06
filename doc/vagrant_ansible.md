@@ -9,15 +9,15 @@ Préconditions:
 
 ## Définir les environnements
 
-Grace Vagrant et selon un parametrage présent dans le script (Vagrantfile) les machines, spécifications et configuration des services composants un environnement (preprod ou prod) sont définies dans leur repertoire respectifs
+Grace Vagrant et selon un parametrage présent dans le script (Vagrantfile) les machines, spécifications et configuration des services composants un environnement (staging ou prod) sont définies dans leur repertoire respectifs
 
 ```
  / 
- |- preprod
+ |- staging
  |   |- conf
  |   |   |- haproxy.cfg
  |   |-vars.vagrantfile.yaml
- |- preprod
+ |- dev
  |   |- conf
  |   |   |- haproxy.cfg
  |   |-vars.vagrantfile.yaml
@@ -83,7 +83,7 @@ opts = GetoptLong.new(
   [ '--environment', GetoptLong::OPTIONAL_ARGUMENT ]
 )
 
-world='preprod'
+world='staging'
 
 opts.ordering=(GetoptLong::REQUIRE_ORDER)   ### this line.
 
@@ -163,7 +163,7 @@ end
  ```
 
 Le script Vagrant (Vagrantfile) prend en compte le parametre `--environment` permettant de définir l'environnement à construire :
-* `preprod` (par défaut)
+* `staging` (par défaut)
 * `prod`
 ```Vagrantfile
     [...]
@@ -171,7 +171,7 @@ Le script Vagrant (Vagrantfile) prend en compte le parametre `--environment` per
     [ '--environment', GetoptLong::OPTIONAL_ARGUMENT ]
     )
 
-    world='preprod'
+    world='staging'
 
     opts.ordering=(GetoptLong::REQUIRE_ORDER)   ### this line.
 
